@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeeSweet Honey – Pure & Natural</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #f6c343;
+      --brown: #3b2518;
+      --cream: #fff9e6;
+      --text-dark: #2e2e2e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      color: var(--text-dark);
+      line-height: 1.6;
+      background: var(--cream);
+    }
+
+    header {
+      background: var(--cream);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .container {
+      width: min(90%, 1200px);
+      margin: auto;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+
+    .logo {
+      font-family: "Playfair Display", serif;
+      font-size: 1.75rem;
+      color: var(--brown);
+    }
+
+    .menu {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .menu a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--text-dark);
+      position: relative;
+    }
+
+    .menu a::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      bottom: -4px;
+      left: 0;
+      transition: width 0.3s;
+    }
+
+    .menu a:hover::after {
+      width: 100%;
+    }
+
+    /* Hero */
+    .hero {
+      background: url("https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee?auto=format&fit=crop&w=1600&q=60") center/cover no-repeat;
+      min-height: 80vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: var(--cream);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      color: var(--cream);
+      max-width: 40ch;
+      margin-inline: auto;
+      font-size: 1.125rem;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      margin-top: 2rem;
+      background: var(--gold);
+      color: var(--brown);
+      padding: 0.75rem 2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: transform 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Products */
+    #products {
+      padding: 4rem 0;
+      background: var(--cream);
+    }
+
+    #products h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: var(--brown);
+      margin-bottom: 2rem;
+    }
+
+    .products-grid {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 1.25rem 1.5rem 2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-content h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      color: var(--brown);
+    }
+
+    .price {
+      font-weight: 700;
+      margin: 1rem 0 0;
+      color: #d4af37;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .card-content p {
+      flex: 1;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .add-btn {
+      align-self: flex-start;
+      margin-top: 1rem;
+      background: var(--gold);
+      color: var(--brown);
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .add-btn:hover {
+      background: #ffd667;
+    }
+
+    /* About */
+    #about {
+      padding: 4rem 0;
+    }
+
+    #about .content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      align-items: center;
+    }
+
+    #about h2 {
+      font-size: 2.25rem;
+      color: var(--brown);
+      margin-bottom: 1rem;
+    }
+
+    #about p {
+      max-width: 60ch;
+      line-height: 1.7;
+    }
+
+    /* Contact */
+    #contact {
+      background: var(--brown);
+      color: var(--cream);
+      padding: 4rem 0;
+    }
+
+    #contact h2 {
+      text-align: center;
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .contact-form {
+      max-width: 600px;
+      margin: auto;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .contact-form button {
+      background: var(--gold);
+      color: var(--brown);
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .contact-form button:hover {
+      opacity: 0.8;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      font-size: 0.875rem;
+      background: var(--cream);
+      color: var(--text-dark);
+    }
+
+    /* Responsive navigation */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: var(--brown);
+      border-radius: 3px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      .menu {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        flex-direction: column;
+        background: var(--cream);
+        width: 200px;
+        padding: 1rem;
+        transform: translateX(100%);
+        transition: transform 0.3s;
+        box-shadow: -2px 2px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .menu.open {
+        transform: translateX(0%);
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">BeeSweet</a>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="menu" id="menu">
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Tiszta, helyi és ízletes méz</h1>
+    <p style="text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);">
+      Egyenesen kaptárunktól az Ön asztaláig – tapasztalja meg a tápanyagokkal teli természetes édességet.
+    </p>
+    <a href="#products" class="btn-primary" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);">
+      Ajánlatunk
+    </a>
+
+  </div>
+</section>
+
+<section id="products">
+  <div class="container">
+    <h2>Méz ajánlatunk</h2>
+    <div class="products-grid">
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container content">
+    <div>
+      <h2>Rólunk – BeeSweet</h2>
+      <p>Családi méhészetünk Magyarország lankás dombjai között működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon repkednek vadvirágok, akácfák és erdei növények között, így minden évszak ízét megőrző, egyedi mézfajtákat készítenek.</p>
+      <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a biológiai sokféleséget, és tiszta, nyers mézet juttassunk el közvetlenül az Ön otthonába.</p>
+    </div>
+    <img src="mez.jpg" alt="Beekeepers" style="border-radius:1.5rem; width:100%; object-fit:cover; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);" />
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <h2>Lépjen kapcsolatba velünk</h2>
+    <form class="contact-form" id="contactForm">
+      <input type="text" name="name" placeholder="Neved" required />
+      <input type="email" name="email" placeholder="Email címed" required />
+      <textarea name="message" placeholder="Miben segíthetünk?" rows="5" required></textarea>
+      <button type="submit">Üzenet küldése</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 BeeSweet. All rights reserved.</p>
+</footer>
+
+<script>
+  // Mobil mézmenü kapcsoló
+  const mezKaptar = document.getElementById("hamburger");
+  const mezMenu = document.getElementById("menu");
+  mezKaptar.addEventListener("click", () => {
+    mezMenu.classList.toggle("open");
+    mezKaptar.classList.toggle("active");
+  });
+
+  // Kosárba helyezés demó (mézesítés)
+  document.querySelectorAll(".add-btn").forEach((mezGomb) => {
+    mezGomb.addEventListener("click", () => {
+      alert("Méz a kosárba téve – ez csak egy bemutató. Éles vásárláshoz integrálj valódi kosárrendszert.");
+    });
+  });
+
+  // Kapcsolatfelvételi űrlap kezelése (mézes demó)
+  const mezKapcsolat = document.getElementById("contactForm");
+  mezKapcsolat.addEventListener("submit", (esemeny) => {
+    esemeny.preventDefault();
+    alert("Köszönjük, hogy felkerested a kaptárunkat! Hamarosan visszazümmögünk.");
+    mezKapcsolat.reset();
+  });
+</script>
+
+<script>
+  async function frissitMezAjanlat() {
+    try {
+      const response = await fetch("https://gist.githubusercontent.com/LinkRiderWP/72c14d567b414c98c494fb32d6ea2c41/raw/mezajanlat.json");
+
+      if (!response.ok) throw new Error("Hálózati hiba: " + response.status);
+
+      // DEBUG: válaszként kapott szöveg kiírása
+      const rawText = await response.text();
+      console.log("🔍 Raw válasz:", rawText);
+
+      let termekek;
+      try {
+        termekek = JSON.parse(rawText);
+      } catch (jsonError) {
+        console.error("❌ Nem sikerült JSON-ná alakítani:", jsonError);
+        return;
+      }
+
+      console.log("✅ Betöltött termékek:", termekek);
+
+      const grid = document.querySelector("#products .products-grid");
+      grid.innerHTML = ""; // Törli a meglévő kártyákat
+
+      termekek.forEach((termek, index) => {
+        if (!termek.kep || !termek.cim || !termek.leiras || !termek.ar) {
+          console.warn(`⚠️ Hiányzó adat a ${index + 1}. terméknél:`, termek);
+          return;
+        }
+
+        const kartya = document.createElement("div");
+        kartya.className = "card";
+        kartya.innerHTML = `
+          <img src="${termek.kep}" alt="${termek.cim}" />
+          <div class="card-content">
+            <h3>${termek.cim}</h3>
+            <p>${termek.leiras}</p>
+            <span class="price">${termek.ar}</span>
+            <button class="add-btn">Add to Cart</button>
+          </div>
+        `;
+        grid.appendChild(kartya);
+      });
+
+      // Új gombokra újra rákötjük az eseményt
+      document.querySelectorAll(".add-btn").forEach((mezGomb) => {
+        mezGomb.addEventListener("click", () => {
+          alert("Méz a kosárba téve – ez csak egy bemutató.");
+        });
+      });
+
+    } catch (hiba) {
+      console.error("❌ Hiba történt a termékek betöltése közben:", hiba);
+    }
+  }
+
+  frissitMezAjanlat();
+</script>
+</body>
+</html>
