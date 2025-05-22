@@ -82,6 +82,18 @@
       width: 100%;
     }
 
+    .akcio {
+      display: inline-block;
+      background-color: #e63946;
+      color: white;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
     /* Hero */
     .hero {
       background: url("kepek/Hatter.png") center/cover no-repeat;
@@ -420,27 +432,23 @@
 
       if (!response.ok) throw new Error("Hálózati hiba: " + response.status);
 
-      // DEBUG: válaszként kapott szöveg kiírása
       const rawText = await response.text();
-      console.log("🔍 Raw válasz:", rawText);
-
-      let termekek;
-      try {
-        termekek = JSON.parse(rawText);
-      } catch (jsonError) {
-        console.error("❌ Nem sikerült JSON-ná alakítani:", jsonError);
-        return;
-      }
-
-      console.log("✅ Betöltött termékek:", termekek);
+      const termekek = JSON.parse(rawText);
 
       const grid = document.querySelector("#products .products-grid");
-      grid.innerHTML = ""; // Törli a meglévő kártyákat
+      grid.innerHTML = "";
 
       termekek.forEach((termek, index) => {
         if (!termek.kep || !termek.cim || !termek.leiras || !termek.ar) {
           console.warn(`⚠️ Hiányzó adat a ${index + 1}. terméknél:`, termek);
           return;
+        }
+
+        let kedvezmenyesAr = termek.ar;
+        if (termek.kedvezmeny && termek.kedvezmeny > 0) {
+          const eredetiArSzam = parseInt(termek.ar.replace(/[^0-9]/g, ""));
+          const szamolt = Math.round(eredetiArSzam * (1 - termek.kedvezmeny / 100));
+          kedvezmenyesAr = `${szamolt} Ft / üveg`;
         }
 
         const kartya = document.createElement("div");
@@ -450,14 +458,16 @@
           <div class="card-content">
             <h3>${termek.cim}</h3>
             <p>${termek.leiras}</p>
-            <span class="price">${termek.ar}</span>
+            <div class="price-row">
+              <span class="price">${kedvezmenyesAr}</span>
+              ${termek.kedvezmeny > 0 ? `<span class="akcio">${termek.kedvezmeny}% kedvezmény</span>` : ""}
+            </div>
             <button class="add-btn">Kosárba</button>
           </div>
         `;
         grid.appendChild(kartya);
       });
 
-      // Új gombokra újra rákötjük az eseményt
       document.querySelectorAll(".add-btn").forEach((mezGomb) => {
         mezGomb.addEventListener("click", () => {
           alert("Méz a kosárba téve – ez csak egy bemutató.");
@@ -471,5 +481,7 @@
 
   frissitMezAjanlat();
 </script>
+
+
 </body>
 </html>
