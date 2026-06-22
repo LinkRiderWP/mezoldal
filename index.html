@@ -201,8 +201,8 @@
   <section id="contact" class="contact-section reveal">
     <div class="container">
       <div class="section-title">
-        <h2>Kapcsolatfelvétel</h2>
-        <p class="subtitle">Kérdése van, vagy rendelni szeretne? Keressen minket bizalommal!</p>
+        <h2>Kapcsolatfelvétel & Megrendelés</h2>
+        <p class="subtitle">Kérdése van, vagy rendelni szeretne? Írjon nekünk, és a mézeket személyesen szállítjuk ki Önnek!</p>
       </div>
       
       <div class="contact-grid">
@@ -242,24 +242,105 @@
             </div>
             <div class="info-text">
               <h4>Helyszín</h4>
-              <p>Alföld, Magyarország<br><span class="detail-text">(Személyes átvétel előzetes egyeztetéssel)</span></p>
+              <p>Alföld, Magyarország<br><span class="detail-text">(Személyes házhozszállítás előzetes egyeztetéssel)</span></p>
             </div>
           </div>
         </div>
 
-        <!-- Üzenetküldő űrlap -->
+        <!-- Üzenetküldő és megrendelő űrlap -->
         <div class="contact-form-wrapper">
           <form class="contact-form" id="contactForm">
-            <div class="form-group">
-              <input type="text" id="name" name="name" placeholder="Az Ön neve" required />
+            <!-- Alapadatok -->
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="name" class="form-label">Az Ön neve *</label>
+                <input type="text" id="name" name="name" placeholder="Pl. Kovács Péter" required />
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">Az Ön e-mail címe *</label>
+                <input type="email" id="email" name="email" placeholder="Pl. kovacs.peter@gmail.com" required />
+              </div>
             </div>
-            <div class="form-group">
-              <input type="email" id="email" name="email" placeholder="Az Ön e-mail címe" required />
+
+            <!-- Kiszállítási adatok -->
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="phone" class="form-label">Az Ön telefonszáma *</label>
+                <input type="tel" id="phone" name="phone" placeholder="Pl. +36 (30) 123-4567" required />
+              </div>
+              <div class="form-group">
+                <label for="address" class="form-label">Pontos kiszállítási cím *</label>
+                <input type="text" id="address" name="address" placeholder="Pl. 4024 Debrecen, Fő utca 12., 3. em. 4." required />
+              </div>
             </div>
-            <div class="form-group">
-              <textarea id="message" name="message" placeholder="Miben segíthetünk? (Kérdés, egyedi rendelés lédig kiszerelésben, stb.)" rows="5" required></textarea>
+
+            <!-- Termékválasztó és kalkulátor rész -->
+            <div class="order-calculator-box">
+              <h4 class="calc-title">Személyes megrendelés összeállítása</h4>
+              <p class="calc-subtitle">Válassza ki a kívánt mézeket, a végösszeget automatikusan kiszámoljuk.</p>
+              
+              <div class="calc-row">
+                <div class="form-group select-group">
+                  <label for="productSelect" class="form-label">Mézfajta választás</label>
+                  <select id="productSelect">
+                    <option value="" disabled selected>Válasszon mézfajtát...</option>
+                  </select>
+                </div>
+                <div class="form-group qty-group">
+                  <label for="productQty" class="form-label">Mennyiség</label>
+                  <div class="qty-control">
+                    <button type="button" class="qty-btn qty-minus" aria-label="Mennyiség csökkentése">-</button>
+                    <input type="number" id="productQty" min="1" value="1" placeholder="Mennyiség" />
+                    <button type="button" class="qty-btn qty-plus" aria-label="Mennyiség növelése">+</button>
+                  </div>
+                </div>
+                <div class="btn-calc-wrapper">
+                  <span class="form-label label-spacer">&nbsp;</span>
+                  <button type="button" id="addProductBtn" class="btn-calc-add">Hozzáadás</button>
+                </div>
+              </div>
+
+              <!-- Dinamikus Kiszerelés választó (üveges vs lédig kg) lédig árak esetén -->
+              <div class="calc-options-row" id="calcOptionsRow" style="display: none;">
+                <span class="calc-options-label">Válasszon kiszerelést:</span>
+                <div class="calc-radio-group">
+                  <label class="calc-radio-label">
+                    <input type="radio" name="calcUnit" value="db" checked />
+                    <span id="labelPriceDb">Üveges (db)</span>
+                  </label>
+                  <label class="calc-radio-label">
+                    <input type="radio" name="calcUnit" value="kg" />
+                    <span id="labelPriceKg">Lédig nagy tétel (kg)</span>
+                  </label>
+                </div>
+                <p class="bulk-min-info" id="bulkMinInfo"></p>
+              </div>
+
+              <!-- Kosár listázás -->
+              <div class="calc-cart-container" id="cartContainer" style="display: none;">
+                <ul class="cart-list" id="cartList">
+                  <!-- JS ide pakolja be a kiválasztott termékeket -->
+                </ul>
+                <div class="cart-summary">
+                  <span>Várható végösszeg:</span>
+                  <strong id="cartTotal">0 Ft</strong>
+                </div>
+              </div>
             </div>
-            <button type="submit" class="btn-submit" id="submitBtn">Üzenet küldése</button>
+
+            <!-- Szabad szöveges megjegyzés -->
+            <div class="form-group">
+              <label for="message" class="form-label">Egyéb megjegyzések (opcionális)</label>
+              <textarea id="message" name="message" placeholder="Pl. preferált kiszállítási időpontok, kapucsengő kódja, stb." rows="4"></textarea>
+            </div>
+
+            <!-- Dinamikus E-mail előnézet box -->
+            <div class="email-preview-box" id="emailPreviewBox" style="display: none;">
+              <span class="preview-badge">Megrendelés e-mail előnézete</span>
+              <pre class="preview-content" id="emailPreviewContent"></pre>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Üzenet és rendelés küldése</button>
           </form>
           <div id="formFeedback" class="form-feedback"></div>
         </div>
