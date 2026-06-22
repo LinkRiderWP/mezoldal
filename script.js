@@ -422,43 +422,83 @@ ${message || "[Nincs egyedi megjegyzés fűzve az üzenethez]"}`;
 }
 
 /**
- * Kapcsolatfelvételi űrlap valósághűbb visszajelzéssel
+ * Kapcsolatfelvételi űrlap valódi e-mail küldéssel (Web3Forms API)
  */
 function initContactForm() {
   const form = document.getElementById("contactForm");
   const feedback = document.getElementById("formFeedback");
   const submitBtn = document.getElementById("submitBtn");
+  const previewContent = document.getElementById("emailPreviewContent");
+  const formattedOrderInput = document.getElementById("formattedOrder");
 
   if (form && feedback && submitBtn) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const originalBtnText = submitBtn.textContent;
       submitBtn.textContent = "Megrendelés küldése...";
       submitBtn.disabled = true;
 
-      setTimeout(() => {
-        feedback.textContent = "Köszönjük a megrendelést! Telefonszámán hamarosan keresni fogjuk a személyes kiszállítás egyeztetése miatt.";
-        feedback.className = "form-feedback success";
-        
-        submitBtn.textContent = originalBtnText;
-        submitBtn.disabled = false;
-        form.reset();
+      // 1. Frissítjük a rejtett mezőt a formázott rendelési adatokkal az e-mail előnézetből
+      if (formattedOrderInput && previewContent) {
+        formattedOrderInput.value = previewContent.textContent;
+      }
 
-        // Kosár ürítése és előnézet elrejtése sikeres küldés után
-        if (typeof window.resetCart === "function") {
-          window.resetCart();
+      // 2. Összekészítjük a küldendő adatokat
+      const formData = new FormData(form);
+      
+      // IDE ILLESZD BE a Web3Forms-tól kapott egyedi Access Key-edet:
+      formData.append("access_key", "00846189-84b3-41ba-87e4-7ddb4e42f20c"); 
+      
+      // Opcionális: Az e-mail tárgyának testreszabása a leveledben
+      formData.append("subject", `Míves Kaptár - Új megrendelés tőle: ${formData.get("name")}`);
+
+      try {
+        // 3. Elküldjük az adatokat az API-nak
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Sikeres küldés esetén lefut a meglévő visszajelző logikád
+          feedback.textContent = "Köszönjük a megrendelést! Telefonszámán hamarosan keresni fogjuk a személyes kiszállítás egyeztetése miatt.";
+          feedback.className = "form-feedback success";
+          
+          form.reset();
+
+          // Kosár ürítése és előnézet elrejtése
+          if (typeof window.resetCart === "function") {
+            window.resetCart();
+          }
+        } else {
+          throw new Error(result.message || "Hiba történt a küldés során.");
         }
 
+      } catch (error) {
+        console.error("Küldési hiba:", error);
+        feedback.textContent = "Sajnos hiba történt a küldés során. Kérjük, próbálja meg újra, vagy hívjon minket telefonon!";
+        feedback.className = "form-feedback error";
+        feedback.style.color = "var(--accent-color)";
+        feedback.style.fontWeight = "600";
+      } finally {
+        // Visszaállítjuk a gombot
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+
+        // Visszajelzés elrejtése pár másodperc múlva
         setTimeout(() => {
           feedback.style.opacity = "0";
           setTimeout(() => {
             feedback.textContent = "";
             feedback.className = "form-feedback";
             feedback.style.opacity = "";
+            feedback.style.color = "";
           }, 400);
-        }, 6000);
-      }, 1200);
+        }, 8000);
+      }
     });
   }
 }
