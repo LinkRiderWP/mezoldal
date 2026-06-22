@@ -2,6 +2,14 @@
 let loadedProducts = [];
 let cart = [];
 
+// Megpróbáljuk betölteni a korábban elmentett kosarat a böngészőből
+try {
+  cart = JSON.parse(localStorage.getItem("miveskaptar_cart")) || [];
+} catch (error) {
+  console.error("Hiba a mentett kosár betöltésekor, üres kosár indítása:", error);
+  cart = [];
+}
+
 // Fallback (tartalék) termékkészlet, ha a külső JSON nem tölthető be
 const fallbackProducts = [
   { cim: "Akácméz", calculatedPrice: 3400, arText: "3400 Ft/üveg", nagy_tetel_ar: "3000 Ft/kg", nagy_tetel_minimum: "10 kg" },
@@ -314,6 +322,8 @@ function initCalculatorAndPreview() {
 
   // Kosár renderelése és frissítése
   function renderCart() {
+    localStorage.setItem("miveskaptar_cart", JSON.stringify(cart));
+
     if (cart.length === 0) {
       cartContainer.style.display = "none";
       updateEmailPreview();
@@ -405,12 +415,22 @@ ${message || "[Nincs egyedi megjegyzés fűzve az üzenethez]"}`;
     previewContent.textContent = template;
   }
 
-  // Input figyelők a dinamikus frissítéshez
+  // Input figyelők a dinamikus frissítéshez, mentéshez és betöltéshez
   const previewInputs = ["name", "email", "phone", "address", "message"];
   previewInputs.forEach(id => {
     const input = document.getElementById(id);
     if (input) {
-      input.addEventListener("input", updateEmailPreview);
+      // 1. Adatok betöltése a böngésző memóriájából oldalbetöltéskor
+      const savedValue = localStorage.getItem(`miveskaptar_field_${id}`);
+      if (savedValue !== null) {
+        input.value = savedValue;
+      }
+
+      // 2. Mentés és e-mail előnézet frissítése gépeléskor
+      input.addEventListener("input", () => {
+        localStorage.setItem(`miveskaptar_field_${id}`, input.value);
+        updateEmailPreview();
+      });
     }
   });
 
@@ -419,10 +439,12 @@ ${message || "[Nincs egyedi megjegyzés fűzve az üzenethez]"}`;
     cart = [];
     renderCart();
   };
+
+  renderCart();
 }
 
 /**
- * Kapcsolatfelvételi űrlap valódi e-mail küldéssel (Web3Forms API)
+ * Kapcsolatfelvételi űrlap valódi e-mail küldéssel (Web3Forms API) + Szigorú beviteli ellenőrzések
  */
 function initContactForm() {
   const form = document.getElementById("contactForm");
@@ -434,7 +456,54 @@ function initContactForm() {
   if (form && feedback && submitBtn) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
+
+      // --- SZIGORÚ ADATELLENŐRZÉSEK (VALIDATION) ---
+      const nameInput = document.getElementById("name");
+      const emailInput = document.getElementById("email");
+      const phoneInput = document.getElementById("phone");
+      const addressInput = document.getElementById("address");
+
+      // 1. Név ellenőrzése (legalább Családnév + Utónév kell)
+      const nameParts = nameInput.value.trim().split(/\s+/);
+      if (nameParts.length < 2 || nameParts[0].length < 2 || nameParts[1].length < 2) {
+        showToast("Kérjük, adja meg a teljes nevét (Családnév és Utónév)!", "warning");
+        nameInput.focus();
+        return;
+      }
+
+      // 2. Telefonszám ellenőrzése (Magyar vezetékes és mobil formátumok)
+      // Megengedünk szóközöket, kötőjeleket, de a tiszta számnak meg kell felelnie a mintának
+      const cleanPhone = phoneInput.value.trim().replace(/[\s\-()]/g, "");
+      const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
+
+      if (!huPhoneRegex.test(cleanPhone)) {
+        showToast("Kérjük, érvényes magyar telefonszámot adjon meg (+36... vagy 06... formátumban)!", "warning");
+        phoneInput.focus();
+        return;
+      }
+
+      // 3. E-mail ellenőrzése (Alapszintű szintaktikai teszt)
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput.value.trim())) {
+        showToast("Kérjük, érvényes e-mail címet adjon meg!", "warning");
+        emailInput.focus();
+        return;
+      }
+
+      // 4. Szállítási cím ellenőrzése (ne legyen túl rövid, pl. csak a város neve)
+      if (addressInput.value.trim().length < 10) {
+        showToast("Kérjük, pontosabb szállítási címet adjon meg (város, utca, házszám)!", "warning");
+        addressInput.focus();
+        return;
+      }
+
+      // 5. Kosár ürességének ellenőrzése
+      if (cart.length === 0) {
+        showToast("A kosara üres! Kérjük, válasszon ki legalább egy mézfajtát a rendelés összeállításánál.", "warning");
+        return;
+      }
+
+      // --- SIKERES ELLENŐRZÉS UTÁN INDUL A KÜLDÉS ---
       const originalBtnText = submitBtn.textContent;
       submitBtn.textContent = "Megrendelés küldése...";
       submitBtn.disabled = true;
@@ -468,6 +537,12 @@ function initContactForm() {
           feedback.className = "form-feedback success";
           
           form.reset();
+
+          // SIKERES KÜLDÉS UTÁN KIÜRÍTJÜK A MENTETT MEZŐKET IS
+          const fieldsToClear = ["name", "email", "phone", "address", "message"];
+          fieldsToClear.forEach(id => {
+            localStorage.removeItem(`miveskaptar_field_${id}`);
+          });
 
           // Kosár ürítése és előnézet elrejtése
           if (typeof window.resetCart === "function") {
@@ -645,7 +720,7 @@ function showToast(message, type = "warning") {
 }
 
 /**
- * Egyedi mennyiség-léptető gombok (+ / -) kezelése
+ * Egyedi mennyiség-léptető gombok (+ / -) kezelése és szigorú korlátozása
  */
 function initQtyButtons() {
   const container = document.querySelector(".qty-control");
@@ -656,6 +731,7 @@ function initQtyButtons() {
   const qtyInput = container.querySelector("#productQty");
 
   if (minusBtn && plusBtn && qtyInput) {
+    // Csökkentő gomb kezelése
     minusBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const currentValue = parseInt(qtyInput.value) || 1;
@@ -665,11 +741,31 @@ function initQtyButtons() {
       }
     });
 
+    // Növelő gomb kezelése
     plusBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const currentValue = parseInt(qtyInput.value) || 1;
       qtyInput.value = currentValue + 1;
       qtyInput.dispatchEvent(new Event("input"));
+    });
+
+    // Gépelés korlátozása: Letiltjuk a speciális karaktereket (mínusz, plusz, tizedespont, vessző, 'e' betű)
+    qtyInput.addEventListener("keydown", (e) => {
+      if (["e", "E", "-", "+", ".", ","].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    // Amikor kilép a mezőből (blur), ellenőrizzük, hogy érvényes-e a szám
+    qtyInput.addEventListener("blur", () => {
+      let parsed = parseInt(qtyInput.value);
+      if (isNaN(parsed) || parsed < 1) {
+        qtyInput.value = 1;
+        qtyInput.dispatchEvent(new Event("input"));
+        showToast("A mennyiségnek legalább 1-nek kell lennie!", "warning");
+      } else {
+        qtyInput.value = Math.floor(parsed); // Biztosan egész szám marad
+      }
     });
   }
 }
