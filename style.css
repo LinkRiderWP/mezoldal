@@ -993,3 +993,9 @@ body.menu-open {
     gap: 0.5rem;
   }
 }
+
+@media (min-width: 768px) {
+  .hero-title-nowrap {
+    white-space: nowrap;
+  }
+}
