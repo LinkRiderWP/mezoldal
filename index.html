@@ -5,12 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Míves Kaptár – Prémium Családi Méhészet</title>
   
+  <!-- SEO Meta adatok -->
+  <meta name="description" content="Míves Kaptár - Prémium családi méhészet az Alföld szívéből. 100% tiszta, nyers kézműves akácméz, hársméz és vegyes virágméz közvetlenül a termelőtől, kíméletes technológiával." />
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Strukturált adatok (JSON-LD) - Helyi Vállalkozás -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": "https://miveskaptar.hu/#localbusiness",
+    "name": "Míves Kaptár - Prémium Családi Méhészet",
+    "image": "https://miveskaptar.hu/kepek/mez.jpg",
+    "url": "https://miveskaptar.hu",
+    "telephone": "+36301234567",
+    "email": "info@miveskaptar.hu",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Alföld",
+      "addressRegion": "Hajdú-Bihar / Csongrád / Békés / Bács-Kiskun",
+      "addressCountry": "HU"
+    },
+    "description": "Kézműves családi méhészet az Alföldön. Prémium minőségű, hőkezeletlen akácméz, hársméz és vegyes virágméz közvetlenül a termelőtől, környezettudatos és fenntartható méhészettel."
+  }
+  </script>
+
+  <!-- Strukturált adatok (JSON-LD) - Kiemelt Termék (Akácméz példa) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Míves Kaptár Kézműves Akácméz",
+    "image": "https://miveskaptar.hu/kepek/mez.jpg",
+    "description": "Különlegesen tiszta, lassan kristályosodó akácméz az Alföld napsütötte tájairól, kíméletes családi pergetéssel.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Míves Kaptár"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": "https://miveskaptar.hu#products",
+      "priceCurrency": "HUF",
+      "price": "3400",
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": "https://schema.org/InStock"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -192,7 +240,7 @@
       </div>
       <div class="about-image-container">
         <div class="image-border-deco"></div>
-        <img src="mez.jpg" alt="Méhész munka közben" class="about-image" />
+        <img src="kepek/mez.jpg" alt="Méhész munka közben" class="about-image" />
       </div>
     </div>
   </section>

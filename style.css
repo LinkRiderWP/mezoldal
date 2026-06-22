@@ -184,7 +184,7 @@ body.menu-open {
 /* Hero Szekció */
 .hero {
   position: relative;
-  background: url("kepek/Hatter.png") center/cover no-repeat;
+  background: url("kepek/hatter.png") center/cover no-repeat;
   min-height: 80vh;
   display: flex;
   align-items: center;
