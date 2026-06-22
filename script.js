@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactForm();
   initBackToTop();
   initActiveNavObserver();
+  initAccordion(); // ÚJ: Mézkalauz logika
+  initCardGlow();  // ÚJ: Arany spotlight fényeffektus
 });
 
 /**
@@ -44,8 +46,6 @@ function initMobileMenu() {
     hamburger.addEventListener("click", () => {
       const isOpen = menu.classList.toggle("open");
       hamburger.classList.toggle("active");
-      
-      // Megakadályozzuk a weboldal görgetését, amíg a mobilmenü nyitva van
       document.body.classList.toggle("menu-open", isOpen);
     });
 
@@ -144,6 +144,9 @@ async function loadHoneyProducts() {
       productsGrid.appendChild(card);
     });
 
+    // Frissítjük az új egérkövető fényeffektus kártyalistáját az újonnan betöltött elemekkel is
+    initCardGlow();
+
   } catch (error) {
     console.error("❌ Nem sikerült a termékek betöltése:", error);
     productsGrid.innerHTML = `
@@ -171,7 +174,6 @@ function initContactForm() {
       submitBtn.textContent = "Küldés folyamatban...";
       submitBtn.disabled = true;
 
-      // Szimulálunk egy minimális hálózati késleltetést a hitelesebb élményért
       setTimeout(() => {
         feedback.textContent = "Köszönjük a megkeresést! Hamarosan válaszolunk üzenetére.";
         feedback.className = "form-feedback success";
@@ -225,7 +227,7 @@ function initActiveNavObserver() {
 
   const observerOptions = {
     root: null,
-    threshold: 0.5, // Akkor aktiválódik, ha a szekció 50%-a látható
+    threshold: 0.5,
     rootMargin: "-80px 0px 0px 0px"
   };
 
@@ -247,5 +249,50 @@ function initActiveNavObserver() {
 
   sections.forEach((section) => {
     navObserver.observe(section);
+  });
+}
+
+/**
+ * ÚJ: Mézkalauz Harmonika (Accordion) Kezelése
+ */
+function initAccordion() {
+  const headers = document.querySelectorAll(".accordion-header");
+  
+  headers.forEach((header) => {
+    header.addEventListener("click", () => {
+      const item = header.parentElement;
+      const isCurrentlyActive = item.classList.contains("active-item");
+
+      // Bezárjuk a többi harmonika elemet (opcionális, de így letisztultabb az élmény)
+      document.querySelectorAll(".accordion-item").forEach((otherItem) => {
+        otherItem.classList.remove("active-item");
+        otherItem.querySelector(".accordion-header").setAttribute("aria-expanded", "false");
+      });
+
+      // Ha az adott elem nem volt aktív, akkor most kinyitjuk
+      if (!isCurrentlyActive) {
+        item.classList.add("active-item");
+        header.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+}
+
+/**
+ * ÚJ: Kártyák interaktív fény-derengése (Spotlight Effect)
+ * Lekéri a kurzor relatív pozícióját a kártyákon belül, és átadja a CSS-nek.
+ */
+function initCardGlow() {
+  const glowElements = document.querySelectorAll(".card, .value-card, .accordion-item");
+  
+  glowElements.forEach((element) => {
+    element.addEventListener("mousemove", (e) => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      element.style.setProperty("--mouse-x", `${x}px`);
+      element.style.setProperty("--mouse-y", `${y}px`);
+    });
   });
 }
