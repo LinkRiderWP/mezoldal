@@ -80,7 +80,6 @@ body.menu-open {
   padding: 1rem 0;
 }
 
-/* REDESIGN: Egyedi, luxus hatású Míves Kaptár logó stílus */
 .logo {
   display: flex;
   align-items: center;
@@ -200,7 +199,6 @@ body.menu-open {
   z-index: 1;
 }
 
-/* Lágy átmenet a sötét hátterek között */
 .hero::after {
   content: '';
   position: absolute;
@@ -387,7 +385,7 @@ body.menu-open {
   margin: 0;
 }
 
-/* Termékek szekció (Lágy aranyszínű méhsejt mintával) */
+/* Termékek szekció */
 .products-section {
   padding: 6rem 0;
   background-color: var(--bg-light);
@@ -441,7 +439,6 @@ body.menu-open {
   transform: scale(1.05);
 }
 
-/* Akció jelvény */
 .floating-badge-sale {
   position: absolute;
   top: 15px;
@@ -506,7 +503,6 @@ body.menu-open {
   color: var(--accent-color);
 }
 
-/* Nagy tételes kártyabox */
 .bulk-price-box {
   margin-top: 1rem;
   padding: 0.6rem 0.8rem;
@@ -545,7 +541,7 @@ body.menu-open {
 .skeleton-text.short { width: 50%; margin-bottom: 2rem; }
 .skeleton-price { height: 24px; width: 35%; margin: 1.5rem; border-radius: 4px; }
 
-/* ÚJ: Mézkalauz Szekció (1-es pont) */
+/* Mézkalauz Szekció */
 .guide-section {
   padding: 7rem 0;
   background-color: rgba(18, 10, 5, 0.15);
@@ -617,7 +613,6 @@ body.menu-open {
   line-height: 1.65;
 }
 
-/* Aktív harmonika elem stílusai */
 .accordion-item.active-item {
   border-color: var(--primary-color);
   box-shadow: 0 4px 15px rgba(229, 169, 60, 0.05);
@@ -629,7 +624,7 @@ body.menu-open {
 }
 
 .accordion-item.active-item .accordion-content {
-  max-height: 250px; /* Biztosítja az animált lenyílást */
+  max-height: 250px;
 }
 
 /* Rólunk Szekció */
@@ -690,9 +685,94 @@ body.menu-open {
   border-top: 1px solid var(--border-glow);
 }
 
-.contact-wrapper {
-  max-width: 600px;
-  margin: 0 auto;
+/* ÚJ: Kétoszlopos kapcsolatrács */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3.5rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: var(--transition-smooth);
+}
+
+.info-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(229, 169, 60, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-icon {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(229, 169, 60, 0.08);
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-smooth);
+}
+
+.info-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.info-card:hover .info-icon {
+  background-color: var(--primary-color);
+  color: var(--bg-dark);
+}
+
+.info-text h4 {
+  font-size: 1rem;
+  color: #FFFFFF;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.info-text p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.info-text a {
+  color: var(--text-main);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.info-text a:hover {
+  color: var(--primary-color);
+}
+
+.detail-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.contact-form-wrapper {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
 }
 
 .contact-form {
@@ -808,18 +888,19 @@ body.menu-open {
   color: var(--text-muted);
 }
 
-/* ÚJ: FÉNY-DERENGÉS (SPOTLIGHT EFFECT - 4-es pont) */
-.card, .value-card, .accordion-item {
+/* FÉNY-DERENGÉS (SPOTLIGHT EFFECT) */
+.card, .value-card, .accordion-item, .info-card, .contact-form-wrapper {
   position: relative;
 }
 
-/* Egérkövető derengő réteg előkészítése */
 .card::before, 
 .value-card::before, 
-.accordion-item::before {
+.accordion-item::before,
+.info-card::before,
+.contact-form-wrapper::before {
   content: '';
   position: absolute;
-  inset: -1px; /* Kicsit túlnyúlik, hogy az elem széleit (borderét) is finoman megvilágítsa */
+  inset: -1px;
   border-radius: inherit;
   background: radial-gradient(350px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(229, 169, 60, 0.08), transparent 80%);
   z-index: 0;
@@ -828,23 +909,24 @@ body.menu-open {
   pointer-events: none;
 }
 
-/* Biztosítjuk, hogy a belső tartalom (szövegek, gombok) a fény felett jelenjenek meg */
 .card > *, 
 .value-card > *, 
-.accordion-item > * {
+.accordion-item > *,
+.info-card > *,
+.contact-form-wrapper > * {
   position: relative;
   z-index: 2;
 }
 
-/* Képcsomagoló z-index korrekció */
 .card-img-wrapper {
   z-index: 1;
 }
 
-/* Hover interakció: aktiváljuk a derengést */
 .card:hover::before, 
 .value-card:hover::before, 
-.accordion-item:hover::before {
+.accordion-item:hover::before,
+.info-card:hover::before,
+.contact-form-wrapper:hover::before {
   opacity: 1;
 }
 
@@ -856,6 +938,13 @@ body.menu-open {
   }
   .image-border-deco {
     display: none;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .contact-form-wrapper {
+    padding: 2rem 1.5rem;
   }
 }
 

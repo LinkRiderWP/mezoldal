@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactForm();
   initBackToTop();
   initActiveNavObserver();
-  initAccordion(); // ÚJ: Mézkalauz logika
-  initCardGlow();  // ÚJ: Arany spotlight fényeffektus
+  initAccordion(); 
+  initCardGlow();  
 });
 
 /**
@@ -253,7 +253,7 @@ function initActiveNavObserver() {
 }
 
 /**
- * ÚJ: Mézkalauz Harmonika (Accordion) Kezelése
+ * Mézkalauz Harmonika (Accordion) Kezelése
  */
 function initAccordion() {
   const headers = document.querySelectorAll(".accordion-header");
@@ -263,13 +263,11 @@ function initAccordion() {
       const item = header.parentElement;
       const isCurrentlyActive = item.classList.contains("active-item");
 
-      // Bezárjuk a többi harmonika elemet (opcionális, de így letisztultabb az élmény)
       document.querySelectorAll(".accordion-item").forEach((otherItem) => {
         otherItem.classList.remove("active-item");
         otherItem.querySelector(".accordion-header").setAttribute("aria-expanded", "false");
       });
 
-      // Ha az adott elem nem volt aktív, akkor most kinyitjuk
       if (!isCurrentlyActive) {
         item.classList.add("active-item");
         header.setAttribute("aria-expanded", "true");
@@ -279,11 +277,12 @@ function initAccordion() {
 }
 
 /**
- * ÚJ: Kártyák interaktív fény-derengése (Spotlight Effect)
+ * Kártyák interaktív fény-derengése (Spotlight Effect)
  * Lekéri a kurzor relatív pozícióját a kártyákon belül, és átadja a CSS-nek.
+ * Kiterjesztve az új kapcsolati kártyákra és az űrlap dobozára is.
  */
 function initCardGlow() {
-  const glowElements = document.querySelectorAll(".card, .value-card, .accordion-item");
+  const glowElements = document.querySelectorAll(".card, .value-card, .accordion-item, .info-card, .contact-form-wrapper");
   
   glowElements.forEach((element) => {
     element.addEventListener("mousemove", (e) => {

@@ -140,7 +140,7 @@
     </div>
   </section>
 
-  <!-- ÚJ: Mézkalauz & Tudástár szekció -->
+  <!-- Mézkalauz & Tudástár szekció -->
   <section id="guide" class="guide-section reveal">
     <div class="container guide-wrapper">
       <div class="section-title">
@@ -187,8 +187,8 @@
     <div class="container about-grid">
       <div class="about-text">
         <h2>Rólunk – Míves Kaptár</h2>
-        <p>Családi méhészetünk Magyarország lankás dombjai között működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon repkednek vadvirágok, akácfák és erdei növények között, így minden évszak ízét megőrző, egyedi mézfajtákat készítenek.</p>
-        <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a biológiai sokféleséget, és tiszta, nyers mézet juttassunk el közvetlenül az Ön otthonába.</p>
+        <p>Családi méhészetünk az Alföld napsütötte tájain, a végtelen rónaságok szívében működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon gyűjtenek az alföldi akácligetek, mezei vadvirágok és gyógynövények között, így minden évszak ízét megőrző, különleges és tiszta mézfajtákat készítenek.</p>
+        <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a tájegységünk biológiai sokféleségét, és tiszta, nyers mézet juttassunk el közvetlenül a kaptárunktól az Ön otthonába.</p>
       </div>
       <div class="about-image-container">
         <div class="image-border-deco"></div>
@@ -200,24 +200,69 @@
   <!-- Kapcsolat szekció -->
   <section id="contact" class="contact-section reveal">
     <div class="container">
-      <div class="contact-wrapper">
-        <div class="section-title">
-          <h2>Kapcsolatfelvétel</h2>
-          <p class="subtitle">Kérdése van? Írjon nekünk, és hamarosan válaszolunk!</p>
+      <div class="section-title">
+        <h2>Kapcsolatfelvétel</h2>
+        <p class="subtitle">Kérdése van, vagy rendelni szeretne? Keressen minket bizalommal!</p>
+      </div>
+      
+      <div class="contact-grid">
+        <!-- Közvetlen elérhetőségek -->
+        <div class="contact-info">
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="info-text">
+              <h4>Telefonszám</h4>
+              <p><a href="tel:+36301234567">+36 (30) 123-4567</a></p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div class="info-text">
+              <h4>E-mail cím</h4>
+              <p><a href="mailto:info@miveskaptar.hu">info@miveskaptar.hu</a></p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="info-text">
+              <h4>Helyszín</h4>
+              <p>Alföld, Magyarország<br><span class="detail-text">(Személyes átvétel előzetes egyeztetéssel)</span></p>
+            </div>
+          </div>
         </div>
-        <form class="contact-form" id="contactForm">
-          <div class="form-group">
-            <input type="text" id="name" name="name" placeholder="Az Ön neve" required />
-          </div>
-          <div class="form-group">
-            <input type="email" id="email" name="email" placeholder="Az Ön e-mail címe" required />
-          </div>
-          <div class="form-group">
-            <textarea id="message" name="message" placeholder="Miben segíthetünk?" rows="5" required></textarea>
-          </div>
-          <button type="submit" class="btn-submit" id="submitBtn">Üzenet küldése</button>
-        </form>
-        <div id="formFeedback" class="form-feedback"></div>
+
+        <!-- Üzenetküldő űrlap -->
+        <div class="contact-form-wrapper">
+          <form class="contact-form" id="contactForm">
+            <div class="form-group">
+              <input type="text" id="name" name="name" placeholder="Az Ön neve" required />
+            </div>
+            <div class="form-group">
+              <input type="email" id="email" name="email" placeholder="Az Ön e-mail címe" required />
+            </div>
+            <div class="form-group">
+              <textarea id="message" name="message" placeholder="Miben segíthetünk? (Kérdés, egyedi rendelés lédig kiszerelésben, stb.)" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn-submit" id="submitBtn">Üzenet küldése</button>
+          </form>
+          <div id="formFeedback" class="form-feedback"></div>
+        </div>
       </div>
     </div>
   </section>
