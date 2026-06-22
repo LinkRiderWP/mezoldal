@@ -69,78 +69,248 @@ function createPollenElement(container) {
 }
 
 /**
- * Interaktív, menekülő méhecske kezelése (MouseMove és TouchMove követéssel)
+ * Interaktív, valós idejű fizikai alapú menekülő méhecske szimuláció 
+ * (Szabad mozgással, kattintásra történő repüléssel és sarokból való elillanással)
  */
 function initInteractiveBee() {
   const bee = document.querySelector('.hero-bee-container');
-  if (!bee) return;
+  const hero = document.querySelector('.hero');
+  if (!bee || !hero) return;
 
+  // Kikapcsoljuk a CSS átmenetet a JS alapú folyamatos fizika miatt
+  bee.style.transition = 'none';
+
+  // Fizikai változók
   let currentX = 0;
   let currentY = 0;
-  let isFleeing = false;
+  let vx = 0;
+  let vy = 0;
+  let currentAngleDeg = 0;
 
-  const fleeHandler = (e) => {
-    // Ha épp folyamatban van az ugrás, elutasítjuk az újabb triggerelést
-    if (isFleeing) return;
-    isFleeing = true;
+  // Kurzor koordináták (a Hero szekcióhoz viszonyítva)
+  let mouseX = -9999;
+  let mouseY = -9999;
+  let isMouseNear = false;
 
-    // Koordináták lekérése egér vagy ujj esetén is
+  // Kattintás utáni automatikus utazás változói
+  let targetTravelX = 0;
+  let targetTravelY = 0;
+  let isAutoTraveling = false;
+
+  // Globális elrendezési adatok (csak resize-kor mérünk a tökéletes futási teljesítményért)
+  let homeX = 0;
+  let homeY = 0;
+  let heroWidth = 0;
+  let heroHeight = 0;
+
+  function calculateLayout() {
+    const heroRect = hero.getBoundingClientRect();
+    heroWidth = heroRect.width;
+    heroHeight = heroRect.height;
+
+    // Alaphelyzet visszaállítása a pontos mérés idejére
+    bee.style.transform = 'none';
+    const beeRect = bee.getBoundingClientRect();
+    homeX = (beeRect.left + beeRect.width / 2) - heroRect.left;
+    homeY = (beeRect.top + beeRect.height / 2) - heroRect.top;
+    
+    // Jelenlegi transzformáció visszaírása, hogy ne legyen ugrás a képernyőn
+    bee.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentAngleDeg}deg)`;
+  }
+
+  // Kezdő mérés és követés átméretezéskor
+  calculateLayout();
+  window.addEventListener('resize', calculateLayout);
+
+  // Kurzor események követése a Hero szekcióban (relatív koordináták)
+  const updateMouseCoords = (e) => {
+    const rect = hero.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    mouseX = clientX - rect.left;
+    mouseY = clientY - rect.top;
+    isMouseNear = true;
+  };
 
-    const rect = bee.getBoundingClientRect();
-    const beeCenterX = rect.left + rect.width / 2;
-    const beeCenterY = rect.top + rect.height / 2;
+  hero.addEventListener('mousemove', updateMouseCoords);
+  hero.addEventListener('touchstart', updateMouseCoords, { passive: true });
+  hero.addEventListener('touchmove', updateMouseCoords, { passive: true });
+  
+  hero.addEventListener('mouseleave', () => { isMouseNear = false; });
+  hero.addEventListener('touchend', () => { isMouseNear = false; });
 
-    // Számítjuk az érintkezési pont és a méhecske középpontja közötti szöget
-    const angle = Math.atan2(beeCenterY - clientY, beeCenterX - clientX);
+  // Kattintásra történő menekülés
+  bee.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    // Menekülés hossza (pixelben)
-    const distance = 160 + Math.random() * 90; // 160px - 250px hirtelen ugrás
-    let nextX = currentX + Math.cos(angle) * distance;
-    let nextY = currentY + Math.sin(angle) * distance;
+    const padding = 55; // Távolság a Hero széleitől, hogy ne repüljön ki a képből
+    
+    // Kijelölünk egy teljesen véletlenszerű pontot a Hero szabad területén belül
+    const targetAbsX = padding + Math.random() * (heroWidth - 2 * padding);
+    const targetAbsY = padding + Math.random() * (heroHeight - 2 * padding);
 
-    // Határok ellenőrzése a Hero szekcióhoz viszonyítva (ne repüljön ki a képből)
-    const hero = document.querySelector('.hero');
-    if (hero) {
-      const heroRect = hero.getBoundingClientRect();
-      const targetViewportX = rect.left + Math.cos(angle) * distance;
-      const targetViewportY = rect.top + Math.sin(angle) * distance;
+    // Átváltjuk eltolássá az eredeti otthonához képest
+    targetTravelX = targetAbsX - homeX;
+    targetTravelY = targetAbsY - homeY;
+    
+    // Elindítjuk az automatikus navigációt
+    isAutoTraveling = true;
+  });
 
-      // Ha túllépné a látható kereteket, a Hero szekció mértani közepe felé tereljük
-      if (
-        targetViewportX < heroRect.left + 50 || 
-        targetViewportX > heroRect.right - 120 ||
-        targetViewportY < heroRect.top + 50 ||
-        targetViewportY > heroRect.bottom - 120
-      ) {
-        const heroCenterX = heroRect.left + heroRect.width / 2;
-        const heroCenterY = heroRect.top + heroRect.height / 2;
-        const bounceAngle = Math.atan2(heroCenterY - beeCenterY, heroCenterX - beeCenterX);
+  // 60 FPS fizikai szimulációs ciklus
+  function updatePhysics() {
+    // A méhecske pillanatnyi koordinátája a Hero-n belül
+    const beeCenterX = homeX + currentX;
+    const beeCenterY = homeY + currentY;
+
+    // Távolságvektor a kurzortól a méhecskéig
+    const dx = beeCenterX - mouseX;
+    const dy = beeCenterY - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // Fizikai paraméterek
+    const proximity = 170;        // Távolság, amin belül megriad (pixelben)
+    const pushStrength = 4.2;     // Menekülési lökőerő mértéke
+    const friction = 0.88;        // Légellenállás (fékezés)
+
+    // 1. Erőhatások kiszámítása
+    if (isAutoTraveling) {
+      // --- AUTOMATIKUS NAVIGÁCIÓ (KATTINTÁS UTÁN) ---
+      const tx = targetTravelX - currentX;
+      const ty = targetTravelY - currentY;
+      const tdist = Math.sqrt(tx * tx + ty * ty);
+
+      if (tdist < 15) {
+        // Ha nagyon közel ért a célhoz, megérkezett és újra átadja az irányítást az egérnek
+        isAutoTraveling = false;
+      } else {
+        // Vonzóerő a kijelölt cél felé
+        let fx = tx * 0.06;
+        let fy = ty * 0.06;
+        const fdist = Math.sqrt(fx * fx + fy * fy);
+        const maxSteerForce = 6.0; // Sebességkorlát a túl hirtelen gyorsulások ellen
         
-        nextX = currentX + Math.cos(bounceAngle) * distance;
-        nextY = currentY + Math.sin(bounceAngle) * distance;
+        if (fdist > maxSteerForce) {
+          fx = (fx / fdist) * maxSteerForce;
+          fy = (fy / fdist) * maxSteerForce;
+        }
+        vx += fx;
+        vy += fy;
+      }
+    } else {
+      // --- NORMÁL EGÉR ELÖLI MENEKÜLÉS ---
+      if (isMouseNear && dist < proximity) {
+        const force = (proximity - dist) / proximity;
+        
+        if (dist > 0.1) {
+          vx += (dx / dist) * force * pushStrength;
+          vy += (dy / dist) * force * pushStrength;
+        } else {
+          const randomAngle = Math.random() * Math.PI * 2;
+          vx += Math.cos(randomAngle) * force * pushStrength;
+          vy += Math.sin(randomAngle) * force * pushStrength;
+        }
+
+        // --- SAROKBÓL VALÓ KISZABADULÁS (CORNER ESCAPE) ---
+        const padding = 45;
+        const cornerThreshold = 80; // A sarok érzékelési övezete
+        
+        const absoluteX = homeX + currentX;
+        const absoluteY = homeY + currentY;
+
+        const nearLeft = (absoluteX < padding + cornerThreshold);
+        const nearRight = (absoluteX > heroWidth - padding - cornerThreshold);
+        const nearTop = (absoluteY < padding + cornerThreshold);
+        const nearBottom = (absoluteY > heroHeight - padding - cornerThreshold);
+
+        // Ha a méhecske sarokba szorul és az egér túl közel jön
+        if ((nearLeft || nearRight) && (nearTop || nearBottom)) {
+          const isLeft = nearLeft;
+          const isTop = nearTop;
+
+          // Megvizsgáljuk, merre van a szabadabb út az egér falaktól vett távolsága alapján
+          const mouseDistToXWall = isLeft ? (mouseX - padding) : ((heroWidth - padding) - mouseX);
+          const mouseDistToYWall = isTop ? (mouseY - padding) : ((heroHeight - padding) - mouseY);
+
+          // Extra oldalirányú slisszoló erő kiszámítása
+          const escapeBoost = force * 2.8;
+
+          if (mouseDistToXWall < mouseDistToYWall) {
+            // Az egér közelebb van a függőleges falhoz -> a vízszintes fal mentén csúszunk ki (le/fel)
+            vy += isTop ? escapeBoost : -escapeBoost;
+          } else {
+            // Az egér közelebb van a vízszintes falhoz -> az oldalfal mentén csúszunk ki (balra/jobbra)
+            vx += isLeft ? escapeBoost : -escapeBoost;
+          }
+        }
       }
     }
 
-    currentX = nextX;
-    currentY = nextY;
+    // 2. Súrlódás alkalmazása a sebességre
+    vx *= friction;
+    vy *= friction;
 
-    // Félős állapot elindítása (szárnysuhogás felgyorsítása)
-    bee.classList.add('scared');
-    bee.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    // 3. Pozíció frissítése
+    currentX += vx;
+    currentY += vy;
 
-    // Az animáció lecsengése után engedélyezzük újra az interakciót
-    setTimeout(() => {
-      bee.classList.remove('scared');
-      isFleeing = false;
-    }, 550); // Összhangban a CSS transition időtartamával
-  };
+    // 4. Irányba fordulás kiszámítása a VALÓS sebesség alapján (mielőtt lefékeznénk a falnál!)
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    let targetAngle = currentAngleDeg;
 
-  // Több esemény figyelése: belépés, folyamatos mutatómozgás és érintés
-  bee.addEventListener('mouseenter', fleeHandler);
-  bee.addEventListener('mousemove', fleeHandler);
-  bee.addEventListener('touchstart', fleeHandler, { passive: true });
+    if (speed > 0.4) {
+      // Ha halad, befordul a mozgás irányába (megálláskor pedig megtartja az utolsó irányát)
+      targetAngle = Math.atan2(vy, vx) * (180 / Math.PI) + 90;
+    }
+
+    // Legrövidebb úton való elfordulás kiszámítása (szög-normalizálás)
+    let angleDiff = targetAngle - currentAngleDeg;
+    while (angleDiff < -180) angleDiff += 360;
+    while (angleDiff > 180) angleDiff -= 360;
+    currentAngleDeg += angleDiff * 0.12;
+
+    // 5. Biztonsági korlátok - A teljes Hero elemen belül tartja a méhet
+    const padding = 45; // Távolság a Hero széleitől
+    let absoluteX = homeX + currentX;
+    let absoluteY = homeY + currentY;
+
+    let hitWall = false;
+    if (absoluteX < padding) {
+      absoluteX = padding;
+      hitWall = true;
+    } else if (absoluteX > heroWidth - padding) {
+      absoluteX = heroWidth - padding;
+      hitWall = true;
+    }
+
+    if (absoluteY < padding) {
+      absoluteY = padding;
+      hitWall = true;
+    } else if (absoluteY > heroHeight - padding) {
+      absoluteY = heroHeight - padding;
+      hitWall = true;
+    }
+
+    // Visszaalakítjuk eltolássá a kiindulási helyzethez képest
+    currentX = absoluteX - homeX;
+    currentY = absoluteY - homeY;
+
+    // Ha falnak ütközött, az ütközés irányú sebességkomponenst elnyeljük
+    if (hitWall) {
+      vx = 0;
+      vy = 0;
+    }
+
+    // 6. Transzformáció alkalmazása a méhecskére
+    bee.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentAngleDeg}deg)`;
+
+    requestAnimationFrame(updatePhysics);
+  }
+
+  // Szimuláció indítása
+  requestAnimationFrame(updatePhysics);
 }
 
 /**
