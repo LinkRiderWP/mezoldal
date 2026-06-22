@@ -62,6 +62,9 @@
 </head>
 <body>
 
+  <!-- Passzív Aranyló Háttérrészecskék -->
+  <div class="ambient-particles" id="ambientParticles"></div>
+
   <!-- Navigáció -->
   <header class="main-header">
     <div class="container nav-container">
@@ -93,6 +96,26 @@
   <!-- Hero szekció -->
   <section class="hero">
     <div class="hero-overlay"></div>
+    
+    <!-- Lebegő interaktív méhecske többszörös fizikai réteggel -->
+    <div class="hero-bee-container">
+      <div class="floating-bee-drifter">
+        <svg class="floating-bee" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M50 40 C45 35, 45 65, 50 60 C55 65, 55 35, 50 40 Z" fill="var(--primary-color)" />
+          <path d="M47 48 H53" />
+          <path d="M46 53 H54" />
+          <circle cx="50" cy="34" r="4" fill="var(--primary-color)" />
+          <path d="M48 31 Q45 27, 43 28" />
+          <path d="M52 31 Q55 27, 57 28" />
+          <path d="M48 44 C35 30, 25 35, 46 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+          <path d="M52 44 C65 30, 75 35, 54 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+          <path d="M48 50 C38 45, 32 50, 47 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+          <path d="M52 50 C62 45, 68 50, 53 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+          <path d="M50 60 L50 64" stroke="var(--primary-color)" />
+        </svg>
+      </div>
+    </div>
+
     <div class="container hero-content">
       <h1 class="fade-in-up hero-title-nowrap">Az Alföld folyékony aranya</h1>
       <p class="fade-in-up delay-1">A vadvirágok tiszta nektárjától a méhek szorgos munkáján és a kíméletes, kézműves pergetésen át, egyenesen az Ön asztaláig.</p>

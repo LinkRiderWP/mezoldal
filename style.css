@@ -61,8 +61,43 @@ body.menu-open {
   margin-inline: auto;
 }
 
+/* --- AMBIENT VIRÁGPOR ANIMÁCIÓ --- */
+.ambient-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pollen {
+  position: absolute;
+  bottom: -20px;
+  background: radial-gradient(circle, rgba(229, 169, 60, 0.6) 0%, rgba(229, 169, 60, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatPollen var(--duration) linear infinite;
+  opacity: 0;
+}
+
+@keyframes floatPollen {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--opacity);
+  }
+  85% {
+    opacity: var(--opacity);
+  }
+  100% {
+    transform: translateY(-110vh) translateX(var(--drift)) scale(1.3);
+    opacity: 0;
+  }
+}
+
 /* Navigáció */
-/* --- FEJLÉC ÁTMENET ÉS ZSUGORODÁS --- */
 .main-header {
   background-color: rgba(18, 10, 5, 0.85);
   position: sticky;
@@ -72,7 +107,6 @@ body.menu-open {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glow);
-  /* Finom átmenet a háttér és a magasság sima változásához */
   transition: background-color var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
@@ -80,8 +114,8 @@ body.menu-open {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 0; /* Egy picit tágasabb kiinduló méret */
-  transition: padding var(--transition-smooth); /* Kényelmes és sima összeugrás */
+  padding: 1.25rem 0;
+  transition: padding var(--transition-smooth);
 }
 
 /* Aktív zsugorodott állapot görgetés hatására */
@@ -92,11 +126,10 @@ body.menu-open {
 }
 
 .main-header.scrolled .nav-container {
-  padding: 0.65rem 0; /* Jelentősen kevesebb helyet foglal el */
+  padding: 0.65rem 0;
 }
 
-
-/* --- SKELETON -> VALÓDI TERMÉK ÁTMENET --- */
+/* SKELETON -> VALÓDI TERMÉK ÁTMENET */
 @keyframes gridFadeIn {
   from {
     opacity: 0;
@@ -108,7 +141,6 @@ body.menu-open {
   }
 }
 
-/* Alaphelyzetben láthatatlanok a kártyák, ha már betöltődött a grid */
 .products-grid.loaded .card {
   opacity: 0;
   animation: gridFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -224,6 +256,7 @@ body.menu-open {
   align-items: center;
   text-align: center;
   color: #FFFFFF;
+  overflow: hidden;
 }
 
 .hero-overlay {
@@ -269,6 +302,65 @@ body.menu-open {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* --- HÁROMRÉTEGŰ PRÉMIUM INTERAKTÍV MÉHECSKE DESIGN --- */
+.hero-bee-container {
+  position: absolute;
+  top: 22%;
+  right: 12%;
+  width: clamp(70px, 10vw, 105px);
+  height: clamp(70px, 10vw, 105px);
+  z-index: 4;
+  pointer-events: auto; /* Aktív interakciók */
+  cursor: pointer;
+  filter: drop-shadow(0 4px 12px rgba(229, 169, 60, 0.25));
+  /* Rendkívül sima, tehetetlenségi Cubic Bezier menekülési átmenet */
+  transition: transform 0.55s cubic-bezier(0.25, 1.3, 0.5, 1);
+}
+
+/* Különálló fizikai réteg a passzív lebegéshez (így sosem snappel megálláskor) */
+.floating-bee-drifter {
+  width: 100%;
+  height: 100%;
+  animation: beeFloat 8s ease-in-out infinite;
+}
+
+/* Maga a vektoros ábra a szárnysuhogáshoz és lágy lecsengéshez */
+.floating-bee {
+  width: 100%;
+  height: 100%;
+  color: var(--primary-color);
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Passzív lebegő hullámzás külön rétegen */
+@keyframes beeFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(6deg);
+  }
+  33% {
+    transform: translate(-15px, -20px) rotate(-4deg);
+  }
+  66% {
+    transform: translate(12px, -10px) rotate(12deg);
+  }
+}
+
+/* Megijedt, szupergyors rezgés menekülés közben */
+.hero-bee-container.scared .floating-bee {
+  animation: beeScared 0.1s infinite alternate ease-in-out;
+  transition: transform 0.1s ease;
+}
+
+@keyframes beeScared {
+  0% {
+    transform: scale(1.15) rotate(-15deg);
+  }
+  100% {
+    transform: scale(0.9) rotate(15deg);
+  }
+}
+
 /* Gombok */
 .btn-primary {
   display: inline-block;
@@ -280,14 +372,23 @@ body.menu-open {
   font-weight: 700;
   font-size: 0.95rem;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 15px rgba(229, 169, 60, 0.25);
+  animation: pulseButton 3.5s infinite alternate ease-in-out;
 }
 
 .btn-primary:hover {
   background-color: var(--primary-dark);
   color: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(229, 169, 60, 0.4);
+  box-shadow: 0 8px 25px rgba(229, 169, 60, 0.45);
+}
+
+@keyframes pulseButton {
+  0% {
+    box-shadow: 0 4px 14px rgba(229, 169, 60, 0.2);
+  }
+  100% {
+    box-shadow: 0 4px 28px rgba(229, 169, 60, 0.55);
+  }
 }
 
 /* Reveal on scroll */
@@ -367,7 +468,7 @@ body.menu-open {
   color: var(--text-muted);
 }
 
-/* Címek */
+/* Címek & Dinamikus Vonaldíszítés */
 .section-title {
   text-align: center;
   margin-bottom: 3.5rem;
@@ -380,15 +481,36 @@ body.menu-open {
   font-weight: 700;
   color: #FFFFFF;
   margin-bottom: 0.6rem;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.6rem;
+}
+
+.section-title h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 75px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+.reveal.active .section-title h2::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .section-title .subtitle {
   color: var(--text-muted);
   font-size: 0.95rem;
   font-style: italic;
+  margin-top: 0.4rem;
 }
 
-/* ÚJRATERVEZETT TÁJÉKOZTATÓ BANNER (Kézműves stílusú szaggatott szegéllyel) */
+/* TÁJÉKOZTATÓ BANNER */
 .bulk-announcement {
   max-width: 700px;
   margin: 1.8rem auto 0;
@@ -725,7 +847,6 @@ body.menu-open {
   border-top: 1px solid var(--border-glow);
 }
 
-/* Kétoszlopos kapcsolatrács */
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -821,14 +942,12 @@ body.menu-open {
   gap: 1.2rem;
 }
 
-/* Kétoszlopos form elrendezés desktopon */
 .form-row-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.2rem;
 }
 
-/* Form elemek feliratainak (labels) stílusai */
 .form-label {
   display: block;
   font-size: 0.85rem;
@@ -943,7 +1062,7 @@ body.menu-open {
   color: var(--bg-dark);
 }
 
-/* KISZERELÉS VÁLASZTÓ (db vs kg) */
+/* KISZERELÉS VÁLASZTÓ */
 .calc-options-row {
   margin-top: 1rem;
   padding: 1rem;
@@ -1010,12 +1129,12 @@ body.menu-open {
   justify-content: space-between;
   align-items: center;
   font-size: 0.88rem;
-  background-color: rgba(229, 169, 60, 0.03); /* Finom méztónus */
+  background-color: rgba(229, 169, 60, 0.03); 
   padding: 0.75rem 1.1rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(229, 169, 60, 0.15); /* Elegáns vékony, körbefutó keret */
+  border: 1px solid rgba(229, 169, 60, 0.15); 
   transition: var(--transition-smooth);
-  line-height: 1; /* Reseteljük a sormagasságot a precíz igazításhoz */
+  line-height: 1; 
 }
 
 .cart-item:hover {
@@ -1028,25 +1147,23 @@ body.menu-open {
   align-items: center;
   gap: 0.6rem;
   line-height: 1;
-  transform: translateY(1px); /* Optikai mikrogazítás: lejjebb húzza a szöveget a gomb középvonalához */
+  transform: translateY(1px); 
 }
 
-/* Egyedi kézműves listajelző ikon */
 .cart-item span::before {
   content: "✦";
   color: var(--primary-color);
   font-size: 0.8rem;
   line-height: 1;
   display: inline-block;
-  transform: translateY(-1px); /* A csillagot picit feljebb igazítjuk, hogy a nagybetűk mértani közepén legyen */
+  transform: translateY(-1px); 
 }
 
 .cart-item strong {
   line-height: 1;
-  transform: translateY(1px); /* Optikai mikrogazítás a vaskos árszövegnek is */
+  transform: translateY(1px); 
 }
 
-/* Mini, keretes törlés gomb */
 .cart-item-remove {
   background: rgba(240, 122, 93, 0.08);
   border: 1px solid rgba(240, 122, 93, 0.25);
@@ -1118,6 +1235,7 @@ body.menu-open {
   overflow-x: auto;
 }
 
+/* Beküldő gomb pulsálás */
 .btn-submit {
   background-color: var(--primary-color);
   color: var(--bg-dark);
@@ -1129,6 +1247,7 @@ body.menu-open {
   cursor: pointer;
   transition: var(--transition-smooth);
   box-shadow: 0 4px 15px rgba(229, 169, 60, 0.2);
+  animation: pulseButton 3.5s infinite alternate ease-in-out;
 }
 
 .btn-submit:hover {
@@ -1182,12 +1301,21 @@ body.menu-open {
 .back-to-top:hover {
   background-color: var(--primary-dark);
   color: #FFFFFF;
-  transform: translateY(-3px);
 }
 
 .back-to-top.show {
   opacity: 1;
   visibility: visible;
+  animation: bounceBackToTop 3s ease-in-out infinite;
+}
+
+@keyframes bounceBackToTop {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Footer */
@@ -1342,7 +1470,7 @@ body.menu-open {
   }
 }
 
-/* EGYEDI, ÚJRATERVEZETT TOAST ÉRTESÍTÉSEK (Lebegő, finoman derengő üvegkártyák) */
+/* TOAST ÉRTESÍTÉSEK */
 .toast-container {
   position: fixed;
   top: 24px;
@@ -1357,7 +1485,7 @@ body.menu-open {
 }
 
 .toast {
-  background-color: rgba(18, 10, 5, 0.95); /* Kellemesen sötét, áttetsző alap */
+  background-color: rgba(18, 10, 5, 0.95); 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--text-main);
@@ -1388,7 +1516,6 @@ body.menu-open {
   line-height: 1.4;
 }
 
-/* Egyedi szegély-derengések és belső fény-visszaverődések a színes sávok helyett */
 .toast-warning {
   border: 1px solid rgba(240, 122, 93, 0.35);
   box-shadow: 0 10px 30px rgba(240, 122, 93, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -1431,19 +1558,16 @@ body.menu-open {
   }
 }
 
-/* Chrome, Safari, Edge, Opera nyilak elrejtése */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* Léptető konténer */
 .qty-control {
   display: flex;
   align-items: stretch;

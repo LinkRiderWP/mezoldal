@@ -18,6 +18,8 @@ const fallbackProducts = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
+  initAmbientPollen();
+  initInteractiveBee();
   initScrollReveal();
   initMobileMenu();
   initHeaderScroll();
@@ -30,6 +32,116 @@ document.addEventListener("DOMContentLoaded", () => {
   initCalculatorAndPreview();
   initQtyButtons();
 });
+
+/**
+ * Passzív, lebegő háttér-részecskék (pollenek) generálása
+ */
+function initAmbientPollen() {
+  const container = document.getElementById("ambientParticles");
+  if (!container) return;
+
+  const particleCount = 22; // Optimális mennyiség a jó teljesítményért
+  for (let i = 0; i < particleCount; i++) {
+    createPollenElement(container);
+  }
+}
+
+function createPollenElement(container) {
+  const pollen = document.createElement("div");
+  pollen.className = "pollen";
+
+  const size = Math.random() * 8 + 4; // 4px és 12px között
+  const leftPosition = Math.random() * 100; // Vízszintes elhelyezkedés
+  const duration = Math.random() * 16 + 14; // 14s és 30s közötti élettartam
+  const startDelay = Math.random() * -30; // Negatív kezdőcsúszás a természetes eloszlásért
+  const driftDistance = Math.random() * 100 - 50; // -50px és 50px közötti kilengés
+  const maxOpacity = Math.random() * 0.35 + 0.15; // Finom, nem zavaró áttetszőség
+
+  pollen.style.width = `${size}px`;
+  pollen.style.height = `${size}px`;
+  pollen.style.left = `${leftPosition}%`;
+  pollen.style.setProperty("--duration", `${duration}s`);
+  pollen.style.setProperty("--drift", `${driftDistance}px`);
+  pollen.style.setProperty("--opacity", maxOpacity);
+  pollen.style.animationDelay = `${startDelay}s`;
+
+  container.appendChild(pollen);
+}
+
+/**
+ * Interaktív, menekülő méhecske kezelése (MouseMove és TouchMove követéssel)
+ */
+function initInteractiveBee() {
+  const bee = document.querySelector('.hero-bee-container');
+  if (!bee) return;
+
+  let currentX = 0;
+  let currentY = 0;
+  let isFleeing = false;
+
+  const fleeHandler = (e) => {
+    // Ha épp folyamatban van az ugrás, elutasítjuk az újabb triggerelést
+    if (isFleeing) return;
+    isFleeing = true;
+
+    // Koordináták lekérése egér vagy ujj esetén is
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    const rect = bee.getBoundingClientRect();
+    const beeCenterX = rect.left + rect.width / 2;
+    const beeCenterY = rect.top + rect.height / 2;
+
+    // Számítjuk az érintkezési pont és a méhecske középpontja közötti szöget
+    const angle = Math.atan2(beeCenterY - clientY, beeCenterX - clientX);
+
+    // Menekülés hossza (pixelben)
+    const distance = 160 + Math.random() * 90; // 160px - 250px hirtelen ugrás
+    let nextX = currentX + Math.cos(angle) * distance;
+    let nextY = currentY + Math.sin(angle) * distance;
+
+    // Határok ellenőrzése a Hero szekcióhoz viszonyítva (ne repüljön ki a képből)
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const heroRect = hero.getBoundingClientRect();
+      const targetViewportX = rect.left + Math.cos(angle) * distance;
+      const targetViewportY = rect.top + Math.sin(angle) * distance;
+
+      // Ha túllépné a látható kereteket, a Hero szekció mértani közepe felé tereljük
+      if (
+        targetViewportX < heroRect.left + 50 || 
+        targetViewportX > heroRect.right - 120 ||
+        targetViewportY < heroRect.top + 50 ||
+        targetViewportY > heroRect.bottom - 120
+      ) {
+        const heroCenterX = heroRect.left + heroRect.width / 2;
+        const heroCenterY = heroRect.top + heroRect.height / 2;
+        const bounceAngle = Math.atan2(heroCenterY - beeCenterY, heroCenterX - beeCenterX);
+        
+        nextX = currentX + Math.cos(bounceAngle) * distance;
+        nextY = currentY + Math.sin(bounceAngle) * distance;
+      }
+    }
+
+    currentX = nextX;
+    currentY = nextY;
+
+    // Félős állapot elindítása (szárnysuhogás felgyorsítása)
+    bee.classList.add('scared');
+    bee.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+    // Az animáció lecsengése után engedélyezzük újra az interakciót
+    setTimeout(() => {
+      bee.classList.remove('scared');
+      isFleeing = false;
+    }, 550); // Összhangban a CSS transition időtartamával
+  };
+
+  // Több esemény figyelése: belépés, folyamatos mutatómozgás és érintés
+  bee.addEventListener('mouseenter', fleeHandler);
+  bee.addEventListener('mousemove', fleeHandler);
+  bee.addEventListener('touchstart', fleeHandler, { passive: true });
+}
 
 /**
  * Scroll Reveal Animáció (Intersection Observer API)
@@ -114,7 +226,7 @@ async function loadHoneyProducts() {
     const products = JSON.parse(rawData);
 
     productsGrid.innerHTML = "";
-    productsGrid.classList.remove("loaded"); // Tiszta állapot az animációhoz
+    productsGrid.classList.remove("loaded"); 
     loadedProducts = []; 
 
     products.forEach((product, index) => {
@@ -173,7 +285,6 @@ async function loadHoneyProducts() {
       // Kártya összeállítása
       const card = document.createElement("article");
       card.className = `card ${isSale ? 'is-sale' : ''}`;
-      // Hullámszerűen beúszó bekezdéshez az animációs és átmenet-késleltetések
       card.style.animationDelay = `${index * 0.05}s`;
       card.style.transitionDelay = `${index * 0.05}s`;
 
@@ -225,7 +336,6 @@ function populateProductSelect() {
   const select = document.getElementById("productSelect");
   if (!select) return;
 
-  // Töröljük a placeholderen kívüli opciókat
   select.innerHTML = '<option value="" disabled selected>Válasszon mézfajtát...</option>';
 
   loadedProducts.forEach((product, index) => {
@@ -249,7 +359,7 @@ function initCalculatorAndPreview() {
   const previewBox = document.getElementById("emailPreviewBox");
   const previewContent = document.getElementById("emailPreviewContent");
 
-  // Dinamikus opciók (db vs kg) elemei
+  // Dinamikus opciók elemei
   const calcOptionsRow = document.getElementById("calcOptionsRow");
   const labelPriceDb = document.getElementById("labelPriceDb");
   const labelPriceKg = document.getElementById("labelPriceKg");
@@ -257,7 +367,6 @@ function initCalculatorAndPreview() {
 
   if (!addBtn || !select || !qtyInput) return;
 
-  // Ha megváltozik a kiválasztott méz, ellenőrizzük, van-e nagy tételes lédig opciója
   select.addEventListener("change", () => {
     const productIndex = select.value;
     if (productIndex === "" || isNaN(productIndex)) return;
@@ -265,15 +374,11 @@ function initCalculatorAndPreview() {
     const selectedProduct = loadedProducts[productIndex];
 
     if (selectedProduct.nagy_tetel_ar && selectedProduct.nagy_tetel_minimum) {
-      // Frissítjük a kiszerelés-választó feliratait az árakkal
       labelPriceDb.textContent = `Üveges kiszerelés (db) — ${selectedProduct.arText}`;
       labelPriceKg.textContent = `Lédig nagy tétel (kg) — ${selectedProduct.nagy_tetel_ar}`;
       bulkMinInfo.textContent = `* Megjegyzés: Lédig (kg) rendelése esetén a minimális rendelési mennyiség: ${selectedProduct.nagy_tetel_minimum}.`;
-      
-      // Megjelenítjük a választót
       calcOptionsRow.style.display = "flex";
     } else {
-      // Elrejtjük és visszaállítjuk darabra, ha a kiválasztott mézből nincs lédig opció
       calcOptionsRow.style.display = "none";
       document.querySelector('input[name="calcUnit"][value="db"]').checked = true;
     }
@@ -295,16 +400,14 @@ function initCalculatorAndPreview() {
     }
 
     const selectedProduct = loadedProducts[productIndex];
-    const unitType = document.querySelector('input[name="calcUnit"]:checked').value; // "db" vagy "kg"
+    const unitType = document.querySelector('input[name="calcUnit"]:checked').value; 
 
     let finalPrice = selectedProduct.calculatedPrice;
     
-    // Ha lédig (kg) opciót választott
     if (unitType === "kg") {
       if (selectedProduct.nagy_tetel_ar) {
         finalPrice = parseInt(selectedProduct.nagy_tetel_ar.replace(/[^0-9]/g, "")) || selectedProduct.calculatedPrice;
         
-        // Ellenőrizzük a minimum rendelési mennyiséget kg-ban
         const minQtyNeeded = parseInt(selectedProduct.nagy_tetel_minimum.replace(/[^0-9]/g, "")) || 10;
         if (qty < minQtyNeeded) {
           showToast(`Lédig kiszerelés esetén a minimális rendelhető mennyiség ebből a mézből ${minQtyNeeded} kg!`, "warning");
@@ -316,7 +419,6 @@ function initCalculatorAndPreview() {
       }
     }
 
-    // Egyedi kulcsot képezünk a kosárban, hogy az üveges és lédig verziók külön sorba kerülhessenek
     const cartKey = `${selectedProduct.cim}_${unitType}`;
     const existingIndex = cart.findIndex(item => item.key === cartKey);
 
@@ -328,14 +430,12 @@ function initCalculatorAndPreview() {
         cim: selectedProduct.cim,
         price: finalPrice,
         qty: qty,
-        unit: unitType // "db" vagy "kg"
+        unit: unitType 
       });
     }
 
-    // Sikeres hozzáadás visszajelzés
     showToast(`"${selectedProduct.cim}" sikeresen hozzáadva a kosárhoz!`, "success");
 
-    // Alaphelyzetbe állítás
     select.value = "";
     qtyInput.value = 1;
     calcOptionsRow.style.display = "none";
@@ -383,7 +483,6 @@ function initCalculatorAndPreview() {
 
     cartTotal.textContent = `${total} Ft`;
 
-    // Eltávolító gombok eseménykezelői (e.currentTarget-tel az SVG kattintásbiztonságért)
     document.querySelectorAll(".cart-item-remove").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const btnElement = e.currentTarget;
@@ -439,18 +538,15 @@ ${message || "[Nincs egyedi megjegyzés fűzve az üzenethez]"}`;
     previewContent.textContent = template;
   }
 
-  // Input figyelők a dinamikus frissítéshez, mentéshez és betöltéshez
   const previewInputs = ["name", "email", "phone", "address", "message"];
   previewInputs.forEach(id => {
     const input = document.getElementById(id);
     if (input) {
-      // 1. Adatok betöltése a böngésző memóriájából oldalbetöltéskor
       const savedValue = localStorage.getItem(`miveskaptar_field_${id}`);
       if (savedValue !== null) {
         input.value = savedValue;
       }
 
-      // 2. Mentés és e-mail előnézet frissítése gépeléskor
       input.addEventListener("input", () => {
         localStorage.setItem(`miveskaptar_field_${id}`, input.value);
         updateEmailPreview();
@@ -458,7 +554,6 @@ ${message || "[Nincs egyedi megjegyzés fűzve az üzenethez]"}`;
     }
   });
 
-  // Globálissá tesszük a kosár-resetet a form beküldéséhez
   window.resetCart = () => {
     cart = [];
     renderCart();
@@ -481,13 +576,12 @@ function initContactForm() {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // --- SZIGORÚ ADATELLENŐRZÉSEK (VALIDATION) ---
+      // --- SZIGORÚ ADATELLENŐRZÉSEK ---
       const nameInput = document.getElementById("name");
       const emailInput = document.getElementById("email");
       const phoneInput = document.getElementById("phone");
       const addressInput = document.getElementById("address");
 
-      // 1. Név ellenőrzése (legalább Családnév + Utónév kell)
       const nameParts = nameInput.value.trim().split(/\s+/);
       if (nameParts.length < 2 || nameParts[0].length < 2 || nameParts[1].length < 2) {
         showToast("Kérjük, adja meg a teljes nevét (Családnév és Utónév)!", "warning");
@@ -495,8 +589,6 @@ function initContactForm() {
         return;
       }
 
-      // 2. Telefonszám ellenőrzése (Magyar vezetékes és mobil formátumok)
-      // Megengedünk szóközöket, kötőjeleket, de a tiszta számnak meg kell felelnie a mintának
       const cleanPhone = phoneInput.value.trim().replace(/[\s\-()]/g, "");
       const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
 
@@ -506,7 +598,6 @@ function initContactForm() {
         return;
       }
 
-      // 3. E-mail ellenőrzése (Alapszintű szintaktikai teszt)
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(emailInput.value.trim())) {
         showToast("Kérjük, érvényes e-mail címet adjon meg!", "warning");
@@ -514,40 +605,31 @@ function initContactForm() {
         return;
       }
 
-      // 4. Szállítási cím ellenőrzése (ne legyen túl rövid, pl. csak a város neve)
       if (addressInput.value.trim().length < 10) {
         showToast("Kérjük, pontosabb szállítási címet adjon meg (város, utca, házszám)!", "warning");
         addressInput.focus();
         return;
       }
 
-      // 5. Kosár ürességének ellenőrzése
       if (cart.length === 0) {
         showToast("A kosara üres! Kérjük, válasszon ki legalább egy mézfajtát a rendelés összeállításánál.", "warning");
         return;
       }
 
-      // --- SIKERES ELLENŐRZÉS UTÁN INDUL A KÜLDÉS ---
+      // --- SIKERES ELLENŐRZÉS UTÁN KÜLDÉS ---
       const originalBtnText = submitBtn.textContent;
       submitBtn.textContent = "Megrendelés küldése...";
       submitBtn.disabled = true;
 
-      // 1. Frissítjük a rejtett mezőt a formázott rendelési adatokkal az e-mail előnézetből
       if (formattedOrderInput && previewContent) {
         formattedOrderInput.value = previewContent.textContent;
       }
 
-      // 2. Összekészítjük a küldendő adatokat
       const formData = new FormData(form);
-      
-      // Access Key:
       formData.append("access_key", "00846189-84b3-41ba-87e4-7ddb4e42f20c"); 
-      
-      // Opcionális: Az e-mail tárgyának testreszabása
       formData.append("subject", `Míves Kaptár - Új megrendelés tőle: ${formData.get("name")}`);
 
       try {
-        // 3. Elküldjük az adatokat az API-nak
         const response = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
           body: formData
@@ -556,19 +638,16 @@ function initContactForm() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Sikeres küldés
           feedback.textContent = "Köszönjük a megrendelést! Telefonszámán hamarosan keresni fogjuk a személyes kiszállítás egyeztetése miatt.";
           feedback.className = "form-feedback success";
           
           form.reset();
 
-          // SIKERES KÜLDÉS UTÁN KIÜRÍTJÜK A MENTETT MEZŐKET IS
           const fieldsToClear = ["name", "email", "phone", "address", "message"];
           fieldsToClear.forEach(id => {
             localStorage.removeItem(`miveskaptar_field_${id}`);
           });
 
-          // Kosár ürítése és előnézet elrejtése
           if (typeof window.resetCart === "function") {
             window.resetCart();
           }
@@ -583,11 +662,9 @@ function initContactForm() {
         feedback.style.color = "var(--accent-color)";
         feedback.style.fontWeight = "600";
       } finally {
-        // Visszaállítjuk a gombot
         submitBtn.textContent = originalBtnText;
         submitBtn.disabled = false;
 
-        // Visszajelzés elrejtése pár másodperc múlva
         setTimeout(() => {
           feedback.style.opacity = "0";
           setTimeout(() => {
@@ -705,8 +782,6 @@ function initCardGlow() {
 
 /**
  * Egyedi, animált értesítések (Toast) megjelenítése
- * @param {string} message - A megjelenítendő üzenet
- * @param {string} type - 'warning', 'error', vagy 'success'
  */
 function showToast(message, type = "warning") {
   let container = document.getElementById("toastContainer");
@@ -730,9 +805,7 @@ function showToast(message, type = "warning") {
   `;
 
   container.appendChild(toast);
-
-  toast.offsetHeight;
-
+  toast.offsetHeight; // Reflow trigger
   toast.classList.add("show");
 
   setTimeout(() => {
@@ -755,7 +828,6 @@ function initQtyButtons() {
   const qtyInput = container.querySelector("#productQty");
 
   if (minusBtn && plusBtn && qtyInput) {
-    // Csökkentő gomb kezelése
     minusBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const currentValue = parseInt(qtyInput.value) || 1;
@@ -765,7 +837,6 @@ function initQtyButtons() {
       }
     });
 
-    // Növelő gomb kezelése
     plusBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const currentValue = parseInt(qtyInput.value) || 1;
@@ -773,14 +844,12 @@ function initQtyButtons() {
       qtyInput.dispatchEvent(new Event("input"));
     });
 
-    // Gépelés korlátozása
     qtyInput.addEventListener("keydown", (e) => {
       if (["e", "E", "-", "+", ".", ","].includes(e.key)) {
         e.preventDefault();
       }
     });
 
-    // Amikor kilép a mezőből (blur), ellenőrizzük, hogy érvényes-e a szám
     qtyInput.addEventListener("blur", () => {
       let parsed = parseInt(qtyInput.value);
       if (isNaN(parsed) || parsed < 1) {
@@ -788,7 +857,7 @@ function initQtyButtons() {
         qtyInput.dispatchEvent(new Event("input"));
         showToast("A mennyiségnek legalább 1-nek kell lennie!", "warning");
       } else {
-        qtyInput.value = Math.floor(parsed); // Biztosan egész szám marad
+        qtyInput.value = Math.floor(parsed); 
       }
     });
   }
