@@ -20,6 +20,7 @@ const fallbackProducts = [
 document.addEventListener("DOMContentLoaded", () => {
   initScrollReveal();
   initMobileMenu();
+  initHeaderScroll();
   loadHoneyProducts();
   initContactForm();
   initBackToTop();
@@ -81,6 +82,22 @@ function initMobileMenu() {
 }
 
 /**
+ * Fejléc zsugorítása görgetéskor
+ */
+function initHeaderScroll() {
+  const header = document.querySelector(".main-header");
+  if (!header) return;
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  });
+}
+
+/**
  * Termékek lekérése a GitHub-ról + Hibakezelés újratöltés gombbal
  */
 async function loadHoneyProducts() {
@@ -97,7 +114,8 @@ async function loadHoneyProducts() {
     const products = JSON.parse(rawData);
 
     productsGrid.innerHTML = "";
-    loadedProducts = []; // Tiszta tömb indítása
+    productsGrid.classList.remove("loaded"); // Tiszta állapot az animációhoz
+    loadedProducts = []; 
 
     products.forEach((product, index) => {
       if (!product.kep || !product.cim || !product.leiras || !product.ar) {
@@ -155,6 +173,8 @@ async function loadHoneyProducts() {
       // Kártya összeállítása
       const card = document.createElement("article");
       card.className = `card ${isSale ? 'is-sale' : ''}`;
+      // Hullámszerűen beúszó bekezdéshez az animációs és átmenet-késleltetések
+      card.style.animationDelay = `${index * 0.05}s`;
       card.style.transitionDelay = `${index * 0.05}s`;
 
       card.innerHTML = `
@@ -174,6 +194,10 @@ async function loadHoneyProducts() {
 
       productsGrid.appendChild(card);
     });
+
+    // Indítjuk az áttűnést
+    void productsGrid.offsetWidth; // Force reflow
+    productsGrid.classList.add("loaded");
 
     // Sikeres betöltés után feltöltjük a kalkulátor választóját
     populateProductSelect();
@@ -344,7 +368,7 @@ function initCalculatorAndPreview() {
         <span>${item.cim} &times; ${item.qty} ${item.unit} (${item.price} Ft/${item.unit})</span>
         <div style="display: flex; align-items: center; gap: 0.8rem;">
           <strong>${itemTotal} Ft</strong>
-          <button type="button" class="cart-item-remove" data-index="${index}" aria-label="Eltávolítás">
+          <button type="button" class="cart-item-remove" data-index="${index}" aria-label="${item.cim} eltávolítása a kosárból" title="Eltávolítás a kosárból">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -516,10 +540,10 @@ function initContactForm() {
       // 2. Összekészítjük a küldendő adatokat
       const formData = new FormData(form);
       
-      // IDE ILLESZD BE a Web3Forms-tól kapott egyedi Access Key-edet:
+      // Access Key:
       formData.append("access_key", "00846189-84b3-41ba-87e4-7ddb4e42f20c"); 
       
-      // Opcionális: Az e-mail tárgyának testreszabása a leveledben
+      // Opcionális: Az e-mail tárgyának testreszabása
       formData.append("subject", `Míves Kaptár - Új megrendelés tőle: ${formData.get("name")}`);
 
       try {
@@ -532,7 +556,7 @@ function initContactForm() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Sikeres küldés esetén lefut a meglévő visszajelző logikád
+          // Sikeres küldés
           feedback.textContent = "Köszönjük a megrendelést! Telefonszámán hamarosan keresni fogjuk a személyes kiszállítás egyeztetése miatt.";
           feedback.className = "form-feedback success";
           
@@ -749,7 +773,7 @@ function initQtyButtons() {
       qtyInput.dispatchEvent(new Event("input"));
     });
 
-    // Gépelés korlátozása: Letiltjuk a speciális karaktereket (mínusz, plusz, tizedespont, vessző, 'e' betű)
+    // Gépelés korlátozása
     qtyInput.addEventListener("keydown", (e) => {
       if (["e", "E", "-", "+", ".", ","].includes(e.key)) {
         e.preventDefault();

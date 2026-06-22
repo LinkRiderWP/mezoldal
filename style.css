@@ -62,8 +62,9 @@ body.menu-open {
 }
 
 /* Navigáció */
+/* --- FEJLÉC ÁTMENET ÉS ZSUGORODÁS --- */
 .main-header {
-  background-color: rgba(18, 10, 5, 0.85); /* Féláttetsző éjszakai sötét */
+  background-color: rgba(18, 10, 5, 0.85);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -71,13 +72,46 @@ body.menu-open {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glow);
+  /* Finom átmenet a háttér és a magasság sima változásához */
+  transition: background-color var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .nav-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
+  padding: 1.25rem 0; /* Egy picit tágasabb kiinduló méret */
+  transition: padding var(--transition-smooth); /* Kényelmes és sima összeugrás */
+}
+
+/* Aktív zsugorodott állapot görgetés hatására */
+.main-header.scrolled {
+  background-color: rgba(12, 6, 3, 0.95);
+  box-shadow: var(--shadow-md);
+  border-bottom-color: rgba(229, 169, 60, 0.2);
+}
+
+.main-header.scrolled .nav-container {
+  padding: 0.65rem 0; /* Jelentősen kevesebb helyet foglal el */
+}
+
+
+/* --- SKELETON -> VALÓDI TERMÉK ÁTMENET --- */
+@keyframes gridFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Alaphelyzetben láthatatlanok a kártyák, ha már betöltődött a grid */
+.products-grid.loaded .card {
+  opacity: 0;
+  animation: gridFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .logo {
