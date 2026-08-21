@@ -4,7 +4,7 @@ let cart = [];
 
 // Biztonságos betöltés localStorage-ból
 try {
-  const savedCart = localStorage.getItem("miveskaptar_cart");
+  const savedCart = localStorage.getItem("miklomez_cart");
   if (savedCart) {
     const parsed = JSON.parse(savedCart);
     if (Array.isArray(parsed)) {
@@ -16,18 +16,20 @@ try {
   cart = [];
 }
 
-// Segédfüggvény árszövegek / számok egységes feldolgozására
+// Segédfüggvény árszövegek / számok feldolgozására
 function parsePrice(val) {
   if (typeof val === "number") return val;
   if (!val) return 0;
   return parseInt(String(val).replace(/[^0-9]/g, ""), 10) || 0;
 }
 
-// Tartalék termékkészlet (ha a gist épp nem érhető el)
+// Termékkészlet pontos árakkal, üvegméretekkel és nagytétel árakkal
 const fallbackProducts = [
   {
     cim: "Napraforgó méz",
-    arak: { 0.8: 2310, 0.9: 2600, 1.0: 2890 },
+    leiras: "Intenzív aranysárga színű, gazdag ízvilágú különlegesség, amely kristályos textúrájával, klasszikus ízével tökéletes választás reggelikhez, teák ízesítéséhez és süteményekhez.",
+    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/napraforgomez.jpg",
+    arak: { "250g": 990, "500g": 1790, "900g": 2890 },
     discountPercentage: 0,
     isSale: false,
     nagy_tetel_ar: "2000 Ft / kg",
@@ -35,8 +37,9 @@ const fallbackProducts = [
   },
   {
     cim: "Akácméz",
-    arak: { 0.8: 2100, 0.9: 2360, 1.0: 2625 },
-    origArak: { 0.8: 2800, 0.9: 3150, 1.0: 3500 },
+    leiras: "Világos színű, lágy ízű mézkülönlegesség, amely hosszan megőrzi folyékony állagát – tökéletes választás mindennapi édesítéshez vagy akár ajándékba is.",
+    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg",
+    arak: { "250g": 1890, "500g": 2590, "900g": 3500 },
     discountPercentage: 25,
     isSale: true,
     nagy_tetel_ar: "2750 Ft / kg",
@@ -44,7 +47,9 @@ const fallbackProducts = [
   },
   {
     cim: "Repceméz",
-    arak: { 0.8: 2000, 0.9: 2250, 1.0: 2500 },
+    leiras: "Krémes állagú, enyhén fanyar ízű méz, amely finomszemcsésen kristályosodik – kiváló választás reggelihez, pirítósra kenve vagy teába keverve.",
+    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/repcemez.jpg",
+    arak: { "250g": 1190, "500g": 1990, "900g": 2500 },
     discountPercentage: 0,
     isSale: false,
     nagy_tetel_ar: "1900 Ft / kg",
@@ -66,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCardGlow();
   initCalculatorAndPreview();
   initQtyButtons();
+  initProductSearch();
 
   const yearEl = document.getElementById("currentYear");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -105,7 +111,7 @@ function initAmbientPollen() {
 }
 
 /**
- * Lebegő interaktív méhecske fizika
+ * Lebegő interaktív méhecske
  */
 function initInteractiveBee() {
   const bee = document.querySelector('.hero-bee-container');
@@ -298,127 +304,76 @@ function initHeaderScroll() {
 }
 
 /**
- * Termékek betöltése a Gist-ből és pontos üvegárak feldolgozása
+ * Termékek betöltése és renderelése (Valós nagytétel árral)
  */
 async function loadHoneyProducts() {
   const productsGrid = document.getElementById("productsGrid");
   if (!productsGrid) return;
 
-  const gistUrl = "https://gist.githubusercontent.com/LinkRiderWP/72c14d567b414c98c494fb32d6ea2c41/raw/mezajanlat.json";
+  loadedProducts = fallbackProducts;
+  productsGrid.innerHTML = "";
 
-  try {
-    const response = await fetch(gistUrl);
-    if (!response.ok) throw new Error(`Hiba: ${response.status}`);
+  loadedProducts.forEach((product, index) => {
+    const price900 = product.arak["900g"] || 0;
+    const bulkPriceText = product.nagy_tetel_ar ? `${product.nagy_tetel_ar} (${product.nagy_tetel_minimum || 'min. 10 kg'})` : "Érdeklődjön e-mailben!";
 
-    const rawData = await response.text();
-    const products = JSON.parse(rawData);
+    const card = document.createElement("article");
+    card.className = `card ${product.isSale ? 'is-sale' : ''}`;
+    card.style.animationDelay = `${index * 0.05}s`;
+    card.setAttribute("data-product-index", index);
 
-    productsGrid.innerHTML = "";
-    loadedProducts = [];
+    card.innerHTML = `
+      <div class="card-img-wrapper">
+        <img src="${product.kep}" alt="${product.cim}" loading="lazy" />
+        ${product.isSale ? `<span class="floating-badge-sale">AKCIÓ -${product.discountPercentage}%</span>` : ""}
+      </div>
+      <div class="card-content">
+        <h3>${product.cim}</h3>
+        <p>${product.leiras}</p>
 
-    products.forEach((product, index) => {
-      if (!product.kep || !product.cim || !product.leiras) return;
-
-      const discountPercentage = parseInt(product.kedvezmeny, 10) || 0;
-      const isSale = discountPercentage > 0;
-
-      let orig08 = 0, orig09 = 0, orig10 = 0;
-
-      if (product.arak) {
-        orig08 = parsePrice(product.arak["0.8"] || product.arak["800g"]);
-        orig09 = parsePrice(product.arak["0.9"] || product.arak["900g"]);
-        orig10 = parsePrice(product.arak["1.0"] || product.arak["1kg"] || product.arak["1"]);
-      }
-
-      if (!orig10) orig10 = parsePrice(product.ar) || 2800;
-      if (!orig08) orig08 = Math.round((orig10 * 0.8) / 10) * 10;
-      if (!orig09) orig09 = Math.round((orig10 * 0.9) / 10) * 10;
-
-      const final08 = isSale ? Math.round((orig08 * (1 - discountPercentage / 100)) / 10) * 10 : orig08;
-      const final09 = isSale ? Math.round((orig09 * (1 - discountPercentage / 100)) / 10) * 10 : orig09;
-      const final10 = isSale ? Math.round((orig10 * (1 - discountPercentage / 100)) / 10) * 10 : orig10;
-
-      loadedProducts.push({
-        cim: product.cim,
-        isSale: isSale,
-        discountPercentage: discountPercentage,
-        origArak: { 0.8: orig08, 0.9: orig09, 1.0: orig10 },
-        arak: { 0.8: final08, 0.9: final09, 1.0: final10 },
-        nagy_tetel_ar: product.nagy_tetel_ar || null,
-        nagy_tetel_minimum: product.nagy_tetel_minimum || null
-      });
-
-      let bulkPriceHtml = "";
-      if (product.nagy_tetel_ar && product.nagy_tetel_minimum) {
-        bulkPriceHtml = `
-          <div class="bulk-price-box">
-            <span class="bulk-icon">📦</span>
-            <span class="bulk-text">Nagy tételben: <strong>${product.nagy_tetel_ar}</strong> (${product.nagy_tetel_minimum})</span>
+        <div class="card-size-selector-box">
+          <span class="card-size-label">Válasszon üvegméretet:</span>
+          <div class="card-size-buttons">
+            <button type="button" class="card-size-btn" data-size="250g">250 g</button>
+            <button type="button" class="card-size-btn" data-size="500g">500 g</button>
+            <button type="button" class="card-size-btn active" data-size="900g">900 g</button>
           </div>
-        `;
-      }
-
-      const card = document.createElement("article");
-      card.className = `card ${isSale ? 'is-sale' : ''}`;
-      card.style.animationDelay = `${index * 0.05}s`;
-      card.setAttribute("data-product-index", index);
-
-      card.innerHTML = `
-        <div class="card-img-wrapper">
-          <img src="${product.kep}" alt="${product.cim}" loading="lazy" />
-          ${isSale ? `<span class="floating-badge-sale">-${discountPercentage}% AKCIÓ</span>` : ""}
         </div>
-        <div class="card-content">
-          <h3>${product.cim}</h3>
-          <p>${product.leiras}</p>
 
-          <div class="card-size-selector-box">
-            <span class="card-size-label">Válasszon üvegméretet:</span>
-            <div class="card-size-buttons">
-              <button type="button" class="card-size-btn" data-size="0.8">0.8 kg</button>
-              <button type="button" class="card-size-btn" data-size="0.9">0.9 kg</button>
-              <button type="button" class="card-size-btn active" data-size="1.0">1.0 kg</button>
-            </div>
+        <div class="price-row">
+          <div class="price-container">
+            <span class="price-sub">Kiválasztott ár:</span>
+            <span class="price card-display-price">${price900.toLocaleString('hu-HU')} Ft</span>
           </div>
-
-          <div class="price-row">
-            <div class="price-container">
-              <span class="price-sub">Kiválasztott ár:</span>
-              ${isSale ? `<span class="original-price card-orig-price">${orig10.toLocaleString('hu-HU')} Ft</span>` : ""}
-              <span class="price card-display-price">${final10.toLocaleString('hu-HU')} Ft</span>
-            </div>
-            <button type="button" class="btn-card-order" data-index="${index}" data-size="1.0" aria-label="${product.cim} megrendelése">
-              <span>Megrendelem</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-
-          ${bulkPriceHtml}
+          <button type="button" class="btn-card-order" data-index="${index}" data-size="900g" aria-label="${product.cim} megrendelése">
+            <span>Megrendelem</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </div>
-      `;
 
-      productsGrid.appendChild(card);
-    });
+        <div class="bulk-price-box">
+          <span class="bulk-icon">📦</span>
+          <span class="bulk-text">Nagytétel ár: <strong>${bulkPriceText}</strong></span>
+        </div>
+      </div>
+    `;
 
-    void productsGrid.offsetWidth;
-    productsGrid.classList.add("loaded");
+    productsGrid.appendChild(card);
+  });
 
-    initCardInteractions();
-    populateProductSelect();
-    initCardGlow();
+  void productsGrid.offsetWidth;
+  productsGrid.classList.add("loaded");
 
-  } catch (error) {
-    console.warn("Külső JSON nem tölthető be, tartalék adatok használata:", error);
-    loadedProducts = fallbackProducts;
-    populateProductSelect();
-  }
+  initCardInteractions();
+  populateProductSelect();
+  initCardGlow();
 }
 
 /**
- * Kártyákon belüli méretváltás eseménykezelői
+ * Kártyákon belüli méretváltás
  */
 function initCardInteractions() {
   document.querySelectorAll(".card[data-product-index]").forEach((card) => {
@@ -428,24 +383,18 @@ function initCardInteractions() {
 
     const sizeBtns = card.querySelectorAll(".card-size-btn");
     const displayPrice = card.querySelector(".card-display-price");
-    const origDisplayPrice = card.querySelector(".card-orig-price");
     const orderBtn = card.querySelector(".btn-card-order");
 
-    let currentSelectedSize = 1.0;
+    let currentSelectedSize = "900g";
 
     sizeBtns.forEach((btn) => {
       btn.addEventListener("click", () => {
         sizeBtns.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        currentSelectedSize = parseFloat(btn.getAttribute("data-size"));
-        const newPrice = product.arak[currentSelectedSize] || product.arak[1.0];
+        currentSelectedSize = btn.getAttribute("data-size");
+        const newPrice = product.arak[currentSelectedSize] || product.arak["900g"];
         displayPrice.textContent = `${newPrice.toLocaleString('hu-HU')} Ft`;
-
-        if (origDisplayPrice && product.isSale) {
-          const newOrigPrice = product.origArak[currentSelectedSize] || product.origArak[1.0];
-          origDisplayPrice.textContent = `${newOrigPrice.toLocaleString('hu-HU')} Ft`;
-        }
 
         if (orderBtn) {
           orderBtn.setAttribute("data-size", currentSelectedSize);
@@ -462,13 +411,11 @@ function initCardInteractions() {
 }
 
 /**
- * Megrendelem gomb: kalkulátor kitöltése és finom leugrás
+ * Megrendelem gomb kártyáról
  */
 function selectProductAndScrollToOrder(productIndex, size) {
   const select = document.getElementById("productSelect");
   const calcOptionsRow = document.getElementById("calcOptionsRow");
-  const jarSizeContainer = document.getElementById("jarSizeContainer");
-  const bulkMinInfo = document.getElementById("bulkMinInfo");
   const calcBox = document.getElementById("orderCalculatorBox");
 
   if (!select) return;
@@ -476,21 +423,12 @@ function selectProductAndScrollToOrder(productIndex, size) {
   select.value = productIndex;
   select.dispatchEvent(new Event("change"));
 
-  const jarRadio = document.querySelector('input[name="calcUnit"][value="jar"]');
-  if (jarRadio) {
-    jarRadio.checked = true;
-    jarRadio.dispatchEvent(new Event("change"));
-  }
-
-  const sizeRadio = document.querySelector(`input[name="jarSize"][value="${size.toFixed(1)}"]`);
+  const sizeRadio = document.querySelector(`input[name="jarSize"][value="${size}"]`);
   if (sizeRadio) {
     sizeRadio.checked = true;
-    sizeRadio.dispatchEvent(new Event("change"));
   }
 
   if (calcOptionsRow) calcOptionsRow.style.display = "flex";
-  if (jarSizeContainer) jarSizeContainer.style.display = "block";
-  if (bulkMinInfo) bulkMinInfo.style.display = "none";
 
   if (calcBox) {
     const yOffset = -90;
@@ -503,7 +441,7 @@ function selectProductAndScrollToOrder(productIndex, size) {
     }, 1800);
   }
 
-  showToast(`Kiválasztva: ${loadedProducts[productIndex].cim} (${size} kg). Adja hozzá a rendeléshez!`, "success");
+  showToast(`Kiválasztva: ${loadedProducts[productIndex].cim} (${size}). Adja hozzá a rendeléshez!`, "success");
 }
 
 function populateProductSelect() {
@@ -515,10 +453,49 @@ function populateProductSelect() {
   loadedProducts.forEach((product, index) => {
     const opt = document.createElement("option");
     opt.value = index;
-    const p10 = product.arak[1.0] || 0;
-    opt.textContent = `${product.cim} (1 kg: ${p10.toLocaleString('hu-HU')} Ft)`;
+    const p900 = product.arak["900g"] || 0;
+    opt.textContent = `${product.cim} (900g: ${p900.toLocaleString('hu-HU')} Ft)`;
     select.appendChild(opt);
   });
+}
+
+/**
+ * Élő Termékkereső a Mézkínálatunk részben
+ */
+function initProductSearch() {
+  const searchInput = document.getElementById("productSearchInput");
+  const clearBtn = document.getElementById("clearSearchBtn");
+  const noMatchBox = document.getElementById("noProductMatch");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase().trim();
+    if (clearBtn) clearBtn.classList.toggle("active", query.length > 0);
+
+    const cards = document.querySelectorAll("#productsGrid .card");
+    let matchCount = 0;
+
+    cards.forEach((card) => {
+      const title = card.querySelector("h3") ? card.querySelector("h3").textContent.toLowerCase() : "";
+      const text = card.querySelector("p") ? card.querySelector("p").textContent.toLowerCase() : "";
+      const isMatch = title.includes(query) || text.includes(query);
+
+      card.style.display = isMatch ? "flex" : "none";
+      if (isMatch) matchCount++;
+    });
+
+    if (noMatchBox) {
+      noMatchBox.style.display = matchCount === 0 ? "block" : "none";
+    }
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.classList.remove("active");
+      searchInput.dispatchEvent(new Event("input"));
+    });
+  }
 }
 
 /**
@@ -527,7 +504,6 @@ function populateProductSelect() {
 function initCalculatorAndPreview() {
   const select = document.getElementById("productSelect");
   const qtyInput = document.getElementById("productQty");
-  const qtyLabel = document.getElementById("qtyLabel");
   const addBtn = document.getElementById("addProductBtn");
   const cartContainer = document.getElementById("cartContainer");
   const cartList = document.getElementById("cartList");
@@ -536,14 +512,9 @@ function initCalculatorAndPreview() {
   const previewContent = document.getElementById("emailPreviewContent");
 
   const calcOptionsRow = document.getElementById("calcOptionsRow");
-  const jarSizeContainer = document.getElementById("jarSizeContainer");
-  const bulkRadioWrapper = document.getElementById("bulkRadioWrapper");
-  const labelPriceKg = document.getElementById("labelPriceKg");
-  const bulkMinInfo = document.getElementById("bulkMinInfo");
-
-  const pillPrice08 = document.getElementById("pillPrice08");
-  const pillPrice09 = document.getElementById("pillPrice09");
-  const pillPrice10 = document.getElementById("pillPrice10");
+  const pillPrice250 = document.getElementById("pillPrice250");
+  const pillPrice500 = document.getElementById("pillPrice500");
+  const pillPrice900 = document.getElementById("pillPrice900");
 
   if (!addBtn || !select || !qtyInput) return;
 
@@ -554,49 +525,19 @@ function initCalculatorAndPreview() {
     const prod = loadedProducts[pIndex];
     if (!prod || !prod.arak) return;
 
-    if (pillPrice08) pillPrice08.textContent = `${prod.arak[0.8].toLocaleString('hu-HU')} Ft`;
-    if (pillPrice09) pillPrice09.textContent = `${prod.arak[0.9].toLocaleString('hu-HU')} Ft`;
-    if (pillPrice10) pillPrice10.textContent = `${prod.arak[1.0].toLocaleString('hu-HU')} Ft`;
+    if (pillPrice250) pillPrice250.textContent = `${(prod.arak["250g"] || 0).toLocaleString('hu-HU')} Ft`;
+    if (pillPrice500) pillPrice500.textContent = `${(prod.arak["500g"] || 0).toLocaleString('hu-HU')} Ft`;
+    if (pillPrice900) pillPrice900.textContent = `${(prod.arak["900g"] || 0).toLocaleString('hu-HU')} Ft`;
   }
 
   select.addEventListener("change", () => {
     const pIndex = select.value;
     if (pIndex === "" || isNaN(pIndex)) return;
 
-    const prod = loadedProducts[pIndex];
     calcOptionsRow.style.display = "flex";
-
     updatePillPrices();
-
-    if (prod.nagy_tetel_ar && prod.nagy_tetel_minimum) {
-      bulkRadioWrapper.style.display = "flex";
-      labelPriceKg.textContent = `Lédig nagy tétel (${prod.nagy_tetel_ar})`;
-      bulkMinInfo.textContent = `* Megjegyzés: Lédig rendelésnél a minimális mennyiség: ${prod.nagy_tetel_minimum}.`;
-    } else {
-      bulkRadioWrapper.style.display = "none";
-      const defaultJarRadio = document.querySelector('input[name="calcUnit"][value="jar"]');
-      if (defaultJarRadio) defaultJarRadio.checked = true;
-      jarSizeContainer.style.display = "block";
-      bulkMinInfo.style.display = "none";
-      qtyLabel.textContent = "Mennyiség (db)";
-    }
   });
 
-  document.querySelectorAll('input[name="calcUnit"]').forEach((radio) => {
-    radio.addEventListener("change", (e) => {
-      if (e.target.value === "jar") {
-        jarSizeContainer.style.display = "block";
-        bulkMinInfo.style.display = "none";
-        qtyLabel.textContent = "Mennyiség (db)";
-      } else {
-        jarSizeContainer.style.display = "none";
-        bulkMinInfo.style.display = "block";
-        qtyLabel.textContent = "Mennyiség (kg)";
-      }
-    });
-  });
-
-  // Hozzáadás a kosárhoz
   addBtn.addEventListener("click", () => {
     const pIndex = select.value;
     const qty = parseInt(qtyInput.value, 10);
@@ -612,40 +553,12 @@ function initCalculatorAndPreview() {
     }
 
     const prod = loadedProducts[pIndex];
-    const unitTypeEl = document.querySelector('input[name="calcUnit"]:checked');
-    const unitType = unitTypeEl ? unitTypeEl.value : "jar";
+    const selectedSizeRadio = document.querySelector('input[name="jarSize"]:checked');
+    const jarSize = selectedSizeRadio ? selectedSizeRadio.value : "900g";
 
-    let itemKey = "";
-    let itemLabel = "";
-    let itemPrice = 0;
-    let unitName = "db";
-
-    if (unitType === "jar") {
-      const selectedSizeRadio = document.querySelector('input[name="jarSize"]:checked');
-      const jarWeight = parseFloat(selectedSizeRadio ? selectedSizeRadio.value : "1.0");
-
-      itemPrice = prod.arak[jarWeight] || prod.arak[1.0];
-      itemKey = `${prod.cim}_jar_${jarWeight}`;
-      itemLabel = `${prod.cim} (${jarWeight} kg-os üveg)`;
-      unitName = "db";
-    } else {
-      if (!prod.nagy_tetel_ar) {
-        showToast("Ebből a mézből nem érhető el lédig kiszerelés!", "error");
-        return;
-      }
-
-      itemPrice = parsePrice(prod.nagy_tetel_ar);
-      const minKg = parsePrice(prod.nagy_tetel_minimum) || 10;
-
-      if (qty < minKg) {
-        showToast(`Lédig kiszerelés esetén a minimális rendelés ${minKg} kg!`, "warning");
-        return;
-      }
-
-      itemKey = `${prod.cim}_bulk_kg`;
-      itemLabel = `${prod.cim} (Lédig nagy tétel)`;
-      unitName = "kg";
-    }
+    const itemPrice = prod.arak[jarSize] || prod.arak["900g"];
+    const itemKey = `${prod.cim}_${jarSize}`;
+    const itemLabel = `${prod.cim} (${jarSize}-os üveg)`;
 
     const existingIndex = cart.findIndex((i) => i.key === itemKey);
     if (existingIndex > -1) {
@@ -656,7 +569,7 @@ function initCalculatorAndPreview() {
         cim: itemLabel,
         price: itemPrice,
         qty: qty,
-        unit: unitName
+        unit: "db"
       });
     }
 
@@ -665,20 +578,15 @@ function initCalculatorAndPreview() {
     select.value = "";
     qtyInput.value = 1;
     calcOptionsRow.style.display = "none";
-    const jarRadio = document.querySelector('input[name="calcUnit"][value="jar"]');
-    if (jarRadio) jarRadio.checked = true;
-    const defaultSize = document.querySelector('input[name="jarSize"][value="1.0"]');
+    const defaultSize = document.querySelector('input[name="jarSize"][value="900g"]');
     if (defaultSize) defaultSize.checked = true;
-    jarSizeContainer.style.display = "block";
-    bulkMinInfo.style.display = "none";
-    qtyLabel.textContent = "Mennyiség (db)";
 
     renderCart();
   });
 
   function renderCart() {
     try {
-      localStorage.setItem("miveskaptar_cart", JSON.stringify(cart));
+      localStorage.setItem("miklomez_cart", JSON.stringify(cart));
     } catch (e) {
       console.error(e);
     }
@@ -760,7 +668,7 @@ function initCalculatorAndPreview() {
       orderLines += `---------------------------\n`;
       orderLines += `Várható végösszeg: ${total.toLocaleString('hu-HU')} Ft\n\n`;
     } else {
-      orderLines += `(Nincs kiválasztott termék a kosárban)\n\n`;
+      orderLines += `(Nincs kiválasztott termék a rendelésben)\n\n`;
     }
 
     const template = `Feladó: ${name || "[Név]"} (${email || "[E-mail cím]"})
@@ -776,11 +684,11 @@ ${message || "[Nincs megjegyzés fűzve a rendeléshez]"}`;
   ["name", "email", "phone", "address", "message"].forEach((id) => {
     const input = document.getElementById(id);
     if (input) {
-      const saved = localStorage.getItem(`miveskaptar_field_${id}`);
+      const saved = localStorage.getItem(`miklomez_field_${id}`);
       if (saved) input.value = saved;
 
       input.addEventListener("input", () => {
-        localStorage.setItem(`miveskaptar_field_${id}`, input.value);
+        localStorage.setItem(`miklomez_field_${id}`, input.value);
         updateEmailPreview();
       });
     }
@@ -795,7 +703,7 @@ ${message || "[Nincs megjegyzés fűzve a rendeléshez]"}`;
 }
 
 /**
- * Űrlap beküldése Web3Forms-on keresztül
+ * Űrlap beküldése
  */
 function initContactForm() {
   const form = document.getElementById("contactForm");
@@ -844,7 +752,7 @@ function initContactForm() {
     }
 
     if (cart.length === 0) {
-      showToast("A kosara még üres! Válasszon legalább egy terméket.", "warning");
+      showToast("A megrendelése még üres! Válasszon legalább egy mézet.", "warning");
       return;
     }
 
@@ -858,7 +766,7 @@ function initContactForm() {
 
     const formData = new FormData(form);
     formData.append("access_key", "00846189-84b3-41ba-87e4-7ddb4e42f20c");
-    formData.append("subject", `Míves Kaptár - Új megrendelés: ${formData.get("name")}`);
+    formData.append("subject", `Mikló Méhészet - Új megrendelés: ${formData.get("name")}`);
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -875,7 +783,7 @@ function initContactForm() {
         form.reset();
 
         ["name", "email", "phone", "address", "message"].forEach((id) => {
-          localStorage.removeItem(`miveskaptar_field_${id}`);
+          localStorage.removeItem(`miklomez_field_${id}`);
         });
 
         if (typeof window.resetCart === "function") {
@@ -887,7 +795,7 @@ function initContactForm() {
 
     } catch (error) {
       console.error("Küldési hiba:", error);
-      feedback.textContent = "Sajnos hiba történt a beküldés során. Kérjük, keressen minket telefonon!";
+      feedback.textContent = "Sajnos hiba történt a beküldés során. Kérjük, keressen minket a 06 20 352 0468 telefonszámon!";
       feedback.className = "form-feedback error";
     } finally {
       submitBtn.textContent = originalText;
@@ -966,12 +874,12 @@ function initAccordion() {
 }
 
 /**
- * Spotlight fény effekt (csak asztali gépeken aktiválódik)
+ * Spotlight fény effekt
  */
 function initCardGlow() {
   if (!window.matchMedia("(hover: hover)").matches) return;
 
-  const elements = document.querySelectorAll(".card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .email-preview-box");
+  const elements = document.querySelectorAll(".card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .email-preview-box, .social-box");
 
   elements.forEach((el) => {
     let ticking = false;
