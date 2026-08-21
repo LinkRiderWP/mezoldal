@@ -2,437 +2,437 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Míves Kaptár – Prémium Családi Méhészet</title>
-  
+
   <!-- SEO Meta adatok -->
-  <meta name="description" content="Míves Kaptár - Prémium családi méhészet az Alföld szívéből. 100% tiszta, nyers kézműves akácméz, hársméz és vegyes virágméz közvetlenül a termelőtől, kíméletes technológiával." />
-  
+  <meta name="description" content="Míves Kaptár - Prémium családi méhészet az Alföld szívéből. 100% tiszta napraforgó méz, akácméz és repceméz 0.8kg, 0.9kg és 1.0kg üveges, valamint lédig kiszerelésben közvetlenül a termelőtől." />
+  <meta name="theme-color" content="#120A05" />
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  
+
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Strukturált adatok (JSON-LD) - Helyi Vállalkozás -->
+  <!-- Strukturált adatok (JSON-LD) -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": "https://miveskaptar.hu/#localbusiness",
-    "name": "Míves Kaptár - Prémium Családi Méhészet",
-    "image": "https://miveskaptar.hu/kepek/mez.jpg",
-    "url": "https://miveskaptar.hu",
-    "telephone": "+36301234567",
-    "email": "info@miveskaptar.hu",
-    "priceRange": "$$",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Alföld",
-      "addressRegion": "Hajdú-Bihar / Csongrád / Békés / Bács-Kiskun",
-      "addressCountry": "HU"
-    },
-    "description": "Kézműves családi méhészet az Alföldön. Prémium minőségű, hőkezeletlen akácméz, hársméz és vegyes virágméz közvetlenül a termelőtől, környezettudatos és fenntartható méhészettel."
-  }
-  </script>
-
-  <!-- Strukturált adatok (JSON-LD) - Kiemelt Termék (Akácméz példa) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "Míves Kaptár Kézműves Akácméz",
-    "image": "https://miveskaptar.hu/kepek/mez.jpg",
-    "description": "Különlegesen tiszta, lassan kristályosodó akácméz az Alföld napsütötte tájairól, kíméletes családi pergetéssel.",
-    "brand": {
-      "@type": "Brand",
-      "name": "Míves Kaptár"
-    },
-    "offers": {
-      "@type": "Offer",
-      "url": "https://miveskaptar.hu#products",
-      "priceCurrency": "HUF",
-      "price": "3400",
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": "https://schema.org/InStock"
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": "https://miveskaptar.hu/#localbusiness",
+      "name": "Míves Kaptár - Prémium Családi Méhészet",
+      "image": "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg",
+      "url": "https://miveskaptar.hu",
+      "telephone": "+36301234567",
+      "email": "info@miveskaptar.hu",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Alföld",
+        "addressCountry": "HU"
+      },
+      "description": "Kézműves családi méhészet az Alföldön. Prémium minőségű akácméz, napraforgó méz és repceméz közvetlenül a termelőtől."
     }
-  }
   </script>
 </head>
 <body>
 
-  <!-- Passzív Aranyló Háttérrészecskék -->
-  <div class="ambient-particles" id="ambientParticles"></div>
+<!-- Passzív Aranyló Háttérrészecskék -->
+<div class="ambient-particles" id="ambientParticles" aria-hidden="true"></div>
 
-  <!-- Navigáció -->
-  <header class="main-header">
-    <div class="container nav-container">
-      <a href="#" class="logo">
-        <span class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2z"/>
-            <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="logo-text">Míves <span class="logo-highlight">Kaptár</span></span>
-      </a>
-      
-      <button class="hamburger" id="hamburger" aria-label="Menü megnyitása">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="menu" id="menu">
-        <a href="#values" class="nav-link">Értékeink</a>
-        <a href="#products" class="nav-link">Kínálatunk</a>
-        <a href="#guide" class="nav-link">Mézkalauz</a>
-        <a href="#about" class="nav-link">Rólunk</a>
-        <a href="#contact" class="nav-link">Kapcsolat</a>
-      </nav>
+<!-- Navigáció -->
+<header class="main-header">
+  <div class="container nav-container">
+    <a href="#" class="logo" aria-label="Míves Kaptár Főoldal">
+      <span class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2z"/>
+          <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="logo-text">Míves <span class="logo-highlight">Kaptár</span></span>
+    </a>
+
+    <button class="hamburger" id="hamburger" aria-label="Menü megnyitása" aria-expanded="false" aria-controls="menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="menu" id="menu">
+      <a href="#values" class="nav-link">Értékeink</a>
+      <a href="#products" class="nav-link">Kínálatunk</a>
+      <a href="#guide" class="nav-link">Mézkalauz</a>
+      <a href="#about" class="nav-link">Rólunk</a>
+      <a href="#contact" class="nav-link">Kapcsolat</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero szekció -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+
+  <div class="hero-bee-container" title="Kattints a méhecskére!">
+    <div class="floating-bee-drifter">
+      <svg class="floating-bee" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M50 40 C45 35, 45 65, 50 60 C55 65, 55 35, 50 40 Z" fill="var(--primary-color)" />
+        <path d="M47 48 H53" />
+        <path d="M46 53 H54" />
+        <circle cx="50" cy="34" r="4" fill="var(--primary-color)" />
+        <path d="M48 31 Q45 27, 43 28" />
+        <path d="M52 31 Q55 27, 57 28" />
+        <path d="M48 44 C35 30, 25 35, 46 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+        <path d="M52 44 C65 30, 75 35, 54 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+        <path d="M48 50 C38 45, 32 50, 47 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+        <path d="M52 50 C62 45, 68 50, 53 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+        <path d="M50 60 L50 64" stroke="var(--primary-color)" />
+      </svg>
     </div>
-  </header>
+  </div>
 
-  <!-- Hero szekció -->
-  <section class="hero">
-    <div class="hero-overlay"></div>
-    
-    <!-- Lebegő interaktív méhecske többszörös fizikai réteggel -->
-    <div class="hero-bee-container">
-      <div class="floating-bee-drifter">
-        <svg class="floating-bee" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M50 40 C45 35, 45 65, 50 60 C55 65, 55 35, 50 40 Z" fill="var(--primary-color)" />
-          <path d="M47 48 H53" />
-          <path d="M46 53 H54" />
-          <circle cx="50" cy="34" r="4" fill="var(--primary-color)" />
-          <path d="M48 31 Q45 27, 43 28" />
-          <path d="M52 31 Q55 27, 57 28" />
-          <path d="M48 44 C35 30, 25 35, 46 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
-          <path d="M52 44 C65 30, 75 35, 54 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
-          <path d="M48 50 C38 45, 32 50, 47 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
-          <path d="M52 50 C62 45, 68 50, 53 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
-          <path d="M50 60 L50 64" stroke="var(--primary-color)" />
+  <div class="container hero-content">
+    <h1>Magyarország folyékony aranya</h1>
+    <p>A virágok tiszta nektárjától a méhek szorgos munkáján és a kíméletes, kézműves pergetésen át, egyenesen az Ön asztaláig.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Kínálatunk megtekintése</a>
+    </div>
+  </div>
+</section>
+
+<!-- Értékeink szekció -->
+<section id="values" class="values-section reveal">
+  <div class="container values-grid">
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3h8M6 6h12v3H6V6ZM6 9c0 6 2 12 6 12s6-6 6-12H6Z" />
+          <path d="M12 9v5M10 14h4" />
         </svg>
       </div>
+      <h3>100% Nyers és Tiszta</h3>
+      <p>Mézeinket nem vetjük alá ipari hőkezelésnek vagy szűrésnek. Megőrzik minden természetes enzimüket és vitamintartalmukat.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4V6a4 4 0 0 0-4-4Z"/>
+          <path d="M12 12a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4Z"/>
+          <path d="M12 12a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4 4 4 0 0 0 4 4h2a4 4 0 0 0 4-4Z"/>
+          <path d="M16 12a4 4 0 0 0 4-4h2a4 4 0 0 0-4-4h-2a4 4 0 0 0-4 4v2Z"/>
+        </svg>
+      </div>
+      <h3>Helyi és Fenntartható</h3>
+      <p>Saját családi méhészetünkből, a természet tiszteletben tartásával, kíméletes technológiával dolgozunk a méhek védelmében.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <h3>Generációs Tudás</h3>
+      <p>Évtizedes tapasztalattal és odafigyeléssel gondozzuk a családokat, hogy a legjobb minőség kerüljön az Ön asztalára.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Termékek szekció -->
+<section id="products" class="products-section reveal">
+  <div class="container">
+    <div class="section-title">
+      <h2>Mézkínálatunk</h2>
+      <p class="subtitle">Válasszon üvegméretet a kártyákon az azonnali ár megtekintéséhez és a gyors megrendeléshez</p>
+
+      <div class="bulk-announcement">
+        <span class="announcement-badge">Változatos kiszerelés</span>
+        <p>Minden üveges mézünk elérhető <strong>0.8 kg, 0.9 kg és 1.0 kg-os</strong> méretben is! Nagyobb tételben (lédig) pedig még kedvezőbb árakat biztosítunk.</p>
+      </div>
     </div>
 
-    <div class="container hero-content">
-      <h1 class="fade-in-up hero-title-nowrap">Az Alföld folyékony aranya</h1>
-      <p class="fade-in-up delay-1">A vadvirágok tiszta nektárjától a méhek szorgos munkáján és a kíméletes, kézműves pergetésen át, egyenesen az Ön asztaláig.</p>
-      <div class="fade-in-up delay-2">
-        <a href="#products" class="btn-primary">Kínálatunk megtekintése</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Bizalomépítő szekció (Értékeink) -->
-  <section id="values" class="values-section reveal">
-    <div class="container values-grid">
-      <div class="value-card">
-        <div class="value-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 3h8M6 6h12v3H6V6ZM6 9c0 6 2 12 6 12s6-6 6-12H6Z" />
-            <path d="M12 9v5M10 14h4" />
-          </svg>
-        </div>
-        <h3>100% Nyers és Tiszta</h3>
-        <p>Mézeinket nem vetjük alá ipari hőkezelésnek vagy szűrésnek. Megőrzik minden természetes enzimüket és vitamintartalmukat.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4V6a4 4 0 0 0-4-4Z"/>
-            <path d="M12 12a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4Z"/>
-            <path d="M12 12a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4 4 4 0 0 0 4 4h2a4 4 0 0 0 4-4Z"/>
-            <path d="M16 12a4 4 0 0 0 4-4h2a4 4 0 0 0-4-4h-2a4 4 0 0 0-4 4v2Z"/>
-          </svg>
-        </div>
-        <h3>Helyi és Fenntartható</h3>
-        <p>Saját családi méhészetünkből, a természet tiszteletben tartásával, kíméletes technológiával dolgozunk a méhek védelmében.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
-        </div>
-        <h3>Generációs Tudás</h3>
-        <p>Évtizedes tapasztalattal és odafigyeléssel gondozzuk a családokat, hogy a legjobb minőség kerüljön az Ön asztalára.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Termékek szekció -->
-  <section id="products" class="products-section reveal">
-    <div class="container">
-      <div class="section-title">
-        <h2>Mézkínálatunk</h2>
-        <p class="subtitle">Kézműves termékeink közvetlenül a termelőtől</p>
-        
-        <!-- Nagy tételes tájékoztató banner -->
-        <div class="bulk-announcement">
-          <span class="announcement-badge">Kedvezmény</span>
-          <p>Nagyobb tételben (lédig kiszerelésben) kedvezőbb árakat biztosítunk! Keresse az egyes termékeknél a nagy tételes ajánlatainkat, vagy érdeklődjön közvetlenül nálunk.</p>
+    <div class="products-grid" id="productsGrid">
+      <!-- Skeleton betöltők -->
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
         </div>
       </div>
-      
-      <div class="products-grid" id="productsGrid">
-        <!-- Kezdeti skeletonok -->
-        <div class="card skeleton">
-          <div class="skeleton-image"></div>
-          <div class="card-content">
-            <div class="skeleton-title"></div>
-            <div class="skeleton-text"></div>
-            <div class="skeleton-text short"></div>
-            <div class="skeleton-price"></div>
-          </div>
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
         </div>
-        <div class="card skeleton">
-          <div class="skeleton-image"></div>
-          <div class="card-content">
-            <div class="skeleton-title"></div>
-            <div class="skeleton-text"></div>
-            <div class="skeleton-text short"></div>
-            <div class="skeleton-price"></div>
-          </div>
-        </div>
-        <div class="card skeleton">
-          <div class="skeleton-image"></div>
-          <div class="card-content">
-            <div class="skeleton-title"></div>
-            <div class="skeleton-text"></div>
-            <div class="skeleton-text short"></div>
-            <div class="skeleton-price"></div>
-          </div>
+      </div>
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Mézkalauz & Tudástár szekció -->
-  <section id="guide" class="guide-section reveal">
-    <div class="container guide-wrapper">
-      <div class="section-title">
-        <h2>Mézkalauz & Élettani Hatások</h2>
-        <p class="subtitle">Melyik mézfajta milyen jótékony hatással bír a szervezetünkre?</p>
+<!-- Mézkalauz szekció -->
+<section id="guide" class="guide-section reveal">
+  <div class="container guide-wrapper">
+    <div class="section-title">
+      <h2>Mézkalauz & Élettani Hatások</h2>
+      <p class="subtitle">Melyik mézfajta milyen jótékony hatással bír a szervezetünkre?</p>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Napraforgó méz - Gazdag ásványi anyagokban és E-vitaminban</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>Intenzív aranysárga színű, kellemesen savas, karakteres ízű méz. Gyorsan kristályosodik finom szemcsékkel. Kiválóan erősíti az immunrendszert, fertőtlenítő és gyulladáscsökkentő hatású, emellett sütéshez és reggelikhez a legkedveltebb.</p>
+        </div>
       </div>
-      
-      <div class="accordion">
-        <div class="accordion-item">
-          <button class="accordion-header" aria-expanded="false">
-            <span>Akácméz - A torok és az emésztőrendszer megnyugtatója</span>
-            <span class="accordion-icon">+</span>
-          </button>
-          <div class="accordion-content">
-            <p>A legnépszerűbb hungarikum mézünk. Kimagasló gyümölcscukor-tartalma miatt rendkívül lassan kristályosodik, így akár évekig folyékony marad. Kiválóan alkalmas köhögés csillapítására, felső légúti panaszokra, valamint gyomorsav-túltengés ellen, mert kíméli az emésztőrendszert.</p>
-          </div>
-        </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header" aria-expanded="false">
-            <span>Hársméz - A leghatékonyabb fegyver megfázás ellen</span>
-            <span class="accordion-icon">+</span>
-          </button>
-          <div class="accordion-content">
-            <p>Jellegzetes, fűszeres illatú és aromás ízű mézkülönlegesség. Rendkívül erős fertőtlenítő, görcsoldó és gyulladáscsökkentő hatással bír. Lázas megbetegedések, hörghurut esetén hársfateával fogyasztva felerősíti annak izzasztó és köptető hatását, emellett idegnyugtatóként és álmatlanság ellen is javasolt.</p>
-          </div>
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Akácméz - A torok és az emésztőrendszer kíméletes megnyugtatója</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>A legismertebb hungarikum mézünk. Magas gyümölcscukor-tartalma miatt rendkívül lassan kristályosodik, akár évekig folyékony marad. Kiválóan alkalmas köhögés csillapítására, valamint gyomorsav-túltengés ellen.</p>
         </div>
+      </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header" aria-expanded="false">
-            <span>Vegyes virágméz - A természet sokszínű immunerősítője</span>
-            <span class="accordion-icon">+</span>
-          </button>
-          <div class="accordion-content">
-            <p>Több tucat vadvirág, mezei gyógynövény és erdei növény nektárjának gazdag keveréke. Mivel a természet teljes esszenciáját tartalmazza, kiváló általános immunerősítő, roboráló és sebgyógyító hatású. Ideális mindennapi fogyasztásra, főzéshez és sütemények édesítéséhez is.</p>
-          </div>
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Repceméz - A gyomorbarát, alacsony savtartalmú krémméz</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>Hófehér, selymesen krémes állagú mézkülönlegesség. Rendkívül alacsony savtartalma miatt a legérzékenyebb gyomrúak és gyomorsavproblémákkal küzdők is bátran fogyaszthatják. Magas vastartalma miatt vérszegénység esetén is ajánlott.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Rólunk szekció -->
-  <section id="about" class="about-section reveal">
-    <div class="container about-grid">
-      <div class="about-text">
-        <h2>Rólunk - Míves Kaptár</h2>
-        <p>Családi méhészetünk az Alföld napsütötte tájain, a végtelen rónaságok szívében működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon gyűjtenek az alföldi akácligetek, mezei vadvirágok és gyógynövények között, így minden évszak ízét megőrző, különleges és tiszta mézfajtákat készítenek.</p>
-        <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a tájegységünk biológiai sokféleségét, és tiszta, nyers mézet juttassunk el közvetlenül a kaptárunktól az Ön otthonába.</p>
-      </div>
-      <div class="about-image-container">
-        <div class="image-border-deco"></div>
-        <img src="kepek/mez.jpg" alt="Méhész munka közben" class="about-image" />
-      </div>
+<!-- Rólunk szekció -->
+<section id="about" class="about-section reveal">
+  <div class="container about-grid">
+    <div class="about-text">
+      <h2>Rólunk - Míves Kaptár</h2>
+      <p>Családi méhészetünk az Alföld napsütötte tájain működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon gyűjtenek az alföldi akácligetek, napraforgó- és repcetáblák között.</p>
+      <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a tájegységünk biológiai sokféleségét, és tiszta, nyers mézet juttassunk el közvetlenül a kaptárunktól az Ön otthonába.</p>
     </div>
-  </section>
+    <div class="about-image-container">
+      <div class="image-border-deco"></div>
+      <img src="https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg" alt="Méhész munka közben" class="about-image" loading="lazy" />
+    </div>
+  </div>
+</section>
 
-  <!-- Kapcsolat szekció -->
-  <section id="contact" class="contact-section reveal">
-    <div class="container">
-      <div class="section-title">
-        <h2>Kapcsolatfelvétel & Megrendelés</h2>
-        <p class="subtitle">Kérdése van, vagy rendelni szeretne? Írjon nekünk, és a mézeket személyesen szállítjuk ki Önnek!</p>
-      </div>
-      
-      <div class="contact-grid">
-        <!-- Közvetlen elérhetőségek -->
-        <div class="contact-info">
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-            </div>
-            <div class="info-text">
-              <h4>Telefonszám</h4>
-              <p><a href="tel:+36301234567">+36 (30) 123-4567</a></p>
-            </div>
+<!-- Kapcsolat & Rendelés szekció -->
+<section id="contact" class="contact-section reveal">
+  <div class="container">
+    <div class="section-title">
+      <h2>Kapcsolatfelvétel & Megrendelés</h2>
+      <p class="subtitle">Állítsa össze rendelését, és a mézeket személyesen szállítjuk ki Önnek!</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
           </div>
-
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-            </div>
-            <div class="info-text">
-              <h4>E-mail cím</h4>
-              <p><a href="mailto:info@miveskaptar.hu">info@miveskaptar.hu</a></p>
-            </div>
-          </div>
-
-          <div class="info-card">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-            </div>
-            <div class="info-text">
-              <h4>Helyszín</h4>
-              <p>Alföld, Magyarország<br><span class="detail-text">(Személyes házhozszállítás előzetes egyeztetéssel)</span></p>
-            </div>
+          <div class="info-text">
+            <h4>Telefonszám</h4>
+            <p><a href="tel:+36301234567">+36 (30) 123-4567</a></p>
           </div>
         </div>
 
-        <!-- Üzenetküldő és megrendelő űrlap -->
-        <div class="contact-form-wrapper">
-          <form class="contact-form" id="contactForm">
-            <input type="hidden" id="formattedOrder" name="Megrendeles_Reszletei" />
-            <!-- Alapadatok -->
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label for="name" class="form-label">Az Ön neve *</label>
-                <input type="text" id="name" name="name" placeholder="Pl. Kovács Péter" required />
-              </div>
-              <div class="form-group">
-                <label for="email" class="form-label">Az Ön e-mail címe *</label>
-                <input type="email" id="email" name="email" placeholder="Pl. kovacs.peter@gmail.com" required />
-              </div>
-            </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <h4>E-mail cím</h4>
+            <p><a href="mailto:info@miveskaptar.hu">info@miveskaptar.hu</a></p>
+          </div>
+        </div>
 
-            <!-- Kiszállítási adatok -->
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label for="phone" class="form-label">Az Ön telefonszáma *</label>
-                <input type="tel" id="phone" name="phone" placeholder="Pl. +36 (30) 123-4567" required />
-              </div>
-              <div class="form-group">
-                <label for="address" class="form-label">Pontos kiszállítási cím *</label>
-                <input type="text" id="address" name="address" placeholder="Pl. 4024 Debrecen, Fő utca 12., 3. em. 4." required />
-              </div>
-            </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <h4>Helyszín</h4>
+            <p>Alföld, Magyarország<br><span class="detail-text">(Személyes kiszállítás egyeztetéssel)</span></p>
+          </div>
+        </div>
+      </div>
 
-            <!-- Termékválasztó és kalkulátor rész -->
-            <div class="order-calculator-box">
-              <h4 class="calc-title">Személyes megrendelés összeállítása</h4>
-              <p class="calc-subtitle">Válassza ki a kívánt mézeket, a végösszeget automatikusan kiszámoljuk.</p>
-              
-              <div class="calc-row">
-                <div class="form-group select-group">
-                  <label for="productSelect" class="form-label">Mézfajta választás</label>
-                  <select id="productSelect">
-                    <option value="" disabled selected>Válasszon mézfajtát...</option>
-                  </select>
-                </div>
-                <div class="form-group qty-group">
-                  <label for="productQty" class="form-label">Mennyiség</label>
-                  <div class="qty-control">
-                    <button type="button" class="qty-btn qty-minus" aria-label="Mennyiség csökkentése" title="Mennyiség csökkentése">-</button>
-                    <input type="number" id="productQty" min="1" value="1" placeholder="Mennyiség" />
-                    <button type="button" class="qty-btn qty-plus" aria-label="Mennyiség növelése" title="Mennyiség növelése">+</button>
-                  </div>
-                </div>
-                <div class="btn-calc-wrapper">
-                  <span class="form-label label-spacer">&nbsp;</span>
-                  <button type="button" id="addProductBtn" class="btn-calc-add">Hozzáadás</button>
-                </div>
-              </div>
+      <!-- Űrlap és Kalkulátor -->
+      <div class="contact-form-wrapper">
+        <form class="contact-form" id="contactForm">
+          <input type="hidden" id="formattedOrder" name="Megrendeles_Reszletei" />
 
-              <!-- Dinamikus Kiszerelés választó (üveges vs lédig kg) lédig árak esetén -->
-              <div class="calc-options-row" id="calcOptionsRow" style="display: none;">
-                <span class="calc-options-label">Válasszon kiszerelést:</span>
-                <div class="calc-radio-group">
-                  <label class="calc-radio-label">
-                    <input type="radio" name="calcUnit" value="db" checked />
-                    <span id="labelPriceDb">Üveges (db)</span>
-                  </label>
-                  <label class="calc-radio-label">
-                    <input type="radio" name="calcUnit" value="kg" />
-                    <span id="labelPriceKg">Lédig nagy tétel (kg)</span>
-                  </label>
-                </div>
-                <p class="bulk-min-info" id="bulkMinInfo"></p>
-              </div>
-
-              <!-- Kosár listázás -->
-              <div class="calc-cart-container" id="cartContainer" style="display: none;">
-                <ul class="cart-list" id="cartList">
-                  <!-- JS ide pakolja be a kiválasztott termékeket -->
-                </ul>
-                <div class="cart-summary">
-                  <span>Várható végösszeg:</span>
-                  <strong id="cartTotal">0 Ft</strong>
-                </div>
-              </div>
-            </div>
-
-            <!-- Szabad szöveges megjegyzés -->
+          <div class="form-row-grid">
             <div class="form-group">
-              <label for="message" class="form-label">Egyéb megjegyzések (opcionális)</label>
-              <textarea id="message" name="message" placeholder="Pl. preferált kiszállítási időpontok, kapucsengő kódja, stb." rows="4"></textarea>
+              <label for="name" class="form-label">Az Ön neve *</label>
+              <input type="text" id="name" name="name" placeholder="Pl. Minta János" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label">Az Ön e-mail címe *</label>
+              <input type="email" id="email" name="email" placeholder="Pl. minta.janos@gmail.com" autocomplete="email" required />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="phone" class="form-label">Az Ön telefonszáma *</label>
+              <input type="tel" id="phone" name="phone" placeholder="Pl. +36 30 123 4567" autocomplete="tel" required />
+            </div>
+            <div class="form-group">
+              <label for="address" class="form-label">Pontos kiszállítási cím *</label>
+              <input type="text" id="address" name="address" placeholder="Pl. 4024 Debrecen, Kossuth Lajos utca 12." autocomplete="street-address" required />
+            </div>
+          </div>
+
+          <!-- Termékkalkulátor -->
+          <div class="order-calculator-box" id="orderCalculatorBox">
+            <h4 class="calc-title">Személyes megrendelés összeállítása</h4>
+            <p class="calc-subtitle">Válassza ki a kívánt mézet, kiszerelést és üvegméretet:</p>
+
+            <div class="calc-row">
+              <div class="form-group select-group">
+                <label for="productSelect" class="form-label">Mézfajta választás</label>
+                <select id="productSelect">
+                  <option value="" disabled selected>Válasszon mézfajtát...</option>
+                </select>
+              </div>
+              <div class="form-group qty-group">
+                <label for="productQty" class="form-label" id="qtyLabel">Mennyiség</label>
+                <div class="qty-control">
+                  <button type="button" class="qty-btn qty-minus" aria-label="Mennyiség csökkentése">-</button>
+                  <input type="number" id="productQty" min="1" value="1" inputmode="numeric" />
+                  <button type="button" class="qty-btn qty-plus" aria-label="Mennyiség növelése">+</button>
+                </div>
+              </div>
+              <div class="btn-calc-wrapper">
+                <span class="form-label label-spacer">&nbsp;</span>
+                <button type="button" id="addProductBtn" class="btn-calc-add">Hozzáadás</button>
+              </div>
             </div>
 
-            <!-- Dinamikus E-mail előnézet box -->
-            <div class="email-preview-box" id="emailPreviewBox" style="display: none;">
-              <span class="preview-badge">Megrendelés e-mail előnézete</span>
-              <pre class="preview-content" id="emailPreviewContent"></pre>
+            <!-- Kiszerelés és Üvegméret Választó -->
+            <div class="calc-options-row" id="calcOptionsRow" style="display: none;">
+              <span class="calc-options-label">1. Csomagolás típusa:</span>
+              <div class="calc-radio-group">
+                <label class="calc-radio-label">
+                  <input type="radio" name="calcUnit" value="jar" checked />
+                  <span>Üveges kiszerelés</span>
+                </label>
+                <label class="calc-radio-label" id="bulkRadioWrapper">
+                  <input type="radio" name="calcUnit" value="bulk" />
+                  <span id="labelPriceKg">Lédig nagy tétel (kg)</span>
+                </label>
+              </div>
+
+              <div id="jarSizeContainer">
+                <span class="calc-options-label" style="margin-top: 0.4rem; display: block;">2. Válasszon üvegméretet:</span>
+                <div class="jar-size-selector">
+                  <label class="size-pill-label">
+                    <input type="radio" name="jarSize" value="0.8" />
+                    <div class="size-pill-content">
+                      <span class="size-pill-title">0.8 kg</span>
+                      <span class="size-pill-price" id="pillPrice08">- Ft</span>
+                    </div>
+                  </label>
+
+                  <label class="size-pill-label">
+                    <input type="radio" name="jarSize" value="0.9" />
+                    <div class="size-pill-content">
+                      <span class="size-pill-title">0.9 kg</span>
+                      <span class="size-pill-price" id="pillPrice09">- Ft</span>
+                    </div>
+                  </label>
+
+                  <label class="size-pill-label">
+                    <input type="radio" name="jarSize" value="1.0" checked />
+                    <div class="size-pill-content">
+                      <span class="size-pill-title">1.0 kg</span>
+                      <span class="size-pill-price" id="pillPrice10">- Ft</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <p class="bulk-min-info" id="bulkMinInfo" style="display: none;"></p>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Üzenet és rendelés küldése</button>
-          </form>
-          <div id="formFeedback" class="form-feedback"></div>
-        </div>
+            <!-- Kosár tartalma -->
+            <div class="calc-cart-container" id="cartContainer" style="display: none;">
+              <ul class="cart-list" id="cartList"></ul>
+              <div class="cart-summary">
+                <span>Várható végösszeg:</span>
+                <strong id="cartTotal">0 Ft</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label">Egyéb megjegyzések (opcionális)</label>
+            <textarea id="message" name="message" placeholder="Pl. preferált kiszállítási időpontok, kapucsengő, stb." rows="4"></textarea>
+          </div>
+
+          <!-- E-mail előnézet -->
+          <div class="email-preview-box" id="emailPreviewBox" style="display: none;">
+            <span class="preview-badge">Megrendelés e-mail előnézete</span>
+            <pre class="preview-content" id="emailPreviewContent"></pre>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">Üzenet és megrendelés elküldése</button>
+        </form>
+        <div id="formFeedback" class="form-feedback" aria-live="polite"></div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Vissza a tetejére gomb -->
-  <button id="backToTop" class="back-to-top" aria-label="Vissza a tetejére">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m18 15-6-6-6 6"/>
-    </svg>
-  </button>
+<!-- Vissza a tetejére gomb -->
+<button id="backToTop" class="back-to-top" aria-label="Vissza a tetejére">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+</button>
 
-  <footer class="main-footer">
-    <div class="container">
-      <p>&copy; 2026 Míves Kaptár. Minden jog fenntartva.</p>
-    </div>
-  </footer>
+<footer class="main-footer">
+  <div class="container">
+    <p>&copy; <span id="currentYear">2026</span> Míves Kaptár. Minden jog fenntartva.</p>
+  </div>
+</footer>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,27 +1,34 @@
 :root {
-  /* PRÉMIUM SÖTÉT PALETTA VÁLTOZÓK */
-  --primary-color: #E5A93C;   /* Sugárzó méz-arany */
-  --primary-dark: #C68B45;    /* Mély meleg borostyán */
-  --accent-color: #F07A5D;     /* Lágy terrakotta */
-  --bg-dark: #120A05;          /* Éjszakai mélybarna (header / footer) */
-  --bg-light: #1F140D;         /* Gazdag, meleg csokoládébarna háttér */
-  --bg-card: #2B1D14;          /* Finom középbarna a kártyáknak */
-  
-  /* Szuper magas kontrasztú, kíméletes szövegszínek sötét háttérre (WCAG AAA) */
-  --text-main: #F5EFE6;        /* Tiszta, lágy krémszín */
-  --text-muted: #C0B0A0;       /* Meleg szürkés-homok szín a kísérőszövegeknek */
-  
+  /* Premium Dark Color Palette */
+  --primary-color: #E5A93C;
+  --primary-dark: #C68B45;
+  --accent-color: #F07A5D;
+  --bg-dark: #120A05;
+  --bg-light: #1F140D;
+  --bg-card: #2B1D14;
+
+  --text-main: #F5EFE6;
+  --text-muted: #C0B0A0;
+
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
-  --border-glow: rgba(229, 169, 60, 0.12); /* Finom arany derengés a szegélyeken */
-  
-  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --border-glow: rgba(229, 169, 60, 0.12);
+
+  --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   --radius-lg: 20px;
   --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Dynamic CSS variable defaults */
+  --duration: 20s;
+  --opacity: 0.3;
+  --drift: 0px;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
 }
 
-/* Gördítősáv */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -37,23 +44,27 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 90px;
+  scroll-padding-top: 85px;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   color: var(--text-main);
   background-color: var(--bg-light);
-  line-height: 1.7;
+  line-height: 1.65;
   overflow-x: hidden;
+  position: relative;
+  width: 100%;
 }
 
 body.menu-open {
   overflow: hidden;
+  touch-action: none;
 }
 
 .container {
@@ -61,7 +72,7 @@ body.menu-open {
   margin-inline: auto;
 }
 
-/* --- AMBIENT VIRÁGPOR ANIMÁCIÓ --- */
+/* Ambient Particles */
 .ambient-particles {
   position: fixed;
   inset: 0;
@@ -76,7 +87,7 @@ body.menu-open {
   background: radial-gradient(circle, rgba(229, 169, 60, 0.6) 0%, rgba(229, 169, 60, 0) 70%);
   border-radius: 50%;
   pointer-events: none;
-  animation: floatPollen var(--duration) linear infinite;
+  animation: floatPollen var(--duration, 20s) linear infinite;
   opacity: 0;
 }
 
@@ -86,20 +97,20 @@ body.menu-open {
     opacity: 0;
   }
   15% {
-    opacity: var(--opacity);
+    opacity: var(--opacity, 0.3);
   }
   85% {
-    opacity: var(--opacity);
+    opacity: var(--opacity, 0.3);
   }
   100% {
-    transform: translateY(-110vh) translateX(var(--drift)) scale(1.3);
+    transform: translateY(-110vh) translateX(var(--drift, 0px)) scale(1.3);
     opacity: 0;
   }
 }
 
-/* Navigáció */
+/* Navigation */
 .main-header {
-  background-color: rgba(18, 10, 5, 0.85);
+  background-color: rgba(18, 10, 5, 0.92);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -107,20 +118,20 @@ body.menu-open {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glow);
-  transition: background-color var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+  transition: var(--transition-smooth);
+  width: 100%;
 }
 
 .nav-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 0;
+  padding: 1rem 0;
   transition: padding var(--transition-smooth);
 }
 
-/* Aktív zsugorodott állapot görgetés hatására */
 .main-header.scrolled {
-  background-color: rgba(12, 6, 3, 0.95);
+  background-color: rgba(12, 6, 3, 0.98);
   box-shadow: var(--shadow-md);
   border-bottom-color: rgba(229, 169, 60, 0.2);
 }
@@ -129,35 +140,19 @@ body.menu-open {
   padding: 0.65rem 0;
 }
 
-/* SKELETON -> VALÓDI TERMÉK ÁTMENET */
-@keyframes gridFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.products-grid.loaded .card {
-  opacity: 0;
-  animation: gridFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.6rem;
   text-decoration: none;
   transition: var(--transition-smooth);
+  z-index: 1005;
 }
 
 .logo-icon {
   color: var(--primary-color);
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,10 +167,10 @@ body.menu-open {
 
 .logo-text {
   font-family: 'Playfair Display', serif;
-  font-size: 1.55rem;
+  font-size: 1.45rem;
   font-weight: 400;
   color: #FFFFFF;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
@@ -186,16 +181,12 @@ body.menu-open {
 
 .logo:hover .logo-icon {
   transform: scale(1.1) rotate(15deg);
-  color: var(--primary-dark);
-}
-
-.logo:hover .logo-text {
-  color: var(--primary-color);
 }
 
 .menu {
   display: flex;
-  gap: 2.2rem;
+  gap: 2rem;
+  align-items: center;
 }
 
 .menu a {
@@ -232,37 +223,45 @@ body.menu-open {
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   z-index: 1010;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .hamburger span {
-  width: 26px;
-  height: 2px;
+  width: 25px;
+  height: 2.5px;
   background-color: var(--text-main);
   transition: var(--transition-smooth);
+  border-radius: 2px;
 }
 
-/* Hero Szekció */
+/* Hero Section */
 .hero {
   position: relative;
   background: url("kepek/hatter.png") center/cover no-repeat;
-  min-height: 80vh;
+  min-height: 75vh;
+  min-height: 75dvh;
   display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
   color: #FFFFFF;
   overflow: hidden;
+  padding: 4rem 0 5rem;
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(18, 10, 5, 0.8) 0%, rgba(18, 10, 5, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(18, 10, 5, 0.85) 0%, rgba(18, 10, 5, 0.6) 100%);
   z-index: 1;
 }
 
@@ -272,7 +271,7 @@ body.menu-open {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 120px;
+  height: 100px;
   background: linear-gradient(to bottom, transparent, var(--bg-light));
   z-index: 2;
   pointer-events: none;
@@ -282,47 +281,55 @@ body.menu-open {
   position: relative;
   z-index: 3;
   max-width: 750px;
+  margin: 0 auto;
 }
 
 .hero h1 {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.1rem, 5.5vw, 3.8rem);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   margin-bottom: 1.2rem;
-  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  word-wrap: break-word;
 }
 
 .hero p {
-  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
   font-weight: 300;
   max-width: 55ch;
-  margin: 0 auto 2.5rem;
+  margin: 0 auto 2.2rem;
   color: var(--text-muted);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  padding: 0 0.5rem;
 }
 
-/* --- HÁROMRÉTEGŰ PRÉMIUM INTERAKTÍV MÉHECSKE DESIGN --- */
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Floating Bee */
 .hero-bee-container {
   position: absolute;
-  top: 22%;
-  right: 12%;
-  width: clamp(70px, 10vw, 105px);
-  height: clamp(70px, 10vw, 105px);
+  top: 15%;
+  right: 8%;
+  width: clamp(55px, 8vw, 90px);
+  height: clamp(55px, 8vw, 90px);
   z-index: 4;
-  pointer-events: auto; /* Aktív interakciók */
+  pointer-events: auto;
   cursor: pointer;
-  filter: drop-shadow(0 4px 12px rgba(229, 169, 60, 0.25));
+  filter: drop-shadow(0 4px 12px rgba(229, 169, 60, 0.3));
+  touch-action: none;
 }
 
-/* Különálló fizikai réteg a passzív lebegéshez (így sosem snappel megálláskor) */
 .floating-bee-drifter {
   width: 100%;
   height: 100%;
   animation: beeFloat 8s ease-in-out infinite;
 }
 
-/* Maga a vektoros ábra a szárnysuhogáshoz és lágy lecsengéshez */
 .floating-bee {
   width: 100%;
   height: 100%;
@@ -331,46 +338,28 @@ body.menu-open {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Passzív lebegő hullámzás külön rétegen */
 @keyframes beeFloat {
-  0%, 100% {
-    transform: translate(0, 0) rotate(6deg);
-  }
-  33% {
-    transform: translate(-15px, -20px) rotate(-4deg);
-  }
-  66% {
-    transform: translate(12px, -10px) rotate(12deg);
-  }
+  0%, 100% { transform: translate(0, 0) rotate(6deg); }
+  33% { transform: translate(-10px, -15px) rotate(-4deg); }
+  66% { transform: translate(10px, -8px) rotate(10deg); }
 }
 
-/* Megijedt, szupergyors rezgés menekülés közben */
-.hero-bee-container.scared .floating-bee {
-  animation: beeScared 0.1s infinite alternate ease-in-out;
-  transition: transform 0.1s ease;
-}
-
-@keyframes beeScared {
-  0% {
-    transform: scale(1.15) rotate(-15deg);
-  }
-  100% {
-    transform: scale(0.9) rotate(15deg);
-  }
-}
-
-/* Gombok */
+/* Buttons */
 .btn-primary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--primary-color);
   color: var(--bg-dark);
   text-decoration: none;
   padding: 0.9rem 2.2rem;
+  min-height: 48px;
   border-radius: 50px;
   font-weight: 700;
   font-size: 0.95rem;
   transition: var(--transition-smooth);
   animation: pulseButton 3.5s infinite alternate ease-in-out;
+  text-align: center;
 }
 
 .btn-primary:hover {
@@ -381,19 +370,15 @@ body.menu-open {
 }
 
 @keyframes pulseButton {
-  0% {
-    box-shadow: 0 4px 14px rgba(229, 169, 60, 0.2);
-  }
-  100% {
-    box-shadow: 0 4px 28px rgba(229, 169, 60, 0.55);
-  }
+  0% { box-shadow: 0 4px 14px rgba(229, 169, 60, 0.2); }
+  100% { box-shadow: 0 4px 28px rgba(229, 169, 60, 0.55); }
 }
 
-/* Reveal on scroll */
+/* Reveal Animation */
 .reveal {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.active {
@@ -401,21 +386,21 @@ body.menu-open {
   transform: translateY(0);
 }
 
-/* Értékeink */
+/* Values */
 .values-section {
-  padding: 6rem 0;
+  padding: 5rem 0;
   background-color: var(--bg-light);
 }
 
 .values-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 2rem;
 }
 
 .value-card {
   text-align: center;
-  padding: 3rem 2rem;
+  padding: 2.5rem 1.8rem;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -430,9 +415,9 @@ body.menu-open {
 }
 
 .value-icon {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 1.8rem;
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 1.5rem;
   background-color: rgba(229, 169, 60, 0.08);
   color: var(--primary-color);
   border-radius: 50%;
@@ -443,20 +428,19 @@ body.menu-open {
 }
 
 .value-icon svg {
-  width: 32px;
-  height: 32px;
-  transition: var(--transition-smooth);
+  width: 30px;
+  height: 30px;
 }
 
 .value-card:hover .value-icon {
   background-color: var(--primary-color);
   color: var(--bg-dark);
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.08) rotate(5deg);
 }
 
 .value-card h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   color: #FFFFFF;
   margin-bottom: 0.8rem;
 }
@@ -466,16 +450,16 @@ body.menu-open {
   color: var(--text-muted);
 }
 
-/* Címek & Dinamikus Vonaldíszítés */
+/* Titles */
 .section-title {
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 3rem;
 }
 
 .section-title h2,
 .about-text h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   color: #FFFFFF;
   margin-bottom: 0.6rem;
@@ -503,18 +487,20 @@ body.menu-open {
 
 .section-title .subtitle {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   font-style: italic;
   margin-top: 0.4rem;
+  max-width: 600px;
+  margin-inline: auto;
 }
 
-/* TÁJÉKOZTATÓ BANNER */
+/* Announcement */
 .bulk-announcement {
-  max-width: 700px;
-  margin: 1.8rem auto 0;
-  padding: 1.2rem 1.6rem;
+  max-width: 760px;
+  margin: 1.5rem auto 0;
+  padding: 1rem 1.4rem;
   background-color: rgba(229, 169, 60, 0.03);
-  border: 1.5px dashed rgba(229, 169, 60, 0.25);
+  border: 2px dashed rgba(229, 169, 60, 0.25);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -523,20 +509,16 @@ body.menu-open {
   transition: var(--transition-smooth);
 }
 
-.bulk-announcement:hover {
-  border-color: rgba(229, 169, 60, 0.4);
-  background-color: rgba(229, 169, 60, 0.05);
-}
-
 .announcement-badge {
   background-color: var(--primary-color);
   color: var(--bg-dark);
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 0.3rem 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.75rem;
   border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .bulk-announcement p {
@@ -545,20 +527,35 @@ body.menu-open {
   margin: 0;
 }
 
-/* Termékek szekció */
+/* Products Section */
 .products-section {
-  padding: 6rem 0;
+  padding: 5rem 0;
   background-color: var(--bg-light);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M14 9.5L0 17.5v16L14 41.5l14-8v-16L14 9.5z' stroke='%23e5a93c' stroke-width='0.6' stroke-opacity='0.08' fill='none'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M14 9.5L0 17.5v16L14 41.5l14-8v-16L14 9.5z' stroke='%23e5a93c' stroke-width='1' stroke-opacity='0.08' fill='none'/%3E%3C/svg%3E");
 }
 
 .products-grid {
   display: grid;
-  gap: 2.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
 }
 
-/* Termékkártya */
+@keyframes gridFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.products-grid.loaded .card {
+  opacity: 0;
+  animation: gridFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -568,10 +565,11 @@ body.menu-open {
   flex-direction: column;
   transition: var(--transition-smooth);
   border: 1px solid var(--border-glow);
+  width: 100%;
 }
 
 .card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
   border-color: rgba(229, 169, 60, 0.25);
 }
@@ -596,25 +594,25 @@ body.menu-open {
 }
 
 .card:hover img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
 .floating-badge-sale {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 12px;
+  right: 12px;
   background-color: var(--accent-color);
   color: #FFFFFF;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 0.4rem 0.8rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 50px;
   box-shadow: 0 4px 10px rgba(240, 122, 93, 0.3);
   z-index: 5;
 }
 
 .card-content {
-  padding: 1.8rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -622,29 +620,91 @@ body.menu-open {
 
 .card-content h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   color: #FFFFFF;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .card-content p {
   font-size: 0.9rem;
   color: var(--text-muted);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
   flex-grow: 1;
+}
+
+/* Card Size Selector */
+.card-size-selector-box {
+  background: rgba(18, 10, 5, 0.45);
+  border: 1px solid rgba(229, 169, 60, 0.15);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  margin-bottom: 1.2rem;
+}
+
+.card-size-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.card-size-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.card-size-btn {
+  background: rgba(229, 169, 60, 0.05);
+  border: 1px solid rgba(229, 169, 60, 0.2);
+  color: var(--text-main);
+  padding: 0.5rem 0.2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  text-align: center;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-size-btn:hover {
+  border-color: var(--primary-color);
+  background: rgba(229, 169, 60, 0.1);
+}
+
+.card-size-btn.active {
+  background: var(--primary-color);
+  color: var(--bg-dark);
+  font-weight: 700;
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(229, 169, 60, 0.3);
 }
 
 .price-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.8rem;
   border-top: 1px solid rgba(229, 169, 60, 0.15);
-  padding-top: 1.1rem;
+  padding-top: 1rem;
 }
 
 .price-container {
   display: flex;
   flex-direction: column;
+}
+
+.price-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 .original-price {
@@ -655,17 +715,55 @@ body.menu-open {
 
 .price {
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: var(--primary-color);
+  line-height: 1.2;
 }
 
 .card.is-sale .price {
   color: var(--accent-color);
 }
 
+.btn-card-order {
+  background-color: var(--primary-color);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 50px;
+  padding: 0.65rem 1.1rem;
+  min-height: 42px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: var(--transition-smooth);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-card-order:hover {
+  background-color: var(--primary-dark);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 169, 60, 0.35);
+}
+
+.btn-card-order svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.25s ease;
+}
+
+.btn-card-order:hover svg {
+  transform: translateX(3px);
+}
+
 .bulk-price-box {
-  margin-top: 1rem;
-  padding: 0.6rem 0.8rem;
+  margin-top: 0.8rem;
+  padding: 0.55rem 0.8rem;
   background-color: rgba(229, 169, 60, 0.04);
   border: 1px dashed rgba(229, 169, 60, 0.2);
   border-radius: var(--radius-md);
@@ -677,6 +775,7 @@ body.menu-open {
 
 .bulk-icon {
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .bulk-text strong {
@@ -701,9 +800,9 @@ body.menu-open {
 .skeleton-text.short { width: 50%; margin-bottom: 2rem; }
 .skeleton-price { height: 24px; width: 35%; margin: 1.5rem; border-radius: 4px; }
 
-/* Mézkalauz Szekció */
+/* Guide Section */
 .guide-section {
-  padding: 7rem 0;
+  padding: 5rem 0;
   background-color: rgba(18, 10, 5, 0.15);
   border-top: 1px solid var(--border-glow);
 }
@@ -716,8 +815,8 @@ body.menu-open {
 .accordion {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
 }
 
 .accordion-item {
@@ -734,18 +833,19 @@ body.menu-open {
 
 .accordion-header {
   width: 100%;
-  padding: 1.3rem 1.6rem;
+  padding: 1.2rem 1.4rem;
   background: none;
   border: none;
   color: #FFFFFF;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   text-align: left;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.8rem;
   transition: var(--transition-smooth);
 }
 
@@ -757,17 +857,18 @@ body.menu-open {
   font-size: 1.3rem;
   color: var(--primary-color);
   transition: var(--transition-smooth);
+  flex-shrink: 0;
 }
 
 .accordion-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 0 1.6rem;
+  padding: 0 1.4rem;
 }
 
 .accordion-content p {
-  padding-bottom: 1.3rem;
+  padding-bottom: 1.2rem;
   font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.65;
@@ -784,29 +885,31 @@ body.menu-open {
 }
 
 .accordion-item.active-item .accordion-content {
-  max-height: 250px;
+  max-height: 350px;
 }
 
-/* Rólunk Szekció */
+/* About Section */
 .about-section {
-  padding: 7rem 0;
+  padding: 5rem 0;
   background-color: rgba(18, 10, 5, 0.2);
 }
 
 .about-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 4rem;
+  gap: 3.5rem;
   align-items: center;
 }
 
 .about-text p {
   margin-bottom: 1.2rem;
   color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .about-image-container {
   position: relative;
+  width: 100%;
 }
 
 .about-image {
@@ -835,35 +938,35 @@ body.menu-open {
 }
 
 .about-image-container:hover .image-border-deco {
-  transform: translate(-8px, -8px);
+  transform: translate(-6px, -6px);
 }
 
-/* Kapcsolat Szekció */
+/* Contact Section */
 .contact-section {
-  padding: 7rem 0;
+  padding: 5rem 0 6rem;
   background-color: var(--bg-light);
   border-top: 1px solid var(--border-glow);
 }
 
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 3.5rem;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 3rem;
   align-items: start;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .info-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1.4rem;
   display: flex;
   align-items: center;
   gap: 1.2rem;
@@ -877,8 +980,8 @@ body.menu-open {
 }
 
 .info-icon {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   background-color: rgba(229, 169, 60, 0.08);
   color: var(--primary-color);
   border-radius: 50%;
@@ -900,7 +1003,7 @@ body.menu-open {
 }
 
 .info-text h4 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #FFFFFF;
   margin-bottom: 0.2rem;
   font-weight: 600;
@@ -924,14 +1027,14 @@ body.menu-open {
 .detail-text {
   font-size: 0.8rem;
   color: var(--text-muted);
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .contact-form-wrapper {
   background-color: var(--bg-card);
   border: 1px solid var(--border-glow);
   border-radius: var(--radius-lg);
-  padding: 2.5rem;
+  padding: 2.2rem;
 }
 
 .contact-form {
@@ -959,13 +1062,13 @@ body.menu-open {
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 1.1rem 1.3rem;
+  padding: 0.9rem 1.1rem;
   border-radius: var(--radius-md);
   border: 1px solid rgba(229, 169, 60, 0.25);
   background-color: var(--bg-card);
   color: var(--text-main);
   font-family: 'Poppins', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1rem; /* 16px to prevent iOS auto zoom */
   transition: var(--transition-smooth);
 }
 
@@ -973,10 +1076,10 @@ body.menu-open {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23E5A93C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 1.3rem center;
-  background-size: 1.2rem;
+  background-position: right 1.1rem center;
+  background-size: 1.1rem;
   cursor: pointer;
-  padding-right: 3rem;
+  padding-right: 2.8rem;
 }
 
 .form-group select option {
@@ -994,16 +1097,22 @@ body.menu-open {
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(229, 169, 60, 0.15);
+  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
 }
 
-/* TERMÉKKALKULÁTOR */
+/* Order Calculator */
 .order-calculator-box {
   background-color: rgba(229, 169, 60, 0.03);
   border: 1px solid rgba(229, 169, 60, 0.15);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
-  margin: 0.5rem 0;
+  padding: 1.4rem;
+  margin: 0.3rem 0;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.order-calculator-box.highlight-pulse {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 25px rgba(229, 169, 60, 0.35);
 }
 
 .calc-title {
@@ -1022,20 +1131,22 @@ body.menu-open {
 .calc-row {
   display: flex;
   gap: 0.8rem;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .calc-row .select-group {
-  flex-grow: 2;
+  flex: 1 1 auto;
 }
 
 .calc-row .qty-group {
-  width: 110px;
+  width: 125px;
+  flex-shrink: 0;
 }
 
 .btn-calc-wrapper {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .label-spacer {
@@ -1044,15 +1155,19 @@ body.menu-open {
 
 .btn-calc-add {
   background-color: transparent;
-  border: 1px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
   color: var(--primary-color);
-  padding: 1.05rem 1.4rem;
+  padding: 0.85rem 1.2rem;
+  min-height: 48px;
   border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   white-space: nowrap;
   transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-calc-add:hover {
@@ -1060,7 +1175,7 @@ body.menu-open {
   color: var(--bg-dark);
 }
 
-/* KISZERELÉS VÁLASZTÓ */
+/* Options */
 .calc-options-row {
   margin-top: 1rem;
   padding: 1rem;
@@ -1069,7 +1184,7 @@ body.menu-open {
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.8rem;
   text-align: left;
 }
 
@@ -1081,7 +1196,7 @@ body.menu-open {
 
 .calc-radio-group {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 
@@ -1092,13 +1207,61 @@ body.menu-open {
   font-size: 0.88rem;
   color: var(--text-main);
   cursor: pointer;
+  min-height: 32px;
 }
 
 .calc-radio-label input[type="radio"] {
   accent-color: var(--primary-color);
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+}
+
+/* Jar Size Pills */
+.jar-size-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.size-pill-label {
+  cursor: pointer;
+  display: block;
+}
+
+.size-pill-label input[type="radio"] {
+  display: none;
+}
+
+.size-pill-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.4rem;
+  background-color: rgba(18, 10, 5, 0.5);
+  border: 1px solid rgba(229, 169, 60, 0.2);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+  min-height: 52px;
+}
+
+.size-pill-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.size-pill-price {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+.size-pill-label input[type="radio"]:checked + .size-pill-content {
+  background-color: rgba(229, 169, 60, 0.15);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(229, 169, 60, 0.2);
 }
 
 .bulk-min-info {
@@ -1108,9 +1271,9 @@ body.menu-open {
   margin: 0;
 }
 
-/* KOSÁR LISTÁZÁS */
+/* Cart */
 .calc-cart-container {
-  margin-top: 1.5rem;
+  margin-top: 1.4rem;
   border-top: 1px dashed rgba(229, 169, 60, 0.2);
   padding-top: 1.2rem;
 }
@@ -1126,13 +1289,13 @@ body.menu-open {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.8rem;
   font-size: 0.88rem;
-  background-color: rgba(229, 169, 60, 0.03); 
-  padding: 0.75rem 1.1rem;
+  background-color: rgba(229, 169, 60, 0.03);
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(229, 169, 60, 0.15); 
+  border: 1px solid rgba(229, 169, 60, 0.15);
   transition: var(--transition-smooth);
-  line-height: 1; 
 }
 
 .cart-item:hover {
@@ -1140,26 +1303,25 @@ body.menu-open {
   border-color: rgba(229, 169, 60, 0.3);
 }
 
-.cart-item span {
+.cart-item-name {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  line-height: 1;
-  transform: translateY(1px); 
+  gap: 0.5rem;
+  word-break: break-word;
 }
 
-.cart-item span::before {
+.cart-item-name::before {
   content: "✦";
   color: var(--primary-color);
-  font-size: 0.8rem;
-  line-height: 1;
-  display: inline-block;
-  transform: translateY(-1px); 
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
-.cart-item strong {
-  line-height: 1;
-  transform: translateY(1px); 
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-shrink: 0;
 }
 
 .cart-item-remove {
@@ -1167,8 +1329,8 @@ body.menu-open {
   border: 1px solid rgba(240, 122, 93, 0.25);
   color: var(--accent-color);
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1185,8 +1347,8 @@ body.menu-open {
 }
 
 .cart-item-remove svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 .cart-summary {
@@ -1199,7 +1361,7 @@ body.menu-open {
   color: var(--primary-color);
 }
 
-/* DINAMIKUS E-MAIL ELŐNÉZET */
+/* Email Preview */
 .email-preview-box {
   background-color: rgba(18, 10, 5, 0.4);
   border: 1px solid rgba(229, 169, 60, 0.15);
@@ -1220,7 +1382,7 @@ body.menu-open {
   top: -10px;
   left: 15px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .preview-content {
@@ -1228,17 +1390,18 @@ body.menu-open {
   font-size: 0.82rem;
   color: var(--text-muted);
   white-space: pre-wrap;
+  word-break: break-word;
   margin: 0.5rem 0 0 0;
   line-height: 1.5;
-  overflow-x: auto;
 }
 
-/* Beküldő gomb pulsálás */
+/* Submit */
 .btn-submit {
   background-color: var(--primary-color);
   color: var(--bg-dark);
   border: none;
-  padding: 1.1rem;
+  padding: 1rem;
+  min-height: 52px;
   border-radius: 50px;
   font-weight: 700;
   font-size: 1rem;
@@ -1246,11 +1409,20 @@ body.menu-open {
   transition: var(--transition-smooth);
   box-shadow: 0 4px 15px rgba(229, 169, 60, 0.2);
   animation: pulseButton 3.5s infinite alternate ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .btn-submit:hover {
   background-color: var(--primary-dark);
   color: #FFFFFF;
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .form-feedback {
@@ -1269,13 +1441,20 @@ body.menu-open {
   font-weight: 600;
 }
 
-/* Vissza a tetejére gomb */
+.form-feedback.error {
+  opacity: 1;
+  transform: translateY(0);
+  color: #E57373;
+  font-weight: 600;
+}
+
+/* Back to top */
 .back-to-top {
   position: fixed;
   bottom: 25px;
-  right: 25px;
-  width: 45px;
-  height: 45px;
+  right: 20px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background-color: var(--primary-color);
   color: var(--bg-dark);
@@ -1287,13 +1466,13 @@ body.menu-open {
   z-index: 99;
   opacity: 0;
   visibility: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: var(--transition-smooth);
 }
 
 .back-to-top svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .back-to-top:hover {
@@ -1308,17 +1487,13 @@ body.menu-open {
 }
 
 @keyframes bounceBackToTop {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Footer */
 .main-footer {
-  padding: 2.5rem 0;
+  padding: 2.5rem 0 calc(2.5rem + env(safe-area-inset-bottom));
   background-color: var(--bg-dark);
   border-top: 1px solid var(--border-glow);
   text-align: center;
@@ -1326,236 +1501,57 @@ body.menu-open {
   color: var(--text-muted);
 }
 
-/* FÉNY-DERENGÉS (SPOTLIGHT EFFECT) */
-.card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .email-preview-box {
-  position: relative;
-}
-
-.card::before, 
-.value-card::before, 
-.accordion-item::before,
-.info-card::before,
-.contact-form-wrapper::before,
-.order-calculator-box::before,
-.email-preview-box::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: radial-gradient(350px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(229, 169, 60, 0.08), transparent 80%);
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-.card > *, 
-.value-card > *, 
-.accordion-item > *,
-.info-card > *,
-.contact-form-wrapper > *,
-.order-calculator-box > *,
-.email-preview-box > * {
-  position: relative;
-  z-index: 2;
-}
-
-.card-img-wrapper {
-  z-index: 1;
-}
-
-.card:hover::before, 
-.value-card:hover::before, 
-.accordion-item:hover::before,
-.info-card:hover::before,
-.contact-form-wrapper:hover::before,
-.order-calculator-box:hover::before,
-.email-preview-box:hover::before {
-  opacity: 1;
-}
-
-/* Mobil / Responsive */
-@media (max-width: 992px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-  .image-border-deco {
-    display: none;
-  }
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-  .contact-form-wrapper {
-    padding: 2rem 1.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
+/* Spotlight Effect for Desktops */
+@media (hover: hover) {
+  .card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .email-preview-box {
+    position: relative;
   }
 
-  .menu {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    flex-direction: column;
-    background-color: var(--bg-dark);
-    padding: 3rem 2rem;
-    gap: 2rem;
-    text-align: center;
+  .card::before,
+  .value-card::before,
+  .accordion-item::before,
+  .info-card::before,
+  .contact-form-wrapper::before,
+  .order-calculator-box::before,
+  .email-preview-box::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(229, 169, 60, 0.08), transparent 80%);
+    z-index: 0;
     opacity: 0;
-    visibility: hidden;
-    transform: translateY(15px);
-    transition: var(--transition-smooth);
-    z-index: 1000;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
   }
 
-  .menu.open {
+  .card > *,
+  .value-card > *,
+  .accordion-item > *,
+  .info-card > *,
+  .contact-form-wrapper > *,
+  .order-calculator-box > *,
+  .email-preview-box > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-img-wrapper {
+    z-index: 1;
+  }
+
+  .card:hover::before,
+  .value-card:hover::before,
+  .accordion-item:hover::before,
+  .info-card:hover::before,
+  .contact-form-wrapper:hover::before,
+  .order-calculator-box:hover::before,
+  .email-preview-box:hover::before {
     opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .hamburger.active span:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-  .hamburger.active span:nth-child(2) {
-    opacity: 0;
-  }
-  .hamburger.active span:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-
-  .bulk-announcement {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .form-row-grid {
-    grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 576px) {
-  .calc-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .calc-row .qty-group {
-    width: 100%;
-  }
-  .btn-calc-wrapper {
-    width: 100%;
-  }
-  .btn-calc-add {
-    width: 100%;
-    padding: 1.1rem;
-  }
-  .label-spacer {
-    display: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .hero-title-nowrap {
-    white-space: nowrap;
-  }
-}
-
-/* TOAST ÉRTESÍTÉSEK */
-.toast-container {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  pointer-events: none;
-  max-width: 380px;
-  width: calc(100% - 48px);
-}
-
-.toast {
-  background-color: rgba(18, 10, 5, 0.95); 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--text-main);
-  padding: 1rem 1.4rem;
-  border-radius: var(--radius-md);
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  pointer-events: auto;
-  opacity: 0;
-  transform: translateX(50px);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.toast-icon {
-  font-size: 1.15rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.toast-text {
-  line-height: 1.4;
-}
-
-.toast-warning {
-  border: 1px solid rgba(240, 122, 93, 0.35);
-  box-shadow: 0 10px 30px rgba(240, 122, 93, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-.toast-warning .toast-icon {
-  color: var(--accent-color);
-}
-
-.toast-error {
-  border: 1px solid rgba(229, 115, 115, 0.35);
-  box-shadow: 0 10px 30px rgba(229, 115, 115, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-.toast-error .toast-icon {
-  color: #E57373;
-}
-
-.toast-success {
-  border: 1px solid rgba(129, 199, 132, 0.35);
-  box-shadow: 0 10px 30px rgba(129, 199, 132, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-.toast-success .toast-icon {
-  color: #81C784;
-}
-
-/* Mobil optimalizálás */
-@media (max-width: 576px) {
-  .toast-container {
-    top: auto;
-    bottom: 24px;
-    right: 12px;
-    left: 12px;
-    width: auto;
-    max-width: none;
-  }
-  .toast {
-    transform: translateY(20px);
-  }
-  .toast.show {
-    transform: translateY(0);
-  }
-}
-
+/* Number inputs and steppers */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -1573,22 +1569,24 @@ input[type=number] {
   border: 1px solid rgba(229, 169, 60, 0.25);
   border-radius: var(--radius-md);
   overflow: hidden;
+  height: 48px;
   transition: var(--transition-smooth);
 }
 
 .qty-control:focus-within {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(229, 169, 60, 0.15);
+  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
 }
 
 .qty-control input {
   width: 100% !important;
-  min-width: 40px;
+  min-width: 36px;
   border: none !important;
   background: transparent !important;
-  padding: 0.8rem 0.2rem !important;
+  padding: 0 !important;
   text-align: center;
   font-weight: 600;
+  font-size: 1rem !important;
   color: var(--text-main);
   box-shadow: none !important;
 }
@@ -1597,22 +1595,239 @@ input[type=number] {
   background: transparent;
   border: none;
   color: var(--primary-color);
-  width: 38px;
+  width: 40px;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: var(--transition-smooth);
   user-select: none;
+  touch-action: manipulation;
 }
 
 .qty-btn:hover {
-  background-color: rgba(229, 169, 60, 0.08);
+  background-color: rgba(229, 169, 60, 0.1);
   color: #FFFFFF;
 }
 
-.qty-btn:active {
-  background-color: rgba(229, 169, 60, 0.15);
+/* Toast */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 380px;
+  width: calc(100% - 40px);
+}
+
+.toast {
+  background-color: rgba(18, 10, 5, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-main);
+  padding: 0.9rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.toast-warning {
+  border: 1px solid rgba(240, 122, 93, 0.35);
+}
+.toast-warning .toast-icon { color: var(--accent-color); }
+
+.toast-error {
+  border: 1px solid rgba(229, 115, 115, 0.35);
+}
+.toast-error .toast-icon { color: #E57373; }
+
+.toast-success {
+  border: 1px solid rgba(129, 199, 132, 0.35);
+}
+.toast-success .toast-icon { color: #81C784; }
+
+/* ==========================================================================
+   RESPONSIVE MÉDIA LEKÉRDEZÉSEK
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .image-border-deco {
+    display: none;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .contact-form-wrapper {
+    padding: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(12, 6, 3, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 3rem 2rem;
+    gap: 2rem;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    transition: var(--transition-smooth);
+    z-index: 1000;
+  }
+
+  .menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .menu a {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .hamburger.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+  .hamburger.active span:nth-child(2) { opacity: 0; }
+  .hamburger.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+  .bulk-announcement {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .form-row-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .hero-bee-container {
+    right: 4%;
+    top: 10%;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    width: 92%;
+  }
+
+  .contact-form-wrapper {
+    padding: 1.2rem;
+  }
+
+  .order-calculator-box {
+    padding: 1.1rem;
+  }
+
+  .calc-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .calc-row .qty-group,
+  .btn-calc-wrapper,
+  .btn-calc-add {
+    width: 100%;
+  }
+
+  .label-spacer {
+    display: none;
+  }
+
+  .jar-size-selector {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .size-pill-content {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    min-height: 42px;
+  }
+
+  .price-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+
+  .price-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .btn-card-order {
+    width: 100%;
+  }
+
+  .toast-container {
+    top: auto;
+    bottom: 80px;
+    right: 15px;
+    left: 15px;
+    width: auto;
+    max-width: none;
+  }
+
+  .toast {
+    transform: translateY(20px);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+  }
+
+  .back-to-top {
+    bottom: 20px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+  }
 }
