@@ -6,7 +6,7 @@
   <title>Mikló – Prémium Családi Méhészet</title>
 
   <!-- SEO Meta adatok -->
-  <meta name="description" content="Mikló - Prémium kézműves családi méhészet az Alföld szívéből. 100% nyers és tiszta napraforgó méz, akác méz és repce méz 250g, 500g és 900g kiszerelésben, valamint kedvező nagytételű árakon közvetlenül a termelőtől." />
+  <meta name="description" content="Mikló - Prémium kézműves családi méhészet az Alföld szívéből. 100% nyers és tiszta napraforgó méz, akác méz és repce méz 250g, 500g és 900g kiszerelésben, közvetlen SimplePay bankkártyás fizetéssel és automatikus számlázással." />
   <meta name="theme-color" content="#120A05" />
 
   <!-- Google Fonts -->
@@ -61,7 +61,7 @@
       <a href="#products" class="nav-link">Kínálatunk</a>
       <a href="#guide" class="nav-link">Mézkalauz</a>
       <a href="#about" class="nav-link">Rólunk</a>
-      <a href="#contact" class="nav-link">Kapcsolat</a>
+      <a href="#contact" class="nav-link">Rendelés</a>
     </nav>
 
     <!-- Fejléc jobb oldali szekció: Közösségi ikonok & Hamburger -->
@@ -185,7 +185,7 @@
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" id="productSearchInput" placeholder="Keresés név vagy ízvilág szerint (pl. akác, repce, sütéshez)..." aria-label="Mézek keresése" />
+        <input type="text" id="productSearchInput" placeholder="Keresés név vagy ízvilág szerint (pl. akác, repce, hárs)..." aria-label="Mézek keresése" />
         <button type="button" id="clearSearchBtn" class="clear-search-btn" aria-label="Keresés törlése">&times;</button>
       </div>
     </div>
@@ -226,7 +226,7 @@
   </div>
 </section>
 
-<!-- Mézkalauz szekció (Prémium Glowing Háttérrel) -->
+<!-- Mézkalauz szekció -->
 <section id="guide" class="guide-section reveal">
   <div class="container guide-wrapper">
     <div class="section-title">
@@ -268,7 +268,7 @@
   </div>
 </section>
 
-<!-- Rólunk szekció (Prémium Honey Chamber Háttérrel) -->
+<!-- Rólunk szekció -->
 <section id="about" class="about-section reveal">
   <div class="container about-grid">
     <div class="about-text">
@@ -278,17 +278,27 @@
     </div>
     <div class="about-image-container">
       <div class="image-border-deco"></div>
-      <img src="https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg" alt="Méhész munka közben az Alföldön" class="about-image" loading="lazy" />
+      <img src="kepek/akacmez.jpg" alt="Méhész munka közben az Alföldön" class="about-image" loading="lazy" />
     </div>
   </div>
 </section>
 
-<!-- Kapcsolat & Rendelés szekció -->
+<!-- Kapcsolat & Rendelés szekció (SimplePay & Billingo integrációval) -->
 <section id="contact" class="contact-section reveal">
   <div class="container">
     <div class="section-title">
-      <h2>Kapcsolatfelvétel & Megrendelés</h2>
-      <p class="subtitle">Állítsa össze rendelését, és a mézeket személyesen juttatjuk el Önhöz!</p>
+      <h2>Biztonságos Online Megrendelés</h2>
+      <p class="subtitle">Állítsa össze rendelését, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát!</p>
+    </div>
+
+    <!-- Fizetési visszajelzés szalagok SimplePay után -->
+    <div id="paymentAlertSuccess" class="payment-alert success" style="display: none;">
+      <h3>🎉 Sikeres fizetés!</h3>
+      <p>Köszönjük a megrendelést! A tranzakció sikeres volt. A Billingo által kiállított hivatalos e-számlát és a rendelés részleteit elküldtük az Ön e-mail címére.</p>
+    </div>
+    <div id="paymentAlertFailed" class="payment-alert error" style="display: none;">
+      <h3>⚠️ A fizetés megszakadt vagy sikertelen volt</h3>
+      <p>A bankkártyás fizetési folyamat nem fejeződött be. Kérjük, próbálja meg újra, vagy válasszon másik kártyát!</p>
     </div>
 
     <div class="contact-grid">
@@ -314,8 +324,8 @@
           </div>
           <div class="info-text">
             <h4>E-mail cím</h4>
-            <p><a href="mailto:info@miveskaptar.hu">info@miveskaptar.hu</a></p>
-            <span class="detail-text">(Egyedi kérések és kiszállítási egyeztetés)</span>
+            <p><a href="mailto:info@miklomez.hu">info@miklomez.hu</a></p>
+            <span class="detail-text">(Ügyfélszolgálat & nagykereskedelem)</span>
           </div>
         </div>
 
@@ -328,8 +338,17 @@
           </div>
           <div class="info-text">
             <h4>Helyszín</h4>
-            <p>Alföld, Magyarország<br><span class="detail-text">(Személyes átvétel és kiszállítás egyeztetéssel)</span></p>
+            <p>Alföld, Magyarország<br><span class="detail-text">(Személyes átvétel és MPL kiszállítás)</span></p>
           </div>
+        </div>
+
+        <!-- Fizetési és Számlázási megbízhatósági blokk -->
+        <div class="payment-trust-card">
+          <div class="trust-logos">
+            <span class="trust-badge simplepay">OTP SimplePay Garancia</span>
+            <span class="trust-badge billingo">Billingo NAV E-számla</span>
+          </div>
+          <p class="trust-desc">A fizetés 256 bites banki titkosítással ellátott felületen zajlik. Kártyaadatait weboldalunk nem látja és nem tárolja.</p>
         </div>
 
         <!-- Közösségi oldalak -->
@@ -355,34 +374,67 @@
       <!-- Űrlap és Kalkulátor -->
       <div class="contact-form-wrapper">
         <form class="contact-form" id="contactForm">
-          <input type="hidden" id="formattedOrder" name="Megrendeles_Reszletei" />
+          <!-- Számlázási típus -->
+          <div class="customer-type-selector">
+            <label class="radio-label">
+              <input type="radio" name="customerType" value="individual" checked id="typeIndividual" />
+              <span>Magánszemélyként vásárolok</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="customerType" value="company" id="typeCompany" />
+              <span>Cégként vásárolok</span>
+            </label>
+          </div>
 
           <div class="form-row-grid">
             <div class="form-group">
-              <label for="name" class="form-label">Az Ön neve *</label>
+              <label for="name" class="form-label" id="nameLabel">Teljes Név *</label>
               <input type="text" id="name" name="name" placeholder="Pl. Minta János" autocomplete="name" required />
             </div>
             <div class="form-group">
-              <label for="email" class="form-label">Az Ön e-mail címe *</label>
+              <label for="email" class="form-label">E-mail cím (ide érkezik az e-számla) *</label>
               <input type="email" id="email" name="email" placeholder="Pl. minta.janos@gmail.com" autocomplete="email" required />
+            </div>
+          </div>
+
+          <!-- Céges mezők (Billingo kötelező adatok) -->
+          <div class="form-row-grid company-fields" id="companyFields" style="display: none;">
+            <div class="form-group">
+              <label for="companyName" class="form-label">Cégnév *</label>
+              <input type="text" id="companyName" name="companyName" placeholder="Pl. Minta Kft." />
+            </div>
+            <div class="form-group">
+              <label for="taxNumber" class="form-label">Adószám *</label>
+              <input type="text" id="taxNumber" name="taxNumber" placeholder="Pl. 12345678-2-42" />
             </div>
           </div>
 
           <div class="form-row-grid">
             <div class="form-group">
-              <label for="phone" class="form-label">Az Ön telefonszáma *</label>
+              <label for="phone" class="form-label">Telefonszám *</label>
               <input type="tel" id="phone" name="phone" placeholder="Pl. 06 20 123 4567" autocomplete="tel" required />
             </div>
             <div class="form-group">
-              <label for="address" class="form-label">Pontos kiszállítási cím *</label>
-              <input type="text" id="address" name="address" placeholder="Pl. 4024 Debrecen, Kossuth Lajos utca 12." autocomplete="street-address" required />
+              <label for="zip" class="form-label">Irányítószám *</label>
+              <input type="text" id="zip" name="zip" placeholder="Pl. 4024" maxlength="4" required />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="city" class="form-label">Település *</label>
+              <input type="text" id="city" name="city" placeholder="Pl. Debrecen" required />
+            </div>
+            <div class="form-group">
+              <label for="address" class="form-label">Utca, házszám, emelet/ajtó *</label>
+              <input type="text" id="address" name="address" placeholder="Pl. Kossuth Lajos utca 12. 2/4." autocomplete="street-address" required />
             </div>
           </div>
 
           <!-- Termékkalkulátor -->
           <div class="order-calculator-box" id="orderCalculatorBox">
-            <h4 class="calc-title">Személyes megrendelés összeállítása</h4>
-            <p class="calc-subtitle">Válassza ki a kívánt mézet és az üvegméretet (250g, 500g vagy 900g):</p>
+            <h4 class="calc-title">Rendelés összeállítása</h4>
+            <p class="calc-subtitle">Válassza ki a mézet és az üvegméretet:</p>
 
             <div class="calc-row">
               <div class="form-group select-group">
@@ -392,11 +444,11 @@
                 </select>
               </div>
               <div class="form-group qty-group">
-                <label for="productQty" class="form-label" id="qtyLabel">Mennyiség (db)</label>
+                <label for="productQty" class="form-label" id="qtyLabel">Mennyiség</label>
                 <div class="qty-control">
-                  <button type="button" class="qty-btn qty-minus" aria-label="Mennyiség csökkentése">-</button>
+                  <button type="button" class="qty-btn qty-minus" aria-label="Csökkentés">-</button>
                   <input type="number" id="productQty" min="1" value="1" inputmode="numeric" />
-                  <button type="button" class="qty-btn qty-plus" aria-label="Mennyiség növelése">+</button>
+                  <button type="button" class="qty-btn qty-plus" aria-label="Növelés">+</button>
                 </div>
               </div>
               <div class="btn-calc-wrapper">
@@ -439,24 +491,35 @@
             <div class="calc-cart-container" id="cartContainer" style="display: none;">
               <ul class="cart-list" id="cartList"></ul>
               <div class="cart-summary">
-                <span>Várható végösszeg:</span>
+                <span>Fizetendő végösszeg:</span>
                 <strong id="cartTotal">0 Ft</strong>
               </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="message" class="form-label">Egyéb megjegyzések (opcionális)</label>
-            <textarea id="message" name="message" placeholder="Pl. preferált kiszállítási időpontok, kapucsengő, stb." rows="4"></textarea>
+            <label for="message" class="form-label">Megjegyzés a futárnak / méhésznek (opcionális)</label>
+            <textarea id="message" name="message" placeholder="Pl. kapucsengő, szállítási megjegyzés..." rows="3"></textarea>
           </div>
 
-          <!-- E-mail előnézet -->
-          <div class="email-preview-box" id="emailPreviewBox" style="display: none;">
-            <span class="preview-badge">Megrendelés e-mail előnézete</span>
-            <pre class="preview-content" id="emailPreviewContent"></pre>
+          <!-- SimplePay Kötelező Adattovábbítási Nyilatkozat -->
+          <div class="form-legal-box">
+            <label class="checkbox-label">
+              <input type="checkbox" id="simplepayConsent" required />
+              <span class="legal-text">
+                Elfogadom a(z) <a href="#" target="_blank">ÁSZF</a>-et és az <a href="#" target="_blank">Adatkezelési tájékoztatót</a>, valamint tudomásul veszem, hogy a személyes adataim átadásra kerülnek az <strong>OTP Mobil Kft. (SimplePay)</strong>, mint adatfeldolgozó részére.
+              </span>
+            </label>
           </div>
 
-          <button type="submit" class="btn-submit" id="submitBtn">Üzenet és megrendelés elküldése</button>
+          <!-- Megrendelés gomb SimplePay logóval -->
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>Tovább a biztonságos SimplePay fizetéshez</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="submit-arrow-icon">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </form>
         <div id="formFeedback" class="form-feedback" aria-live="polite"></div>
       </div>
@@ -484,7 +547,7 @@
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-.87-.07z"/></svg>
       </a>
     </div>
-    <p>&copy; <span id="currentYear">2026</span> Mikló Méhészet. Minden jog fenntartva.</p>
+    <p>&copy; <span id="currentYear">2026</span> Mikló Méhészet. Minden jog fenntartva. | Biztonságos SimplePay fizetés & Billingo NAV számlázás.</p>
   </div>
 </footer>
 

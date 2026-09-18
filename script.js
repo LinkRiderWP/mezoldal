@@ -1,4 +1,6 @@
-// Globális állapotok
+// ==========================================
+// GLOBÁLIS ÁLLAPOTOK ÉS KOSÁR INICIALIZÁLÁS
+// ==========================================
 let loadedProducts = [];
 let cart = [];
 
@@ -16,19 +18,12 @@ try {
   cart = [];
 }
 
-// Segédfüggvény árszövegek / számok feldolgozására
-function parsePrice(val) {
-  if (typeof val === "number") return val;
-  if (!val) return 0;
-  return parseInt(String(val).replace(/[^0-9]/g, ""), 10) || 0;
-}
-
-// Termékkészlet pontos árakkal, üvegméretekkel és nagytétel árakkal
+// Termékkészlet pontos árakkal, helyi képekkel és nagytétel árakkal
 const fallbackProducts = [
   {
     cim: "Napraforgó méz",
     leiras: "Intenzív aranysárga színű, gazdag ízvilágú különlegesség, amely kristályos textúrájával, klasszikus ízével tökéletes választás reggelikhez, teák ízesítéséhez és süteményekhez.",
-    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/napraforgomez.jpg",
+    kep: "kepek/mez.jpg",
     arak: { "250g": 990, "500g": 1790, "900g": 2890 },
     discountPercentage: 0,
     isSale: false,
@@ -38,7 +33,7 @@ const fallbackProducts = [
   {
     cim: "Akácméz",
     leiras: "Világos színű, lágy ízű mézkülönlegesség, amely hosszan megőrzi folyékony állagát – tökéletes választás mindennapi édesítéshez vagy akár ajándékba is.",
-    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg",
+    kep: "kepek/akacmez.jpg",
     arak: { "250g": 1890, "500g": 2590, "900g": 3500 },
     discountPercentage: 25,
     isSale: true,
@@ -48,15 +43,28 @@ const fallbackProducts = [
   {
     cim: "Repceméz",
     leiras: "Krémes állagú, enyhén fanyar ízű méz, amely finomszemcsésen kristályosodik – kiváló választás reggelihez, pirítósra kenve vagy teába keverve.",
-    kep: "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/repcemez.jpg",
+    kep: "kepek/repcemez.jpg",
     arak: { "250g": 1190, "500g": 1990, "900g": 2500 },
     discountPercentage: 0,
     isSale: false,
     nagy_tetel_ar: "1900 Ft / kg",
     nagy_tetel_minimum: "min. 10 kg"
+  },
+  {
+    cim: "Hársméz",
+    leiras: "Erőteljes, rendkívül aromás, fűszeres illatú igazi gyógyító mézkülönlegesség. Természetes nyugtató hatású, megfázásos tünetek enyhítésére és alvászavarok ellen kiváló.",
+    kep: "kepek/harsmez.jpg",
+    arak: { "250g": 1490, "500g": 2290, "900g": 3100 },
+    discountPercentage: 0,
+    isSale: false,
+    nagy_tetel_ar: "2400 Ft / kg",
+    nagy_tetel_minimum: "min. 10 kg"
   }
 ];
 
+// ==========================================
+// DOM READY & FUNKCIÓK INDÍTÁSA
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   initAmbientPollen();
   initInteractiveBee();
@@ -64,21 +72,71 @@ document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
   initHeaderScroll();
   loadHoneyProducts();
-  initContactForm();
+  initOrderAndSimplePay();
   initBackToTop();
   initActiveNavObserver();
   initAccordion();
   initCardGlow();
-  initCalculatorAndPreview();
+  initCalculatorAndCart();
   initQtyButtons();
   initProductSearch();
+  initCustomerTypeToggle();
+  checkPaymentStatusParams();
 
   const yearEl = document.getElementById("currentYear");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
 
 /**
- * Lebegő virágpor háttér
+ * 1. SimplePay visszatérés figyelése az URL-ből (?payment=success / ?payment=failed)
+ */
+function checkPaymentStatusParams() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("payment");
+  const alertSuccess = document.getElementById("paymentAlertSuccess");
+  const alertFailed = document.getElementById("paymentAlertFailed");
+
+  if (status === "success") {
+    if (alertSuccess) alertSuccess.style.display = "block";
+    localStorage.removeItem("miklomez_cart");
+    cart = [];
+    if (typeof window.renderCartApp === "function") window.renderCartApp();
+    showToast("A fizetés sikeres volt! A Billingo e-számlát elküldtük e-mailben.", "success");
+  } else if (status === "failed") {
+    if (alertFailed) alertFailed.style.display = "block";
+    showToast("A fizetés sikertelen volt. Kérjük próbálja meg újra!", "error");
+  }
+}
+
+/**
+ * 2. Vevő típusa választó (Magánszemély / Céges számla adószámmal)
+ */
+function initCustomerTypeToggle() {
+  const indRadio = document.getElementById("typeIndividual");
+  const compRadio = document.getElementById("typeCompany");
+  const compFields = document.getElementById("companyFields");
+  const nameLabel = document.getElementById("nameLabel");
+  const compNameInput = document.getElementById("companyName");
+  const taxInput = document.getElementById("taxNumber");
+
+  if (!indRadio || !compRadio || !compFields) return;
+
+  function updateFields() {
+    const isComp = compRadio.checked;
+    compFields.style.display = isComp ? "grid" : "none";
+    if (nameLabel) {
+      nameLabel.textContent = isComp ? "Kapcsolattartó neve *" : "Teljes Név *";
+    }
+    if (compNameInput) compNameInput.required = isComp;
+    if (taxInput) taxInput.required = isComp;
+  }
+
+  indRadio.addEventListener("change", updateFields);
+  compRadio.addEventListener("change", updateFields);
+}
+
+/**
+ * 3. Lebegő virágpor háttéranimáció
  */
 function initAmbientPollen() {
   const container = document.getElementById("ambientParticles");
@@ -111,14 +169,14 @@ function initAmbientPollen() {
 }
 
 /**
- * Lebegő interaktív méhecske
+ * 4. Interaktív fizikai méhecske
  */
 function initInteractiveBee() {
-  const bee = document.querySelector('.hero-bee-container');
-  const hero = document.querySelector('.hero');
+  const bee = document.querySelector(".hero-bee-container");
+  const hero = document.querySelector(".hero");
   if (!bee || !hero) return;
 
-  bee.style.transition = 'none';
+  bee.style.transition = "none";
 
   let currentX = 0, currentY = 0;
   let vx = 0, vy = 0;
@@ -134,7 +192,7 @@ function initInteractiveBee() {
     const heroRect = hero.getBoundingClientRect();
     heroWidth = heroRect.width;
     heroHeight = heroRect.height;
-    bee.style.transform = 'none';
+    bee.style.transform = "none";
     const beeRect = bee.getBoundingClientRect();
     homeX = (beeRect.left + beeRect.width / 2) - heroRect.left;
     homeY = (beeRect.top + beeRect.height / 2) - heroRect.top;
@@ -142,7 +200,7 @@ function initInteractiveBee() {
   }
 
   calculateLayout();
-  window.addEventListener('resize', calculateLayout);
+  window.addEventListener("resize", calculateLayout);
 
   const updateMouseCoords = (e) => {
     const rect = hero.getBoundingClientRect();
@@ -153,10 +211,10 @@ function initInteractiveBee() {
     isMouseNear = true;
   };
 
-  hero.addEventListener('mousemove', updateMouseCoords, { passive: true });
-  hero.addEventListener('mouseleave', () => { isMouseNear = false; });
+  hero.addEventListener("mousemove", updateMouseCoords, { passive: true });
+  hero.addEventListener("mouseleave", () => { isMouseNear = false; });
 
-  bee.addEventListener('click', (e) => {
+  bee.addEventListener("click", (e) => {
     e.preventDefault();
     const padding = 40;
     const targetAbsX = padding + Math.random() * (heroWidth - 2 * padding);
@@ -240,7 +298,7 @@ function initInteractiveBee() {
 }
 
 /**
- * Scroll Reveal
+ * 5. Görgetésre aktiválódó elemek (Scroll Reveal)
  */
 function initScrollReveal() {
   const revealElements = document.querySelectorAll(".reveal");
@@ -257,7 +315,7 @@ function initScrollReveal() {
 }
 
 /**
- * Mobil Menü
+ * 6. Mobil Menü Kezelése
  */
 function initMobileMenu() {
   const hamburger = document.getElementById("hamburger");
@@ -282,9 +340,7 @@ function initMobileMenu() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && menu.classList.contains("open")) {
-      toggle(false);
-    }
+    if (e.key === "Escape" && menu.classList.contains("open")) toggle(false);
   });
 
   document.addEventListener("click", (e) => {
@@ -304,7 +360,7 @@ function initHeaderScroll() {
 }
 
 /**
- * Termékek betöltése és renderelése (Valós nagytétel árral)
+ * 7. Termékek betöltése és renderelése
  */
 async function loadHoneyProducts() {
   const productsGrid = document.getElementById("productsGrid");
@@ -345,8 +401,8 @@ async function loadHoneyProducts() {
             <span class="price-sub">Kiválasztott ár:</span>
             <span class="price card-display-price">${price900.toLocaleString('hu-HU')} Ft</span>
           </div>
-          <button type="button" class="btn-card-order" data-index="${index}" data-size="900g" aria-label="${product.cim} megrendelése">
-            <span>Megrendelem</span>
+          <button type="button" class="btn-card-order" data-index="${index}" data-size="900g" aria-label="${product.cim} kosárba tétele">
+            <span>Kosárba</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -373,7 +429,7 @@ async function loadHoneyProducts() {
 }
 
 /**
- * Kártyákon belüli méretváltás
+ * 8. Kártyán belüli méretváltások
  */
 function initCardInteractions() {
   document.querySelectorAll(".card[data-product-index]").forEach((card) => {
@@ -396,9 +452,7 @@ function initCardInteractions() {
         const newPrice = product.arak[currentSelectedSize] || product.arak["900g"];
         displayPrice.textContent = `${newPrice.toLocaleString('hu-HU')} Ft`;
 
-        if (orderBtn) {
-          orderBtn.setAttribute("data-size", currentSelectedSize);
-        }
+        if (orderBtn) orderBtn.setAttribute("data-size", currentSelectedSize);
       });
     });
 
@@ -410,9 +464,6 @@ function initCardInteractions() {
   });
 }
 
-/**
- * Megrendelem gomb kártyáról
- */
 function selectProductAndScrollToOrder(productIndex, size) {
   const select = document.getElementById("productSelect");
   const calcOptionsRow = document.getElementById("calcOptionsRow");
@@ -424,9 +475,7 @@ function selectProductAndScrollToOrder(productIndex, size) {
   select.dispatchEvent(new Event("change"));
 
   const sizeRadio = document.querySelector(`input[name="jarSize"][value="${size}"]`);
-  if (sizeRadio) {
-    sizeRadio.checked = true;
-  }
+  if (sizeRadio) sizeRadio.checked = true;
 
   if (calcOptionsRow) calcOptionsRow.style.display = "flex";
 
@@ -460,7 +509,7 @@ function populateProductSelect() {
 }
 
 /**
- * Élő Termékkereső a Mézkínálatunk részben
+ * 9. Termékkereső szűrés
  */
 function initProductSearch() {
   const searchInput = document.getElementById("productSearchInput");
@@ -499,17 +548,15 @@ function initProductSearch() {
 }
 
 /**
- * Kalkulátor és Kosár Kezelése
+ * 10. Kalkulátor és Kosár Logika
  */
-function initCalculatorAndPreview() {
+function initCalculatorAndCart() {
   const select = document.getElementById("productSelect");
   const qtyInput = document.getElementById("productQty");
   const addBtn = document.getElementById("addProductBtn");
   const cartContainer = document.getElementById("cartContainer");
   const cartList = document.getElementById("cartList");
   const cartTotal = document.getElementById("cartTotal");
-  const previewBox = document.getElementById("emailPreviewBox");
-  const previewContent = document.getElementById("emailPreviewContent");
 
   const calcOptionsRow = document.getElementById("calcOptionsRow");
   const pillPrice250 = document.getElementById("pillPrice250");
@@ -593,7 +640,6 @@ function initCalculatorAndPreview() {
 
     if (cart.length === 0) {
       cartContainer.style.display = "none";
-      updateEmailPreview();
       return;
     }
 
@@ -609,7 +655,7 @@ function initCalculatorAndPreview() {
       li.className = "cart-item";
       li.innerHTML = `
         <div class="cart-item-name">
-          <span>${item.cim} &times; ${item.qty} ${item.unit} (${item.price.toLocaleString('hu-HU')} Ft/${item.unit})</span>
+          <span>${item.cim} &times; ${item.qty} ${item.unit} (${item.price.toLocaleString('hu-HU')} Ft)</span>
         </div>
         <div class="cart-item-actions">
           <strong>${itemTotal.toLocaleString('hu-HU')} Ft</strong>
@@ -635,186 +681,115 @@ function initCalculatorAndPreview() {
         renderCart();
       });
     });
-
-    updateEmailPreview();
   }
 
-  function updateEmailPreview() {
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const message = document.getElementById("message").value.trim();
-
-    const hasInputs = name || email || phone || address || message;
-
-    if (cart.length === 0 && !hasInputs) {
-      previewBox.style.display = "none";
-      return;
-    }
-
-    previewBox.style.display = "block";
-
-    let orderLines = "";
-    let total = 0;
-
-    if (cart.length > 0) {
-      orderLines += `--- MEGRENDELT TERMÉKEK ---\n`;
-      cart.forEach((item) => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        orderLines += `- ${item.cim}: ${item.qty} ${item.unit} × ${item.price.toLocaleString('hu-HU')} Ft = ${itemTotal.toLocaleString('hu-HU')} Ft\n`;
-      });
-      orderLines += `---------------------------\n`;
-      orderLines += `Várható végösszeg: ${total.toLocaleString('hu-HU')} Ft\n\n`;
-    } else {
-      orderLines += `(Nincs kiválasztott termék a rendelésben)\n\n`;
-    }
-
-    const template = `Feladó: ${name || "[Név]"} (${email || "[E-mail cím]"})
-Telefon: ${phone || "[Telefonszám]"}
-Kiszállítási cím: ${address || "[Cím]"}
-
-${orderLines}Megjegyzés:
-${message || "[Nincs megjegyzés fűzve a rendeléshez]"}`;
-
-    previewContent.textContent = template;
-  }
-
-  ["name", "email", "phone", "address", "message"].forEach((id) => {
-    const input = document.getElementById(id);
-    if (input) {
-      const saved = localStorage.getItem(`miklomez_field_${id}`);
-      if (saved) input.value = saved;
-
-      input.addEventListener("input", () => {
-        localStorage.setItem(`miklomez_field_${id}`, input.value);
-        updateEmailPreview();
-      });
-    }
-  });
-
-  window.resetCart = () => {
-    cart = [];
-    renderCart();
-  };
-
+  window.renderCartApp = renderCart;
   renderCart();
 }
 
 /**
- * Űrlap beküldése
+ * 11. Megrendelés küldése & SimplePay átirányítás
  */
-function initContactForm() {
+function initOrderAndSimplePay() {
   const form = document.getElementById("contactForm");
   const feedback = document.getElementById("formFeedback");
   const submitBtn = document.getElementById("submitBtn");
-  const previewContent = document.getElementById("emailPreviewContent");
-  const formattedOrderInput = document.getElementById("formattedOrder");
 
   if (!form || !feedback || !submitBtn) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const phoneInput = document.getElementById("phone");
-    const addressInput = document.getElementById("address");
-
-    const nameParts = nameInput.value.trim().split(/\s+/);
-    if (nameParts.length < 2) {
-      showToast("Kérjük, adja meg teljes nevét (Vezetéknév és Keresztnév)!", "warning");
-      nameInput.focus();
+    if (cart.length === 0) {
+      showToast("A kosár üres! Válasszon legalább egy mézet a megrendeléshez.", "warning");
       return;
     }
 
-    const cleanPhone = phoneInput.value.trim().replace(/[\s\-()]/g, "");
-    const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
+    const consent = document.getElementById("simplepayConsent");
+    if (consent && !consent.checked) {
+      showToast("Kérjük, fogadja el az adatkezelési és SimplePay feltételeket!", "warning");
+      return;
+    }
 
+    const isCompany = document.getElementById("typeCompany").checked;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const zip = document.getElementById("zip").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const message = document.getElementById("message").value.trim();
+    const companyName = isCompany ? document.getElementById("companyName").value.trim() : "";
+    const taxNumber = isCompany ? document.getElementById("taxNumber").value.trim() : "";
+
+    // Név ellenőrzés
+    if (name.split(/\s+/).length < 2) {
+      showToast("Kérjük, adja meg teljes nevét (Vezetéknév és Keresztnév)!", "warning");
+      document.getElementById("name").focus();
+      return;
+    }
+
+    // Magyar telefonszám validáció
+    const cleanPhone = phone.replace(/[\s\-()]/g, "");
+    const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
     if (!huPhoneRegex.test(cleanPhone)) {
       showToast("Kérjük, érvényes magyar telefonszámot adjon meg!", "warning");
-      phoneInput.focus();
+      document.getElementById("phone").focus();
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailInput.value.trim())) {
-      showToast("Kérjük, érvényes e-mail címet adjon meg!", "warning");
-      emailInput.focus();
+    // Irányítószám (4 számjegy) validáció
+    if (!/^\d{4}$/.test(zip)) {
+      showToast("Kérjük, érvényes 4 számjegyű magyar irányítószámot adjon meg!", "warning");
+      document.getElementById("zip").focus();
       return;
     }
 
-    if (addressInput.value.trim().length < 8) {
-      showToast("Kérjük, pontosabb szállítási címet adjon meg!", "warning");
-      addressInput.focus();
-      return;
-    }
-
-    if (cart.length === 0) {
-      showToast("A megrendelése még üres! Válasszon legalább egy mézet.", "warning");
-      return;
-    }
-
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Megrendelés küldése...";
     submitBtn.disabled = true;
-
-    if (formattedOrderInput && previewContent) {
-      formattedOrderInput.value = previewContent.textContent;
-    }
-
-    const formData = new FormData(form);
-    formData.append("access_key", "00846189-84b3-41ba-87e4-7ddb4e42f20c");
-    formData.append("subject", `Mikló Méhészet - Új megrendelés: ${formData.get("name")}`);
+    const spanText = submitBtn.querySelector("span");
+    if (spanText) spanText.textContent = "Átirányítás a SimplePay felületére...";
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("/api/create-payment", {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: cart,
+          customer: {
+            name,
+            email,
+            phone,
+            zip,
+            city,
+            address,
+            company: companyName,
+            taxNumber: taxNumber
+          },
+          note: message
+        })
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (response.ok && result.success) {
-        feedback.textContent = "Köszönjük a megrendelést! Hamarosan keresni fogjuk a személyes kiszállítás egyeztetése miatt.";
-        feedback.className = "form-feedback success";
-
-        form.reset();
-
-        ["name", "email", "phone", "address", "message"].forEach((id) => {
-          localStorage.removeItem(`miklomez_field_${id}`);
-        });
-
-        if (typeof window.resetCart === "function") {
-          window.resetCart();
-        }
+      if (response.ok && data.success && data.paymentUrl) {
+        // Átirányítás a hivatalos OTP SimplePay fizetési felületre
+        window.location.href = data.paymentUrl;
       } else {
-        throw new Error(result.message || "Hiba a küldéskor.");
+        throw new Error(data.message || "A fizetési kapu nem válaszolt.");
       }
 
-    } catch (error) {
-      console.error("Küldési hiba:", error);
-      feedback.textContent = "Sajnos hiba történt a beküldés során. Kérjük, keressen minket a 06 20 352 0468 telefonszámon!";
+    } catch (err) {
+      console.error("SimplePay indítási hiba:", err);
+      feedback.textContent = `Hiba a fizetés indításakor: ${err.message}. Kérjük próbálja újra!`;
       feedback.className = "form-feedback error";
-    } finally {
-      submitBtn.textContent = originalText;
       submitBtn.disabled = false;
-
-      setTimeout(() => {
-        feedback.style.opacity = "0";
-        setTimeout(() => {
-          feedback.textContent = "";
-          feedback.className = "form-feedback";
-          feedback.style.opacity = "";
-        }, 400);
-      }, 8000);
+      if (spanText) spanText.textContent = "Tovább a biztonságos SimplePay fizetéshez";
     }
   });
 }
 
 /**
- * Vissza a tetejére gomb
+ * 12. Vissza a tetejére gomb
  */
 function initBackToTop() {
   const btn = document.getElementById("backToTop");
@@ -830,7 +805,7 @@ function initBackToTop() {
 }
 
 /**
- * Navigációs figyelő
+ * 13. Navigációs figyelő görgetéskor
  */
 function initActiveNavObserver() {
   const sections = document.querySelectorAll("section[id]");
@@ -851,7 +826,7 @@ function initActiveNavObserver() {
 }
 
 /**
- * Accordion
+ * 14. Mézkalauz Harmonika (Accordion)
  */
 function initAccordion() {
   document.querySelectorAll(".accordion-header").forEach((header) => {
@@ -874,12 +849,12 @@ function initAccordion() {
 }
 
 /**
- * Spotlight fény effekt
+ * 15. Kártya Spotlight Fényeffekt
  */
 function initCardGlow() {
   if (!window.matchMedia("(hover: hover)").matches) return;
 
-  const elements = document.querySelectorAll(".card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .email-preview-box, .social-box");
+  const elements = document.querySelectorAll(".card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .social-box");
 
   elements.forEach((el) => {
     let ticking = false;
@@ -898,7 +873,7 @@ function initCardGlow() {
 }
 
 /**
- * Toast értesítések
+ * 16. Toast értesítések
  */
 function showToast(message, type = "warning") {
   let container = document.getElementById("toastContainer");
@@ -932,7 +907,7 @@ function showToast(message, type = "warning") {
 }
 
 /**
- * Mennyiségléptető gombok (+ / -)
+ * 17. Mennyiségléptető gombok (+ / -)
  */
 function initQtyButtons() {
   const minusBtn = document.querySelector(".qty-minus");
