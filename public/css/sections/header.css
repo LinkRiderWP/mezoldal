@@ -1,0 +1,313 @@
+/* ==========================================
+   FEJLÉC ÉS NAVIGÁCIÓ
+   ========================================== */
+.main-header {
+    background-color: rgba(18, 10, 5, 0.92);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-glow);
+    transition: var(--transition-smooth);
+    width: 100%;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 2.5rem;
+    width: 100%;
+    gap: 1.5rem;
+    transition: padding var(--transition-smooth);
+}
+
+.main-header.scrolled {
+    background-color: rgba(12, 6, 3, 0.98);
+    box-shadow: var(--shadow-md);
+    border-bottom-color: rgba(229, 169, 60, 0.2);
+}
+
+.main-header.scrolled .nav-container {
+    padding: 0.65rem 2.5rem;
+}
+
+/* Logó */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    z-index: 1005;
+    flex-shrink: 0;
+}
+
+.logo-icon {
+    color: var(--primary-color);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.logo-icon svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 5px rgba(229, 169, 60, 0.2));
+}
+
+.logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
+    font-weight: 400;
+    color: #FFFFFF;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.logo-highlight {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.logo:hover .logo-icon {
+    transform: scale(1.1) rotate(15deg);
+}
+
+/* Navigációs menü */
+.menu {
+    display: flex;
+    gap: 1.8rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.menu a {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    position: relative;
+    transition: var(--transition-smooth);
+    padding: 0.4rem 0;
+    white-space: nowrap;
+}
+
+.menu a:hover,
+.menu a.active {
+    color: var(--primary-color);
+}
+
+.menu a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    bottom: 0;
+    left: 0;
+    transition: var(--transition-smooth);
+}
+
+.menu a:hover::after,
+.menu a.active::after {
+    width: 100%;
+}
+
+/* Fejléc jobb oldali gombok */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+/* Bejelentkezés gomb és ikonja */
+.header-auth-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(229, 169, 60, 0.08);
+    border: 1px solid rgba(229, 169, 60, 0.25);
+    color: var(--text-main);
+    padding: 0.45rem 0.9rem;
+    border-radius: 50px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    min-height: 38px;
+}
+
+.header-auth-btn svg {
+    width: 17px;
+    height: 17px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.header-auth-btn:hover,
+.header-auth-btn.logged-in {
+    border-color: var(--primary-color);
+    background: rgba(229, 169, 60, 0.15);
+}
+
+.header-auth-btn.logged-in {
+    color: var(--primary-color);
+}
+
+/* Kosár gomb, ikonja és darabszám jelvény */
+.header-cart-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(229, 169, 60, 0.1);
+    border: 1px solid rgba(229, 169, 60, 0.3);
+    color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    flex-shrink: 0;
+}
+
+.header-cart-btn:hover {
+    background: rgba(229, 169, 60, 0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 169, 60, 0.25);
+}
+
+.header-cart-btn svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--accent-color);
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-dark);
+}
+
+/* Közösségi ikonok */
+.header-socials {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-left: 1.2rem;
+    border-left: 1px solid rgba(229, 169, 60, 0.22);
+}
+
+.social-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(229, 169, 60, 0.08);
+    border: 1px solid rgba(229, 169, 60, 0.2);
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    flex-shrink: 0;
+}
+
+.social-icon svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.social-icon:hover {
+    background: var(--primary-color);
+    color: var(--bg-dark);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 169, 60, 0.35);
+}
+
+/* Hamburger menü (mobilon) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1010;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2.2px;
+    background-color: var(--text-main);
+    transition: var(--transition-smooth);
+    border-radius: 2px;
+}
+
+/* Reszponzív nézetek */
+@media (max-width: 992px) {
+    .nav-container { padding: 0.9rem 1.5rem; }
+}
+
+@media (max-width: 768px) {
+    .nav-container { padding: 0.8rem 1.2rem; }
+    .header-socials { display: none; }
+    .hamburger { display: flex; }
+
+    .menu {
+        position: fixed;
+        inset: 0;
+        height: 100vh;
+        height: 100dvh;
+        flex-direction: column;
+        justify-content: center;
+        background-color: rgba(12, 6, 3, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 3rem 2rem;
+        gap: 2rem;
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: var(--transition-smooth);
+        z-index: 1000;
+    }
+
+    .menu.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .menu a { font-size: 1.3rem; font-weight: 600; }
+    .hamburger.active span:nth-child(1) { transform: translateY(7.2px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7.2px) rotate(-45deg); }
+}

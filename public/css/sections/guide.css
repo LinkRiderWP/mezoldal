@@ -1,0 +1,10 @@
+.guide-section {
+    padding: 5rem 0;
+    background-color: rgba(18, 10, 5, 0.15);
+    border-top: 1px solid var(--border-glow);
+}
+
+.guide-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}

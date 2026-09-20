@@ -1,3 +1,26 @@
-@import url('base.css');
-@import url('components.css');
-@import url('sections.css');
+/* 1. Alapok */
+@import url('base/variables.css');
+@import url('base/reset.css');
+@import url('base/animations.css');
+
+/* 2. Általános komponensek */
+@import url('components/titles.css');
+@import url('components/buttons.css');
+@import url('components/cards.css');
+@import url('components/accordion.css');
+@import url('components/modal.css');
+@import url('components/toast.css');
+@import url('components/back-to-top.css');
+
+/* 3. Funkcionális modulok (Kosár & Pénztár) */
+@import url('features/cart.css');
+@import url('features/checkout.css');
+
+/* 4. Oldalszekciók */
+@import url('sections/header.css');
+@import url('sections/hero.css');
+@import url('sections/values.css');
+@import url('sections/products.css');
+@import url('sections/guide.css');
+@import url('sections/about.css');
+@import url('sections/footer.css');

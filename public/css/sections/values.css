@@ -1,0 +1,10 @@
+.values-section {
+    padding: 5rem 0;
+    background-color: var(--bg-light);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 2rem;
+}

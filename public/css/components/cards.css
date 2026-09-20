@@ -1,0 +1,69 @@
+/* Értékkártyák */
+.value-card {
+    text-align: center;
+    padding: 2.2rem 1.6rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-glow);
+    transition: var(--transition-smooth);
+}
+.value-card:hover { transform: translateY(-5px); border-color: rgba(229, 169, 60, 0.3); }
+.value-icon {
+    width: 60px; height: 60px; margin: 0 auto 1.2rem;
+    background-color: rgba(229, 169, 60, 0.08); color: var(--primary-color);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.value-icon svg { width: 28px; height: 28px; }
+.value-card h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #FFFFFF; margin-bottom: 0.6rem; }
+.value-card p { font-size: 0.88rem; color: var(--text-muted); }
+
+/* Mézkártyák */
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-smooth);
+    border: 1px solid var(--border-glow);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+.card:hover { transform: translateY(-5px); border-color: rgba(229, 169, 60, 0.3); box-shadow: var(--shadow-md); }
+.card.is-sale { border: 2px solid var(--accent-color); }
+.card-img-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background-color: #1A100B; }
+.card img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition-smooth); }
+.card:hover img { transform: scale(1.04); }
+
+.floating-badge-sale {
+    position: absolute; top: 10px; right: 10px;
+    background-color: var(--accent-color); color: #FFFFFF; font-size: 0.72rem;
+    font-weight: 700; padding: 0.3rem 0.65rem; border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(240, 122, 93, 0.3); z-index: 5;
+}
+
+.card-content { padding: 1.4rem; display: flex; flex-direction: column; flex-grow: 1; }
+.card-content h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #FFFFFF; margin-bottom: 0.4rem; }
+.card-content p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; flex-grow: 1; }
+
+.card-size-selector-box {
+    background: rgba(18, 10, 5, 0.45); border: 1px solid rgba(229, 169, 60, 0.15);
+    border-radius: var(--radius-md); padding: 0.65rem; margin-bottom: 1rem;
+}
+.card-size-label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem; }
+.card-size-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem; }
+.card-size-btn {
+    background: rgba(229, 169, 60, 0.05); border: 1px solid rgba(229, 169, 60, 0.2);
+    color: var(--text-main); padding: 0.45rem 0.2rem; font-size: 0.8rem; font-weight: 500;
+    border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition-smooth); min-height: 36px;
+}
+.card-size-btn:hover { border-color: var(--primary-color); background: rgba(229, 169, 60, 0.12); }
+.card-size-btn.active { background: var(--primary-color); color: var(--bg-dark); font-weight: 700; border-color: var(--primary-color); }
+
+.price-row { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; border-top: 1px solid rgba(229, 169, 60, 0.15); padding-top: 0.9rem; }
+.price-container { display: flex; flex-direction: column; }
+.price-sub { font-size: 0.72rem; color: var(--text-muted); }
+.price { font-weight: 700; font-size: 1.25rem; color: var(--primary-color); }
+.card.is-sale .price { color: var(--accent-color); }

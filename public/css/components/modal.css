@@ -1,0 +1,29 @@
+.modal-backdrop {
+    position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 3000;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-backdrop.active { opacity: 1; visibility: visible; }
+
+.auth-modal {
+    position: relative; background-color: var(--bg-card); border: 1px solid rgba(229, 169, 60, 0.3);
+    border-radius: var(--radius-lg); width: 100%; max-width: 460px; padding: 2rem;
+    max-height: 90vh; overflow-y: auto;
+}
+.close-modal-btn { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+.auth-tabs-nav { display: flex; border-bottom: 1px solid rgba(229, 169, 60, 0.2); margin-bottom: 1.4rem; gap: 1rem; }
+.auth-tab-btn { background: none; border: none; color: var(--text-muted); font-size: 0.92rem; font-weight: 600; padding: 0.5rem 0.2rem; cursor: pointer; }
+.auth-tab-btn.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+
+.auth-modal-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: #FFFFFF; margin-bottom: 0.2rem; }
+.auth-modal-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+.auth-form { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.profile-header { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.4rem; background: rgba(229, 169, 60, 0.05); padding: 0.9rem; border-radius: var(--radius-md); }
+.profile-avatar { font-size: 1.8rem; }
+.profile-orders-list { display: flex; flex-direction: column; gap: 0.7rem; max-height: 200px; overflow-y: auto; margin-bottom: 1.4rem; }
+.profile-order-card { background-color: rgba(18, 10, 5, 0.5); border: 1px solid rgba(229, 169, 60, 0.15); border-radius: var(--radius-sm); padding: 0.75rem 0.9rem; font-size: 0.82rem; }
+.order-status-badge { font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 4px; }
+.order-status-badge.paid { background-color: rgba(129, 199, 132, 0.2); color: #81C784; }
+.btn-logout { width: 100%; padding: 0.7rem; background: transparent; border: 1px solid rgba(240, 122, 93, 0.3); color: var(--accent-color); border-radius: 50px; font-weight: 600; cursor: pointer; }
