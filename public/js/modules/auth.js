@@ -3,6 +3,16 @@ import { showToast } from './ui.js';
 const TOKEN_KEY = 'miklomez_auth_token';
 let currentUser = null;
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 export function getToken() {
     return localStorage.getItem(TOKEN_KEY);
 }
@@ -115,19 +125,40 @@ function renderOrdersList(orders) {
         return;
     }
 
-    ordersList.innerHTML = orders.map(ord => `
+    ordersList.innerHTML = orders.map(ord => {
+        const safeOrderRef = escapeHtml(ord.orderRef);
+        const safeStatus = ord.status === 'PAID' ? 'Kifizetve' : 'Függőben';
+        const statusClass = ord.status === 'PAID' ? 'paid' : 'pending';
+        const formattedDate = new Date(ord.createdAt).toLocaleDateString('hu-HU', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const itemsHtml = (ord.items || []).map(it => {
+            const name = escapeHtml(it.name || it.cim || 'Méz');
+            const qty = Number(it.qty || it.quantity || 1);
+            return `<div>• ${name} (${qty} db)</div>`;
+        }).join('');
+
+        const totalFormatted = Number(ord.totalAmount || 0).toLocaleString('hu-HU');
+
+        return `
         <div class="profile-order-card">
             <div class="order-card-header">
-                <strong>#${ord.orderRef}</strong>
-                <span class="order-status-badge ${ord.status.toLowerCase()}">${ord.status === 'PAID' ? 'Kifizetve' : 'Függőben'}</span>
+                <strong>#${safeOrderRef}</strong>
+                <span class="order-status-badge ${statusClass}">${safeStatus}</span>
             </div>
-            <p class="order-card-date">${new Date(ord.createdAt).toLocaleDateString('hu-HU', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+            <p class="order-card-date">${formattedDate}</p>
             <div class="order-card-items">
-                ${ord.items.map(it => `<div>• ${it.name || it.cim} (${it.qty || it.quantity} db)</div>`).join('')}
+                ${itemsHtml}
             </div>
-            <div class="order-card-total">Összesen: <strong>${(ord.totalAmount).toLocaleString('hu-HU')} Ft</strong></div>
+            <div class="order-card-total">Összesen: <strong>${totalFormatted} Ft</strong></div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function initAuthModalEvents() {

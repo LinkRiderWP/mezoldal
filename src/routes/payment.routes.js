@@ -10,12 +10,12 @@ const emailService = require('../services/email.service');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-    throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókból!");
+    throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókbból!");
 }
 
 const paymentLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 20, // max 20 fizetésindítás / 15 perc / IP
+    max: 20,
     message: { success: false, message: "Túl sok fizetési kérés indult, kérjük próbálja meg később!" }
 });
 
@@ -53,32 +53,51 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
 
         const { name, email, phone, zip, city, address, company, taxNumber } = customer;
 
-        // Szigorú szerveroldali validáció
+        // E-mail ellenőrzés
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email || !emailRegex.test(email.trim()) || email.length > 150) {
             return res.status(400).json({ success: false, message: "Érvénytelen e-mail cím." });
         }
 
+        // Név ellenőrzés
         if (!name || name.trim().split(/\s+/).length < 2 || name.trim().length > 100) {
             return res.status(400).json({ success: false, message: "Kérjük, adja meg teljes nevét!" });
         }
 
+        // Telefonszám ellenőrzés
         const cleanPhone = String(phone || '').replace(/[\s\-()]/g, "");
         const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
         if (!huPhoneRegex.test(cleanPhone)) {
             return res.status(400).json({ success: false, message: "Érvénytelen telefonszám formátum." });
         }
 
+        // Irányítószám ellenőrzés
         if (!zip || !/^\d{4}$/.test(String(zip).trim())) {
             return res.status(400).json({ success: false, message: "Érvénytelen 4 számjegyű irányítószám." });
         }
 
+        // Település és cím ellenőrzés
         if (!city || city.trim().length < 2 || city.trim().length > 50) {
             return res.status(400).json({ success: false, message: "Érvénytelen település név." });
         }
 
         if (!address || address.trim().length < 3 || address.trim().length > 120) {
             return res.status(400).json({ success: false, message: "Érvénytelen utca és házszám." });
+        }
+
+        // Céges adatok ellenőrzése, ha megadták
+        let cleanTaxNumber = "";
+        let cleanCompany = "";
+        if (company && company.trim().length > 0) {
+            cleanCompany = company.trim().slice(0, 100);
+            if (!taxNumber) {
+                return res.status(400).json({ success: false, message: "Céges vásárlásnál az adószám megadása kötelező!" });
+            }
+            const digitsOnlyTax = String(taxNumber).replace(/[\s\-]/g, "");
+            if (!/^\d{8}$|^\d{11}$/.test(digitsOnlyTax)) {
+                return res.status(400).json({ success: false, message: "Érvénytelen adószám formátum!" });
+            }
+            cleanTaxNumber = String(taxNumber).trim().slice(0, 30);
         }
 
         const sanitizedCustomer = {
@@ -88,8 +107,8 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
             zip: String(zip).trim(),
             city: city.trim().slice(0, 50),
             address: address.trim().slice(0, 120),
-            company: company ? String(company).trim().slice(0, 100) : "",
-            taxNumber: taxNumber ? String(taxNumber).trim().slice(0, 30) : ""
+            company: cleanCompany,
+            taxNumber: cleanTaxNumber
         };
 
         const optionalUser = extractOptionalUser(req);
@@ -146,8 +165,6 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
         }
 
         const finalTotalAmount = itemsTotal + shippingFee;
-
-        // Ütközésmentes, biztonságos és nem kitalálható azonosító
         const orderRef = `MM-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
         await db.collection('orders').doc(orderRef).set({
@@ -166,6 +183,7 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
             totalAmount: finalTotalAmount,
             wantsEmailNotification: wantsEmailNotification !== false,
             status: 'PENDING',
+            invoiceStatus: 'PENDING',
             createdAt: new Date().toISOString()
         });
 
@@ -227,18 +245,37 @@ router.post('/simplepay-ipn', async (req, res) => {
             const order = orderDoc.data();
 
             if (order.status !== 'PAID') {
-                await orderDocRef.update({
+                const paidOrderData = {
+                    ...order,
                     status: 'PAID',
                     transactionId: ipnData.transactionId || null,
                     paidAt: new Date().toISOString()
+                };
+
+                await orderDocRef.update({
+                    status: 'PAID',
+                    transactionId: paidOrderData.transactionId,
+                    paidAt: paidOrderData.paidAt
                 });
 
-                // 1. Számlázás Billingo-val
-                await createBillingoInvoice(order);
+                // 1. Számlázás Billingo-val és auditálás
+                const billingoResult = await createBillingoInvoice(paidOrderData);
+                if (billingoResult.success) {
+                    await orderDocRef.update({
+                        invoiceStatus: 'CREATED',
+                        invoiceNumber: billingoResult.invoiceNumber,
+                        invoiceId: billingoResult.invoiceId
+                    });
+                } else {
+                    await orderDocRef.update({
+                        invoiceStatus: 'FAILED',
+                        invoiceError: billingoResult.error || 'Ismeretlen számlázási hiba'
+                    });
+                }
 
                 // 2. Automatikus e-mail visszaigazolás küldése
-                if (order.wantsEmailNotification !== false) {
-                    await emailService.sendOrderConfirmation(order);
+                if (paidOrderData.wantsEmailNotification !== false) {
+                    await emailService.sendOrderConfirmation(paidOrderData);
                 }
             }
         }

@@ -62,6 +62,21 @@ export function initOrderAndSimplePay() {
             return;
         }
 
+        // Céges adószám ellenőrzés
+        if (isCompany) {
+            if (!companyName) {
+                showToast("Kérjük, adja meg a cégnevet!", "warning");
+                document.getElementById("companyName").focus();
+                return;
+            }
+            const cleanTax = taxNumber.replace(/[\s\-]/g, "");
+            if (!/^\d{8}$|^\d{11}$/.test(cleanTax)) {
+                showToast("Kérjük, érvényes magyar adószámot adjon meg (pl. 12345678-2-42)!", "warning");
+                document.getElementById("taxNumber").focus();
+                return;
+            }
+        }
+
         submitBtn.disabled = true;
         const spanText = submitBtn.querySelector("span");
         if (spanText) spanText.textContent = "Átirányítás a SimplePay felületére...";

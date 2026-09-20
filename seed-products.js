@@ -1,22 +1,5 @@
 // seed-products.js
-const { initializeApp, cert, getApps } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
-const path = require('path');
-const fs = require('fs');
-
-const keyPath = path.resolve(__dirname, 'firebase-service-account.json');
-const serviceAccount = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
-
-let app;
-if (getApps().length === 0) {
-    app = initializeApp({
-        credential: cert(serviceAccount)
-    });
-} else {
-    app = getApps()[0];
-}
-
-const db = getFirestore(app);
+const { db } = require('./src/config/firebase');
 
 const initialProducts = [
     {

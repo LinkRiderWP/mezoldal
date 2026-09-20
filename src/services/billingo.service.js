@@ -5,28 +5,28 @@ async function createBillingoInvoice(order) {
     const blockId = parseInt(process.env.BILLINGO_BLOCK_ID, 10);
 
     if (!apiKey || !blockId) {
-        console.warn("Billingo API adatok nincsenek konfigurálva a .env-ben.");
-        return;
+        console.warn("⚠️ Billingo API kulcs vagy Block ID nincs konfigurálva a .env-ben.");
+        return { success: false, reason: "BILLINGO_NOT_CONFIGURED" };
     }
 
     const today = new Date().toISOString().split('T')[0];
 
-    // 1. Terméktételek összeállítása
-    const items = order.items.map(item => ({
-        name: item.cim,
-        unit_price: item.price,
+    // 1. Tételek összeállítása
+    const items = (order.items || []).map(item => ({
+        name: item.name || item.cim,
+        unit_price: Number(item.price || item.unitPrice),
         unit_price_type: "gross",
-        quantity: item.qty,
+        quantity: Number(item.qty || item.quantity || 1),
         unit: "db",
         vat: "AAM",
         comment: "Kézműves magyar méz"
     }));
 
-    // 2. Szállítási díj tétel (ha van és nem ingyenes)
-    if (order.shipping && order.shipping.price > 0) {
+    // 2. Szállítási díj tétel
+    if (order.shipping && Number(order.shipping.price) > 0) {
         items.push({
             name: `Kiszállítási díj (${order.shipping.name})`,
-            unit_price: order.shipping.price,
+            unit_price: Number(order.shipping.price),
             unit_price_type: "gross",
             quantity: 1,
             unit: "db",
@@ -35,18 +35,25 @@ async function createBillingoInvoice(order) {
         });
     }
 
-    const invoicePayload = {
-        partner: {
-            name: order.customer.company || order.customer.name,
-            address: {
-                country_code: "HU",
-                post_code: String(order.customer.zip),
-                city: order.customer.city,
-                address: order.customer.address
-            },
-            emails: [order.customer.email],
-            taxcode: order.customer.taxNumber || ""
+    // Partner adatok előkészítése
+    const partnerPayload = {
+        name: order.customer.company || order.customer.name,
+        address: {
+            country_code: "HU",
+            post_code: String(order.customer.zip),
+            city: order.customer.city,
+            address: order.customer.address
         },
+        emails: [order.customer.email]
+    };
+
+    // Csak céges partner esetén küldünk adószámot (magánszemélynél a Billingo hibaüzenetet adhat üres stringre)
+    if (order.customer.taxNumber && order.customer.taxNumber.trim().length > 0) {
+        partnerPayload.taxcode = order.customer.taxNumber.trim();
+    }
+
+    const invoicePayload = {
+        partner: partnerPayload,
         block_id: blockId,
         type: "invoice",
         fulfillment_date: today,
@@ -73,12 +80,24 @@ async function createBillingoInvoice(order) {
 
         const result = await response.json();
         if (response.ok) {
-            console.log(`Billingo számla elkészült! Szám: ${result.invoice_number || result.id}`);
+            const invoiceNumber = result.invoice_number || String(result.id);
+            console.log(`✅ Billingo számla elkészült! Szám: ${invoiceNumber}`);
+            return {
+                success: true,
+                invoiceId: result.id,
+                invoiceNumber: invoiceNumber
+            };
         } else {
-            console.error("Billingo API hiba:", result);
+            console.error("❌ Billingo API válaszhiva:", result);
+            return {
+                success: false,
+                error: result.message || "Billingo hiba",
+                details: result
+            };
         }
     } catch (err) {
-        console.error("Billingo lekérési kivétel:", err);
+        console.error("❌ Billingo lekérési kivétel:", err);
+        return { success: false, error: err.message };
     }
 }
 
