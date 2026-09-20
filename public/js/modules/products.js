@@ -9,7 +9,9 @@ export function loadHoneyProducts() {
 
     products.forEach((product, index) => {
         const price900 = product.arak["900g"] || 0;
-        const bulkPriceText = product.nagy_tetel_ar ? `${product.nagy_tetel_ar} (${product.nagy_tetel_minimum || 'min. 10 kg'})` : "Érdeklődjön e-mailben!";
+        const bulkPriceText = product.nagy_tetel_ar
+            ? `${product.nagy_tetel_ar} (${product.nagy_tetel_minimum || 'min. 10 kg'})`
+            : "Egyedi árajánlat alapján";
 
         const card = document.createElement("article");
         card.className = `card ${product.isSale ? 'is-sale' : ''}`;
@@ -49,8 +51,13 @@ export function loadHoneyProducts() {
         </div>
 
         <div class="bulk-price-box">
-          <span class="bulk-icon">📦</span>
-          <span class="bulk-text">Nagytétel ár: <strong>${bulkPriceText}</strong></span>
+          <div class="bulk-info-main">
+            <span class="bulk-icon">📦</span>
+            <span class="bulk-text">Nagytétel ár: <strong>${bulkPriceText}</strong></span>
+          </div>
+          <a href="mailto:info@miklomez.hu?subject=Nagyt%C3%A9teles%20megrendel%C3%A9s%20-%20${encodeURIComponent(product.cim)}" class="bulk-contact-link">
+            ✉️ Nagytételes megrendelés e-mailben &rarr;
+          </a>
         </div>
       </div>
     `;

@@ -326,6 +326,16 @@
     margin: 0;
 }
 
+.bulk-announcement p a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.bulk-announcement p a:hover {
+    color: #FFFFFF;
+}
+
 /* Termékek Szekció */
 .products-section {
     position: relative;

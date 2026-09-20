@@ -400,15 +400,21 @@
 }
 
 .bulk-price-box {
-    margin-top: 0.8rem;
-    padding: 0.6rem 0.85rem;
+    margin-top: 0.85rem;
+    padding: 0.75rem 0.9rem;
     background-color: rgba(229, 169, 60, 0.05);
     border: 1px dashed rgba(229, 169, 60, 0.3);
     border-radius: var(--radius-md);
     display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+}
+
+.bulk-info-main {
+    display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.82rem;
 }
 
 .bulk-icon {
@@ -419,6 +425,62 @@
 .bulk-text strong {
     color: var(--primary-color);
     font-weight: 700;
+}
+
+.bulk-contact-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+    margin-left: 1.7rem;
+}
+
+.bulk-contact-link:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.bulk-order-hint {
+    background: rgba(229, 169, 60, 0.08);
+    border: 1px solid rgba(229, 169, 60, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+.bulk-order-hint span {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.bulk-order-hint p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.bulk-order-hint strong {
+    color: var(--primary-color);
+}
+
+.bulk-order-hint a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.bulk-order-hint a:hover {
+    color: #FFFFFF;
 }
 
 /* Fejléc Felhasználói Fiók Gomb */
