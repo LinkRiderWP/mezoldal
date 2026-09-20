@@ -1,5 +1,5 @@
 .contact-section {
-    padding: 5rem 0 6rem;
+    padding: 6rem 0;
     background-color: var(--bg-light);
     border-top: 1px solid var(--border-glow);
 }
@@ -7,16 +7,16 @@
 .checkout-layout {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
-    gap: 2.2rem;
+    gap: 2.5rem;
     align-items: start;
-    margin-top: 1rem;
+    margin-top: 1.2rem;
 }
 
 .checkout-col {
     background-color: var(--bg-card);
     border: 1px solid var(--border-glow);
     border-radius: var(--radius-lg);
-    padding: 2rem;
+    padding: 2.2rem;
     box-shadow: var(--shadow-sm);
     transition: var(--transition-smooth);
 }
@@ -24,10 +24,10 @@
 .checkout-block-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.4rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid rgba(229, 169, 60, 0.15);
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(226, 161, 54, 0.15);
 }
 
 .step-num {
@@ -55,10 +55,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
-    background-color: rgba(18, 10, 5, 0.6);
+    background-color: rgba(18, 10, 6, 0.6);
     padding: 0.35rem;
     border-radius: var(--radius-md);
-    border: 1px solid rgba(229, 169, 60, 0.15);
+    border: 1px solid rgba(226, 161, 54, 0.15);
     margin-bottom: 1.4rem;
 }
 
@@ -89,7 +89,7 @@
     background-color: var(--primary-color);
     color: var(--bg-dark);
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(229, 169, 60, 0.3);
+    box-shadow: 0 2px 8px rgba(226, 161, 54, 0.3);
 }
 
 .form-grid {
@@ -106,8 +106,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    background: rgba(229, 169, 60, 0.04);
-    border: 1px dashed rgba(229, 169, 60, 0.25);
+    background: rgba(226, 161, 54, 0.04);
+    border: 1px dashed rgba(226, 161, 54, 0.25);
     border-radius: var(--radius-md);
     padding: 1rem;
     margin-bottom: 0.4rem;
@@ -117,7 +117,7 @@
     display: block;
     font-size: 0.82rem;
     font-weight: 500;
-    color: var(--primary-color);
+    color: var(--primary-light);
     margin-bottom: 0.35rem;
 }
 
@@ -127,8 +127,8 @@
     min-height: 50px;
     padding: 0.8rem 1rem;
     border-radius: var(--radius-md);
-    border: 1px solid rgba(229, 169, 60, 0.22);
-    background-color: rgba(18, 10, 5, 0.45);
+    border: 1px solid rgba(226, 161, 54, 0.22);
+    background-color: rgba(18, 10, 6, 0.5);
     color: var(--text-main);
     font-family: 'Poppins', sans-serif;
     font-size: 0.92rem;
@@ -145,14 +145,14 @@
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
+    box-shadow: 0 0 0 3px rgba(226, 161, 54, 0.18);
 }
 
 .empty-cart-state {
     text-align: center;
-    padding: 2.2rem 1.2rem;
-    background: rgba(18, 10, 5, 0.4);
-    border: 1px dashed rgba(229, 169, 60, 0.25);
+    padding: 2.4rem 1.2rem;
+    background: rgba(18, 10, 6, 0.4);
+    border: 1px dashed rgba(226, 161, 54, 0.25);
     border-radius: var(--radius-md);
 }
 
@@ -166,9 +166,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.6rem 1.4rem;
+    padding: 0.65rem 1.4rem;
     border-radius: 50px;
-    background-color: rgba(229, 169, 60, 0.12);
+    background-color: rgba(226, 161, 54, 0.12);
     border: 1px solid var(--primary-color);
     color: var(--primary-color);
     text-decoration: none;
@@ -184,7 +184,7 @@
 
 .add-more-honey-row {
     text-align: right;
-    margin: 0.6rem 0 1rem;
+    margin: 0.7rem 0 1rem;
 }
 
 .link-add-more {
@@ -196,77 +196,93 @@
 
 .link-add-more:hover { color: #FFFFFF; }
 
-.shipping-section-box { margin: 1.1rem 0; }
+.shipping-section-box { margin: 1.2rem 0; }
 .shipping-title {
     display: block;
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
 }
 
 .shipping-options-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.5rem;
 }
 
 .shipping-option-card input[type="radio"] { display: none; }
+
 .shipping-card-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.7rem 0.9rem;
-    background-color: rgba(18, 10, 5, 0.45);
-    border: 1px solid rgba(229, 169, 60, 0.15);
+    padding: 0.75rem 1rem;
+    background-color: rgba(18, 10, 6, 0.5);
+    border: 1px solid rgba(226, 161, 54, 0.18);
     border-radius: var(--radius-md);
     transition: var(--transition-smooth);
+    cursor: pointer;
 }
 
 .shipping-card-header {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
 }
 
-.shipping-name { font-size: 0.85rem; font-weight: 500; color: var(--text-main); }
-.shipping-price { font-size: 0.85rem; font-weight: 700; color: var(--primary-color); }
+.shipping-svg-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.shipping-svg-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.shipping-name { font-size: 0.86rem; font-weight: 500; color: var(--text-main); }
+.shipping-price { font-size: 0.86rem; font-weight: 700; color: var(--primary-color); }
 
 .shipping-option-card input[type="radio"]:checked + .shipping-card-content {
-    background-color: rgba(229, 169, 60, 0.12);
+    background-color: rgba(226, 161, 54, 0.12);
     border-color: var(--primary-color);
 }
 
-/* Jogi nyilatkozat és jelölőnégyzetek */
 .form-legal-box {
-    margin-top: 1.1rem;
-    background-color: rgba(18, 10, 5, 0.4);
-    border: 1px solid rgba(229, 169, 60, 0.12);
+    margin-top: 1.2rem;
+    background-color: rgba(18, 10, 6, 0.45);
+    border: 1px solid var(--border-glow);
     border-radius: var(--radius-md);
-    padding: 0.85rem;
+    padding: 0.95rem;
 }
 
 .checkbox-label {
     display: flex;
     align-items: flex-start;
-    gap: 0.65rem;
+    gap: 0.7rem;
     cursor: pointer;
 }
 
 .checkbox-label input[type="checkbox"] {
     accent-color: var(--primary-color);
-    width: 16px;
-    height: 16px;
+    width: 17px;
+    height: 17px;
     margin-top: 2px;
     flex-shrink: 0;
 }
 
 .legal-text {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    line-height: 1.45;
+    line-height: 1.5;
 }
 
 .legal-text a {
@@ -285,9 +301,9 @@
 .form-feedback.error { display: block; color: #EF5350; }
 
 .payment-alert {
-    padding: 1.2rem;
+    padding: 1.4rem;
     border-radius: var(--radius-md);
-    margin-bottom: 2rem;
+    margin-bottom: 2.2rem;
     text-align: center;
 }
 
@@ -306,11 +322,11 @@
 .trust-mini-badge {
     display: flex;
     justify-content: space-around;
-    gap: 0.8rem;
-    margin-top: 1.4rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(229, 169, 60, 0.12);
-    font-size: 0.78rem;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border-glow);
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
@@ -319,8 +335,8 @@
 }
 
 @media (max-width: 576px) {
-    .checkout-col { padding: 1.3rem 1.1rem; }
+    .checkout-col { padding: 1.4rem 1.1rem; }
     .form-grid, .company-fields { grid-template-columns: 1fr; }
     .form-group.half-width { grid-column: span 2; }
-    .trust-mini-badge { flex-direction: column; align-items: center; gap: 0.4rem; }
+    .trust-mini-badge { flex-direction: column; align-items: center; gap: 0.5rem; }
 }

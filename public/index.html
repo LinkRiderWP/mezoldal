@@ -234,7 +234,7 @@
   </div>
 </section>
 
-<!-- Rólunk szekció -->
+<!-- Rólunk szekció (Eredeti szöveggel, igényes vizuális fény- és keretanimációval) -->
 <section id="about" class="about-section reveal">
   <div class="container about-grid">
     <div class="about-text">
@@ -242,9 +242,25 @@
       <p>Családi méhészetünk az Alföld napsütötte tájain működik. Méheink szabadon gyűjtenek a tiszta alföldi akácligetekben és mezei vadvirágokon, biztosítva a 100%-ban természetes, hamisítatlan minőséget.</p>
       <p>Küldetésünk az egészséges méhcsaládok gondozása és a tiszta, nyers termelői méz eljuttatása közvetlenül az Ön otthonába.</p>
     </div>
-    <div class="about-image-container">
-      <div class="image-border-deco"></div>
-      <img src="kepek/akacmez.jpg" alt="Méhészet az Alföldön" class="about-image" loading="lazy" />
+
+    <div class="about-image-wrapper" id="aboutVisualWrapper">
+      <!-- Finom, pulzáló meleg fényudvar a kép mögött -->
+      <div class="about-glow-aura" aria-hidden="true"></div>
+
+      <!-- Halvány, elegáns geometriai méhsejt akcentus -->
+      <div class="about-honeycomb-accent" aria-hidden="true">
+        <svg viewBox="0 0 160 160" fill="none">
+          <path d="M40 10 L70 27 L70 61 L40 78 L10 61 L10 27 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.35"/>
+          <path d="M100 45 L130 62 L130 96 L100 113 L70 96 L70 62 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.25"/>
+          <path d="M40 80 L70 97 L70 131 L40 148 L10 131 L10 97 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.2"/>
+        </svg>
+      </div>
+
+      <!-- Képkeret finom mikro-lebegéssel és fénycsillanással -->
+      <div class="about-card-frame">
+        <div class="frame-shimmer-layer"></div>
+        <img src="kepek/akacmez.jpg" alt="Méhészet az Alföldön" class="about-image" loading="lazy" />
+      </div>
     </div>
   </div>
 </section>
@@ -421,7 +437,7 @@
             </div>
           </div>
 
-          <!-- Értesítési preferencia és jogi pipa (rel="noopener noreferrer" biztonsági javítással) -->
+          <!-- Értesítési preferencia és jogi pipa -->
           <div class="form-legal-box">
             <label class="checkbox-label">
               <input type="checkbox" id="orderEmailConsent" checked />

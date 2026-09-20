@@ -1,25 +1,33 @@
 :root {
-    --primary-color: #E5A93C;
-    --primary-dark: #C68B45;
-    --accent-color: #F07A5D;
-    --bg-dark: #120A05;
-    --bg-light: #1F140D;
-    --bg-card: #2B1D14;
+    /* Organikus, meleg méz és méhviasz prémium paletta */
+    --primary-color: #E2A136;
+    --primary-light: #F4C46E;
+    --primary-dark: #B87B20;
+    --accent-color: #D96846;
 
-    --text-main: #F5EFE6;
-    --text-muted: #C0B0A0;
+    /* Mély, meleg fa- és propolisz-árnyalatok (nem rideg fekete) */
+    --bg-dark: #120A06;
+    --bg-light: #1A1009;
+    --bg-card: #23160D;
+    --bg-card-hover: #2E1D12;
 
-    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
-    --border-glow: rgba(229, 169, 60, 0.12);
+    --text-main: #FBF7F0;
+    --text-muted: #B8A899;
+    --text-subtle: #877769;
+
+    /* Részletgazdag, természetes fények és árnyékok */
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.28);
+    --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.38);
+    --shadow-lg: 0 22px 50px rgba(0, 0, 0, 0.5);
+    --border-glow: rgba(226, 161, 54, 0.14);
+    --border-highlight: rgba(226, 161, 54, 0.35);
 
     --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    --radius-lg: 20px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
 
-    --duration: 20s;
-    --opacity: 0.3;
+    --duration: 22s;
+    --opacity: 0.25;
     --drift: 0px;
 }

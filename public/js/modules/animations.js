@@ -28,6 +28,34 @@ export function initAmbientPollen() {
     }
 }
 
+/**
+ * 3D finom kártyadöntés a Rólunk képnél (letisztult, természetes lebegéssel)
+ */
+export function initAboutVisualInteractions() {
+    const wrapper = document.getElementById("aboutVisualWrapper");
+    if (!wrapper || window.innerWidth < 992) return;
+
+    const frame = wrapper.querySelector(".about-card-frame");
+    if (!frame) return;
+
+    wrapper.addEventListener("mousemove", (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        const rotateX = -(y / rect.height) * 8;
+        const rotateY = (x / rect.width) * 8;
+
+        frame.style.animationPlayState = "paused";
+        frame.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+
+    wrapper.addEventListener("mouseleave", () => {
+        frame.style.animationPlayState = "running";
+        frame.style.transform = "";
+    });
+}
+
 export function initInteractiveBee() {
     const bee = document.querySelector(".hero-bee-container");
     const hero = document.querySelector(".hero");

@@ -1,4 +1,4 @@
-import { initAmbientPollen, initInteractiveBee } from './modules/animations.js';
+import { initAmbientPollen, initInteractiveBee, initAboutVisualInteractions } from './modules/animations.js';
 import {
     initScrollReveal,
     initMobileMenu,
@@ -39,6 +39,7 @@ function checkPaymentStatusParams() {
 document.addEventListener("DOMContentLoaded", () => {
     initAmbientPollen();
     initInteractiveBee();
+    initAboutVisualInteractions();
     initScrollReveal();
     initMobileMenu();
     initHeaderScroll();
