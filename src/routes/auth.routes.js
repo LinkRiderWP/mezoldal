@@ -2,9 +2,22 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const { db } = require('../config/firebase');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'miklo_default_jwt_secret_dev_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókból!");
+}
+
+// Sebességkorlátozás bejelentkezésre és regisztrációra
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 perc
+    max: 10, // maximum 10 kísérlet / IP
+    message: { success: false, message: "Túl sok próbálkozás ebből a hálózatból. Kérjük várjon 15 percet!" },
+    standardHeaders: true,
+    legacyHeaders: false
+});
 
 function generateToken(user) {
     return jwt.sign(
@@ -32,7 +45,7 @@ function authenticate(req, res, next) {
 }
 
 // 1. Regisztráció
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     try {
         const { email, password, name, phone, zip, city, address, company, taxNumber, wantsEmailNotification } = req.body;
 
@@ -40,11 +53,20 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ success: false, message: "A név, e-mail cím és jelszó megadása kötelező!" });
         }
 
-        if (password.length < 6) {
-            return res.status(400).json({ success: false, message: "A jelszónak legalább 6 karakternek kell lennie!" });
+        if (typeof password !== 'string' || password.length < 6 || password.length > 72) {
+            return res.status(400).json({ success: false, message: "A jelszónak 6 és 72 karakter között kell lennie!" });
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const normalizedEmail = email.toLowerCase().trim();
+        if (!emailRegex.test(normalizedEmail) || normalizedEmail.length > 150) {
+            return res.status(400).json({ success: false, message: "Érvénytelen e-mail cím formátum!" });
+        }
+
+        if (name.trim().length > 100) {
+            return res.status(400).json({ success: false, message: "A név nem haladhatja meg a 100 karaktert!" });
+        }
+
         const usersRef = db.collection('users');
         const existing = await usersRef.where('email', '==', normalizedEmail).get();
 
@@ -60,12 +82,12 @@ router.post('/register', async (req, res) => {
             email: normalizedEmail,
             password: hashedPassword,
             name: name.trim(),
-            phone: phone ? phone.trim() : "",
-            zip: zip ? zip.trim() : "",
-            city: city ? city.trim() : "",
-            address: address ? address.trim() : "",
-            company: company ? company.trim() : "",
-            taxNumber: taxNumber ? taxNumber.trim() : "",
+            phone: phone ? String(phone).trim().slice(0, 30) : "",
+            zip: zip ? String(zip).trim().slice(0, 10) : "",
+            city: city ? String(city).trim().slice(0, 50) : "",
+            address: address ? String(address).trim().slice(0, 100) : "",
+            company: company ? String(company).trim().slice(0, 100) : "",
+            taxNumber: taxNumber ? String(taxNumber).trim().slice(0, 30) : "",
             wantsEmailNotification: wantsEmailNotification !== false,
             createdAt: new Date().toISOString()
         };
@@ -88,14 +110,14 @@ router.post('/register', async (req, res) => {
 });
 
 // 2. Bejelentkezés
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) {
+        if (!email || !password || typeof password !== 'string') {
             return res.status(400).json({ success: false, message: "Kérjük adja meg e-mail címét és jelszavát!" });
         }
 
-        const normalizedEmail = email.toLowerCase().trim();
+        const normalizedEmail = String(email).toLowerCase().trim();
         const usersRef = db.collection('users');
         const snapshot = await usersRef.where('email', '==', normalizedEmail).limit(1).get();
 
@@ -137,8 +159,9 @@ router.get('/me', authenticate, async (req, res) => {
         const user = userDoc.data();
         delete user.password;
 
+        // Csak a hitelesített fiókhoz tartozó rendelések lekérése
         const ordersSnapshot = await db.collection('orders')
-            .where('customer.email', '==', user.email)
+            .where('userId', '==', req.user.id)
             .get();
 
         const orders = [];

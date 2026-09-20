@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const escapeHtml = require('escape-html');
 
 class EmailService {
     constructor() {
@@ -25,22 +26,32 @@ class EmailService {
         if (!order || !order.customer || !order.customer.email) return;
 
         const customerEmail = order.customer.email;
-        const customerName = order.customer.name || 'Kedves Vásárlónk';
+        const customerName = escapeHtml(order.customer.name || 'Kedves Vásárlónk');
+        const orderRef = escapeHtml(order.orderRef || '');
+        const zip = escapeHtml(String(order.customer.zip || ''));
+        const city = escapeHtml(order.customer.city || '');
+        const address = escapeHtml(order.customer.address || '');
+        const phone = escapeHtml(order.customer.phone || '');
         const fromAddress = process.env.EMAIL_FROM || '"Mikló Méhészet" <info@miklomez.hu>';
 
-        const itemsRows = order.items.map(item => `
+        const itemsRows = (order.items || []).map(item => {
+            const itemName = escapeHtml(item.name || item.cim || 'Méz');
+            const qty = Number(item.qty || item.quantity || 1);
+            const price = Number(item.price || 0);
+            return `
             <tr style="border-bottom: 1px solid #3A281E;">
-                <td style="padding: 10px; color: #F5EFE6;">${item.name || item.cim}</td>
-                <td style="padding: 10px; text-align: center; color: #F5EFE6;">${item.qty || item.quantity} db</td>
-                <td style="padding: 10px; text-align: right; color: #E5A93C; font-weight: bold;">${(item.price * (item.qty || item.quantity)).toLocaleString('hu-HU')} Ft</td>
+                <td style="padding: 10px; color: #F5EFE6;">${itemName}</td>
+                <td style="padding: 10px; text-align: center; color: #F5EFE6;">${qty} db</td>
+                <td style="padding: 10px; text-align: right; color: #E5A93C; font-weight: bold;">${(price * qty).toLocaleString('hu-HU')} Ft</td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
 
         const shippingRow = order.shipping ? `
             <tr style="border-bottom: 1px solid #3A281E;">
-                <td style="padding: 10px; color: #C0B0A0;">Szállítás: ${order.shipping.name}</td>
+                <td style="padding: 10px; color: #C0B0A0;">Szállítás: ${escapeHtml(order.shipping.name || '')}</td>
                 <td style="padding: 10px; text-align: center; color: #C0B0A0;">1 db</td>
-                <td style="padding: 10px; text-align: right; color: #E5A93C; font-weight: bold;">${order.shipping.price === 0 ? 'Ingyenes' : `${order.shipping.price.toLocaleString('hu-HU')} Ft`}</td>
+                <td style="padding: 10px; text-align: right; color: #E5A93C; font-weight: bold;">${order.shipping.price === 0 ? 'Ingyenes' : `${Number(order.shipping.price).toLocaleString('hu-HU')} Ft`}</td>
             </tr>
         ` : '';
 
@@ -69,12 +80,12 @@ class EmailService {
                 </div>
 
                 <p>Kedves <strong>${customerName}</strong>!</p>
-                <p>Köszönjük megrendelését! A(z) <strong>${order.orderRef}</strong> számú rendelés kifizetése sikeresen megtörtént.</p>
+                <p>Köszönjük megrendelését! A(z) <strong>${orderRef}</strong> számú rendelés kifizetése sikeresen megtörtént.</p>
 
                 <div class="order-box">
                     <p style="margin: 0 0 5px;"><strong>Szállítási adatok:</strong></p>
-                    <p style="margin: 0; color: #C0B0A0;">${order.customer.zip} ${order.customer.city}, ${order.customer.address}</p>
-                    <p style="margin: 5px 0 0; color: #C0B0A0;">Telefonszám: ${order.customer.phone}</p>
+                    <p style="margin: 0; color: #C0B0A0;">${zip} ${city}, ${address}</p>
+                    <p style="margin: 5px 0 0; color: #C0B0A0;">Telefonszám: ${phone}</p>
                 </div>
 
                 <table>
@@ -116,7 +127,7 @@ class EmailService {
             await this.transporter.sendMail({
                 from: fromAddress,
                 to: customerEmail,
-                subject: `Sikeres rendelés: ${order.orderRef} – Mikló Méhészet`,
+                subject: `Sikeres rendelés: ${orderRef} – Mikló Méhészet`,
                 html: htmlContent
             });
             console.log(`✅ Értesítő e-mail sikeresen elküldve: ${customerEmail}`);

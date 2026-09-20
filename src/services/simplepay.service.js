@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 class SimplePayService {
     constructor() {
         this.merchant = process.env.SIMPLEPAY_MERCHANT;
-        this.secretKey = process.env.SIMPLEPAY_SECRET_KEY;
+        this.secretKey = (process.env.SIMPLEPAY_SECRET_KEY || '').trim();
         this.isSandbox = process.env.SIMPLEPAY_SANDBOX === 'true';
         this.apiUrl = this.isSandbox
             ? 'https://sandbox.simplepay.hu/payment/v2/start'
@@ -12,14 +12,33 @@ class SimplePayService {
     }
 
     calculateSignature(data) {
-        return crypto.createHmac('sha384', (this.secretKey || '').trim())
+        if (!this.secretKey) {
+            throw new Error("SIMPLEPAY_SECRET_KEY nincs beállítva a szerveren!");
+        }
+        return crypto.createHmac('sha384', this.secretKey)
             .update(typeof data === 'string' ? data : JSON.stringify(data))
             .digest('base64');
     }
 
     verifySignature(rawBody, receivedSignature) {
-        const expectedSignature = this.calculateSignature(rawBody);
-        return expectedSignature === receivedSignature;
+        if (!this.secretKey || !receivedSignature || !rawBody) {
+            return false;
+        }
+
+        try {
+            const expectedSignature = this.calculateSignature(rawBody);
+            const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+            const receivedBuffer = Buffer.from(receivedSignature, 'utf8');
+
+            if (expectedBuffer.length !== receivedBuffer.length) {
+                return false;
+            }
+
+            return crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
+        } catch (e) {
+            console.error("Aláírás-hitelesítési hiba:", e);
+            return false;
+        }
     }
 
     async startTransaction(orderRef, totalAmount, customer, returnUrl) {
