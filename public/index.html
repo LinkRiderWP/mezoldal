@@ -14,7 +14,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Frissített stíluslap elérési út -->
   <link rel="stylesheet" href="css/style.css" />
 
   <!-- Strukturált adatok (JSON-LD) -->
@@ -40,7 +39,7 @@
 </head>
 <body>
 
-<!-- Passzív Aranyló Háttérrészecskék (Particle Effect) -->
+<!-- Passzív Aranyló Háttérrészecskék -->
 <div class="ambient-particles" id="ambientParticles" aria-hidden="true"></div>
 
 <!-- Navigáció -->
@@ -65,8 +64,18 @@
       <a href="#contact" class="nav-link">Rendelés</a>
     </nav>
 
-    <!-- Fejléc jobb oldali szekció: Közösségi ikonok & Hamburger -->
+    <!-- Fejléc jobb oldali szekció: Kosár gomb, Közösségi ikonok & Hamburger -->
     <div class="header-actions">
+      <!-- Fejléc Kosár gomb számlálóval -->
+      <a href="#contact" class="header-cart-btn" id="headerCartBtn" aria-label="Kosár megtekintése">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-badge" id="headerCartBadge">0</span>
+      </a>
+
       <div class="header-socials">
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -175,7 +184,7 @@
 
       <div class="bulk-announcement">
         <span class="announcement-badge">Kedvező nagytétel</span>
-        <p>Üveges mézeink <strong>250g, 500g és 900g</strong> kiszerelésben is elérhetők, nagyobb tételben pedig <strong>kiemelt kilogrammos árakon</strong> vásárolhat!</p>
+        <p>Üveges mézeink <strong>250g, 500g és 900g</strong> kiszerelésben is elérhetők, <strong>15 000 Ft felett pedig ingyenesen szállítunk</strong>!</p>
       </div>
     </div>
 
@@ -284,12 +293,12 @@
   </div>
 </section>
 
-<!-- Kapcsolat & Rendelés szekció (SimplePay & Billingo integrációval) -->
+<!-- Kapcsolat & Rendelés szekció (SimplePay, Billingo & Szállítás) -->
 <section id="contact" class="contact-section reveal">
   <div class="container">
     <div class="section-title">
       <h2>Biztonságos Online Megrendelés</h2>
-      <p class="subtitle">Állítsa össze rendelését, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát!</p>
+      <p class="subtitle">Állítsa össze rendelését, válasszon szállítási módot, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát!</p>
     </div>
 
     <!-- Fizetési visszajelzés szalagok SimplePay után -->
@@ -488,19 +497,78 @@
               </div>
             </div>
 
-            <!-- Kosár tartalma -->
+            <!-- Kosár tartalma és Ingyenes szállítás motivációs sáv -->
             <div class="calc-cart-container" id="cartContainer" style="display: none;">
+              <!-- Ingyenes szállítás progress bar -->
+              <div class="free-shipping-box" id="freeShippingBox">
+                <div class="free-shipping-text" id="freeShippingText">Még 15 000 Ft az ingyenes szállításhoz!</div>
+                <div class="free-shipping-bar">
+                  <div class="free-shipping-progress" id="freeShippingProgress" style="width: 0%;"></div>
+                </div>
+              </div>
+
               <ul class="cart-list" id="cartList"></ul>
-              <div class="cart-summary">
-                <span>Fizetendő végösszeg:</span>
-                <strong id="cartTotal">0 Ft</strong>
+
+              <!-- Szállítási Mód Választó Kártyák -->
+              <div class="shipping-section-box">
+                <span class="shipping-title">Válasszon szállítási módot:</span>
+                <div class="shipping-options-grid">
+                  <label class="shipping-option-card">
+                    <input type="radio" name="shippingMethod" value="courier" checked />
+                    <div class="shipping-card-content">
+                      <div class="shipping-card-header">
+                        <span class="shipping-icon">🚚</span>
+                        <span class="shipping-name">MPL Házhozszállítás</span>
+                      </div>
+                      <span class="shipping-price" id="shippingPriceCourier">1 990 Ft</span>
+                    </div>
+                  </label>
+
+                  <label class="shipping-option-card">
+                    <input type="radio" name="shippingMethod" value="parcel" />
+                    <div class="shipping-card-content">
+                      <div class="shipping-card-header">
+                        <span class="shipping-icon">📦</span>
+                        <span class="shipping-name">MPL Csomagautomata / PostaPont</span>
+                      </div>
+                      <span class="shipping-price" id="shippingPriceParcel">990 Ft</span>
+                    </div>
+                  </label>
+
+                  <label class="shipping-option-card">
+                    <input type="radio" name="shippingMethod" value="pickup" />
+                    <div class="shipping-card-content">
+                      <div class="shipping-card-header">
+                        <span class="shipping-icon">🏠</span>
+                        <span class="shipping-name">Személyes átvétel (Alföld)</span>
+                      </div>
+                      <span class="shipping-price" id="shippingPricePickup">Ingyenes</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Részletes Összesítő -->
+              <div class="cart-breakdown">
+                <div class="breakdown-row">
+                  <span>Termékek összesen:</span>
+                  <span id="cartSubtotal">0 Ft</span>
+                </div>
+                <div class="breakdown-row">
+                  <span>Szállítási költség:</span>
+                  <span id="cartShippingFee">1 990 Ft</span>
+                </div>
+                <div class="cart-summary">
+                  <span>Fizetendő végösszeg:</span>
+                  <strong id="cartTotal">0 Ft</strong>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="form-group">
             <label for="message" class="form-label">Megjegyzés a futárnak / méhésznek (opcionális)</label>
-            <textarea id="message" name="message" placeholder="Pl. kapucsengő, szállítási megjegyzés..." rows="3"></textarea>
+            <textarea id="message" name="message" placeholder="Pl. kapucsengő, csomagautomata azonosító, szállítási megjegyzés..." rows="3"></textarea>
           </div>
 
           <!-- SimplePay Kötelező Adattovábbítási Nyilatkozat -->
@@ -528,6 +596,14 @@
   </div>
 </section>
 
+<!-- Lebegő Gyors-Kosár gomb (mobilon és asztalin is látható, ha van tétel a kosárban) -->
+<a href="#contact" class="floating-cart-btn" id="floatingCartBtn" aria-label="Ugrás a kosárhoz" style="display: none;">
+  <span class="floating-cart-icon">🛒</span>
+  <span class="floating-cart-count" id="floatingCartCount">0 db</span>
+  <span class="floating-cart-divider">•</span>
+  <strong class="floating-cart-total" id="floatingCartTotal">0 Ft</strong>
+</a>
+
 <!-- Vissza a tetejére gomb -->
 <button id="backToTop" class="back-to-top" aria-label="Vissza a tetejére">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -553,7 +629,6 @@
   </div>
 </footer>
 
-<!-- Frissített ES Module szkript belépési pont -->
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

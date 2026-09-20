@@ -4,19 +4,26 @@ const { db } = require('../config/firebase');
 const simplePayService = require('../services/simplepay.service');
 const { createBillingoInvoice } = require('../services/billingo.service');
 
-// 1. Fizetés inicializálása - VÉDETT ÁRKÉPZÉSSEL
+// Hivatalos szállítási konfiguráció a szerveren (manipulálhatatlan)
+const SHIPPING_CONFIG = {
+    courier: { name: 'MPL Házhozszállítás', price: 1990 },
+    parcel: { name: 'MPL Csomagautomata / PostaPont', price: 990 },
+    pickup: { name: 'Személyes átvétel', price: 0 }
+};
+const FREE_SHIPPING_LIMIT = 15000;
+
+// 1. Fizetés inicializálása - VÉDETT ÁRKÉPZÉSSEL ÉS SZÁLLÍTÁSSAL
 router.post('/create-payment', async (req, res) => {
     try {
-        const { items, customer, note } = req.body;
+        const { items, customer, note, shippingMethod } = req.body;
         if (!items?.length || !customer?.email) {
             return res.status(400).json({ success: false, message: "Hiányos rendelési adatok." });
         }
 
-        // --- SZERVEROLDALI ÁRVÉDELEM (FIREBASE) KEZDETE ---
-        let calculatedTotal = 0;
+        // --- 1. TERMÉKÁRAK HITELÍTÉSE FIREBASE-BŐL ---
+        let itemsTotal = 0;
         const verifiedItems = [];
 
-        // Lekérjük a termékeket a Firebase Firestore 'products' gyűjteményéből
         const productsSnapshot = await db.collection('products').get();
         const dbProducts = {};
         productsSnapshot.forEach(doc => {
@@ -33,10 +40,9 @@ router.post('/create-payment', async (req, res) => {
             }
 
             const qty = Math.max(1, parseInt(item.qty, 10) || 1);
-            // KIZÁRÓLAG a Firebase-ből származó hiteles árat vesszük figyelembe:
             const officialUnitPrice = productData.arak[item.size];
             const lineTotal = officialUnitPrice * qty;
-            calculatedTotal += lineTotal;
+            itemsTotal += lineTotal;
 
             verifiedItems.push({
                 productId: item.id,
@@ -50,17 +56,36 @@ router.post('/create-payment', async (req, res) => {
                 total: lineTotal
             });
         }
-        // --- SZERVEROLDALI ÁRVÉDELEM VÉGE ---
 
+        // --- 2. SZÁLLÍTÁSI DÍJ SZERVEROLDALI HITELÍTÉSE ---
+        const chosenShippingKey = SHIPPING_CONFIG[shippingMethod] ? shippingMethod : 'courier';
+        const shippingOption = SHIPPING_CONFIG[chosenShippingKey];
+
+        let shippingFee = shippingOption.price;
+        let isFreeShipping = false;
+
+        if (chosenShippingKey === 'pickup' || itemsTotal >= FREE_SHIPPING_LIMIT) {
+            shippingFee = 0;
+            isFreeShipping = true;
+        }
+
+        const finalTotalAmount = itemsTotal + shippingFee;
         const orderRef = 'MM-' + Date.now();
 
-        // Rendelés elmentése Firebase Firestore-ba (perzisztens, szerver újrainduláskor sem vész el!)
+        // Rendelés elmentése a Firebase Firestore-ba
         await db.collection('orders').doc(orderRef).set({
             orderRef,
             items: verifiedItems,
+            itemsTotal,
+            shipping: {
+                methodKey: chosenShippingKey,
+                name: shippingOption.name,
+                price: shippingFee,
+                isFree: isFreeShipping
+            },
             customer,
             note: note || "",
-            totalAmount: calculatedTotal,
+            totalAmount: finalTotalAmount,
             status: 'PENDING',
             createdAt: new Date().toISOString()
         });
@@ -68,8 +93,8 @@ router.post('/create-payment', async (req, res) => {
         const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
         const returnUrl = `${baseUrl}/api/simplepay-back`;
 
-        // A SimplePay-nek a szerver által kiszámolt és védett összeget adjuk át!
-        const spData = await simplePayService.startTransaction(orderRef, calculatedTotal, customer, returnUrl);
+        // SimplePay tranzakció indítása a golyóálló végösszeggel
+        const spData = await simplePayService.startTransaction(orderRef, finalTotalAmount, customer, returnUrl);
 
         if (spData?.paymentUrl) {
             return res.json({ success: true, paymentUrl: spData.paymentUrl });
@@ -100,7 +125,7 @@ router.get('/simplepay-back', (req, res) => {
     res.redirect(`/?payment=${isSuccess ? 'success' : 'failed'}&order=${orderRef}#contact`);
 });
 
-// 3. SimplePay IPN webhook (Firebase frissítés & Számlázás)
+// 3. SimplePay IPN webhook
 router.post('/simplepay-ipn', async (req, res) => {
     try {
         const rawBody = req.rawBody || JSON.stringify(req.body);
@@ -117,14 +142,13 @@ router.post('/simplepay-ipn', async (req, res) => {
         if (orderDoc.exists && ipnData.status === 'FINISHED') {
             const order = orderDoc.data();
 
-            // Státusz frissítése Firebase-ben PAID-re
             await orderDocRef.update({
                 status: 'PAID',
                 transactionId: ipnData.transactionId,
                 paidAt: new Date().toISOString()
             });
 
-            // Billingo számla automatikus kiállítása
+            // Számla kiállítása a szállítási tétellel együtt
             await createBillingoInvoice(order);
         }
 

@@ -1,4 +1,4 @@
-import { getCart } from './cart.js';
+import { getCart, getSelectedShippingMethod } from './cart.js';
 import { showToast } from './ui.js';
 
 export function initOrderAndSimplePay() {
@@ -33,6 +33,7 @@ export function initOrderAndSimplePay() {
         const message = document.getElementById("message").value.trim();
         const companyName = isCompany ? document.getElementById("companyName").value.trim() : "";
         const taxNumber = isCompany ? document.getElementById("taxNumber").value.trim() : "";
+        const shippingMethod = getSelectedShippingMethod();
 
         // Név ellenőrzés
         if (name.split(/\s+/).length < 2) {
@@ -67,6 +68,7 @@ export function initOrderAndSimplePay() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     items: cart,
+                    shippingMethod: shippingMethod,
                     customer: {
                         name,
                         email,

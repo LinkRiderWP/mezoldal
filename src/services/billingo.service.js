@@ -10,6 +10,8 @@ async function createBillingoInvoice(order) {
     }
 
     const today = new Date().toISOString().split('T')[0];
+
+    // 1. Terméktételek összeállítása
     const items = order.items.map(item => ({
         name: item.cim,
         unit_price: item.price,
@@ -19,6 +21,19 @@ async function createBillingoInvoice(order) {
         vat: "AAM",
         comment: "Kézműves magyar méz"
     }));
+
+    // 2. Szállítási díj tétel (ha van és nem ingyenes)
+    if (order.shipping && order.shipping.price > 0) {
+        items.push({
+            name: `Kiszállítási díj (${order.shipping.name})`,
+            unit_price: order.shipping.price,
+            unit_price_type: "gross",
+            quantity: 1,
+            unit: "db",
+            vat: "AAM",
+            comment: "MPL szállítási szolgáltatás"
+        });
+    }
 
     const invoicePayload = {
         partner: {
