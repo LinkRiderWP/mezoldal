@@ -623,6 +623,11 @@
 .form-group input,
 .form-group textarea {
     width: 100%;
+    max-width: 100%;       /* Nem engedi, hogy szélesebb legyen a szülő doboznál */
+    min-width: 100%;
+    min-height: 70px;      /* Minimális magasság */
+    max-height: 180px;     /* Nem engedi végtelenül lefelé sem nyújtani */
+    resize: vertical;      /* KIZÁRÓLAG függőlegesen engedi nyújtani, oldalra NEM! */
     padding: 0.8rem 1rem;
     border-radius: var(--radius-md);
     border: 1px solid rgba(229, 169, 60, 0.22);
@@ -630,7 +635,7 @@
     color: var(--text-main);
     font-family: 'Poppins', sans-serif;
     font-size: 0.92rem;
-    transition: var(--transition-smooth);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .form-group input:focus,
