@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const { db } = require('../config/firebase');
 const simplePayService = require('../services/simplepay.service');
 const { createBillingoInvoice } = require('../services/billingo.service');
+const emailService = require('../services/email.service');
 
-// Hivatalos szállítási konfiguráció a szerveren (manipulálhatatlan)
+const JWT_SECRET = process.env.JWT_SECRET || 'miklo_default_jwt_secret_dev_2026';
+
 const SHIPPING_CONFIG = {
     courier: { name: 'MPL Házhozszállítás', price: 1990 },
     parcel: { name: 'MPL Csomagautomata / PostaPont', price: 990 },
@@ -12,15 +15,28 @@ const SHIPPING_CONFIG = {
 };
 const FREE_SHIPPING_LIMIT = 15000;
 
-// 1. Fizetés inicializálása - VÉDETT ÁRKÉPZÉSSEL ÉS SZÁLLÍTÁSSAL
+function extractOptionalUser(req) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+            return jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+// 1. Fizetés inicializálása
 router.post('/create-payment', async (req, res) => {
     try {
-        const { items, customer, note, shippingMethod } = req.body;
+        const { items, customer, note, shippingMethod, wantsEmailNotification } = req.body;
         if (!items?.length || !customer?.email) {
             return res.status(400).json({ success: false, message: "Hiányos rendelési adatok." });
         }
 
-        // --- 1. TERMÉKÁRAK HITELÍTÉSE FIREBASE-BŐL ---
+        const optionalUser = extractOptionalUser(req);
+
         let itemsTotal = 0;
         const verifiedItems = [];
 
@@ -57,7 +73,6 @@ router.post('/create-payment', async (req, res) => {
             });
         }
 
-        // --- 2. SZÁLLÍTÁSI DÍJ SZERVEROLDALI HITELÍTÉSE ---
         const chosenShippingKey = SHIPPING_CONFIG[shippingMethod] ? shippingMethod : 'courier';
         const shippingOption = SHIPPING_CONFIG[chosenShippingKey];
 
@@ -72,9 +87,9 @@ router.post('/create-payment', async (req, res) => {
         const finalTotalAmount = itemsTotal + shippingFee;
         const orderRef = 'MM-' + Date.now();
 
-        // Rendelés elmentése a Firebase Firestore-ba
         await db.collection('orders').doc(orderRef).set({
             orderRef,
+            userId: optionalUser ? optionalUser.id : null,
             items: verifiedItems,
             itemsTotal,
             shipping: {
@@ -86,6 +101,7 @@ router.post('/create-payment', async (req, res) => {
             customer,
             note: note || "",
             totalAmount: finalTotalAmount,
+            wantsEmailNotification: wantsEmailNotification !== false,
             status: 'PENDING',
             createdAt: new Date().toISOString()
         });
@@ -93,7 +109,6 @@ router.post('/create-payment', async (req, res) => {
         const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
         const returnUrl = `${baseUrl}/api/simplepay-back`;
 
-        // SimplePay tranzakció indítása a golyóálló végösszeggel
         const spData = await simplePayService.startTransaction(orderRef, finalTotalAmount, customer, returnUrl);
 
         if (spData?.paymentUrl) {
@@ -148,8 +163,13 @@ router.post('/simplepay-ipn', async (req, res) => {
                 paidAt: new Date().toISOString()
             });
 
-            // Számla kiállítása a szállítási tétellel együtt
+            // 1. Számlázás Billingo-val
             await createBillingoInvoice(order);
+
+            // 2. Automatikus e-mail visszaigazolás küldése a vevőnek
+            if (order.wantsEmailNotification !== false) {
+                await emailService.sendOrderConfirmation(order);
+            }
         }
 
         const responsePayload = JSON.stringify(ipnData);

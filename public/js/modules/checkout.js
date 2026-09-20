@@ -1,5 +1,6 @@
 import { getCart, getSelectedShippingMethod } from './cart.js';
 import { showToast } from './ui.js';
+import { getToken } from './auth.js';
 
 export function initOrderAndSimplePay() {
     const form = document.getElementById("contactForm");
@@ -35,6 +36,9 @@ export function initOrderAndSimplePay() {
         const taxNumber = isCompany ? document.getElementById("taxNumber").value.trim() : "";
         const shippingMethod = getSelectedShippingMethod();
 
+        const emailConsentCheckbox = document.getElementById("orderEmailConsent");
+        const wantsEmailNotification = emailConsentCheckbox ? emailConsentCheckbox.checked : true;
+
         // Név ellenőrzés
         if (name.split(/\s+/).length < 2) {
             showToast("Kérjük, adja meg teljes nevét (Vezetéknév és Keresztnév)!", "warning");
@@ -63,9 +67,15 @@ export function initOrderAndSimplePay() {
         if (spanText) spanText.textContent = "Átirányítás a SimplePay felületére...";
 
         try {
+            const token = getToken();
+            const headers = { "Content-Type": "application/json" };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+
             const response = await fetch("/api/create-payment", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({
                     items: cart,
                     shippingMethod: shippingMethod,
@@ -79,6 +89,7 @@ export function initOrderAndSimplePay() {
                         company: companyName,
                         taxNumber: taxNumber
                     },
+                    wantsEmailNotification,
                     note: message
                 })
             });

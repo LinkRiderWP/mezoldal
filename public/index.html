@@ -64,8 +64,17 @@
       <a href="#contact" class="nav-link">Rendelés</a>
     </nav>
 
-    <!-- Fejléc jobb oldali szekció: Kosár gomb, Közösségi ikonok & Hamburger -->
+    <!-- Fejléc jobb oldali szekció: Felhasználó gomb, Kosár gomb, Közösségi ikonok & Hamburger -->
     <div class="header-actions">
+      <!-- Felhasználói Fiók gomb (Login / Profil) -->
+      <button type="button" class="header-auth-btn" id="headerAuthBtn" aria-label="Felhasználói fiók">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span id="headerAuthBtnText">Bejelentkezés</span>
+      </button>
+
       <!-- Fejléc Kosár gomb számlálóval -->
       <a href="#contact" class="header-cart-btn" id="headerCartBtn" aria-label="Kosár megtekintése">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -298,13 +307,13 @@
   <div class="container">
     <div class="section-title">
       <h2>Biztonságos Online Megrendelés</h2>
-      <p class="subtitle">Állítsa össze rendelését, válasszon szállítási módot, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát!</p>
+      <p class="subtitle">Állítsa össze rendelését, válasszon szállítási módot, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát és az értesítő e-mailt!</p>
     </div>
 
     <!-- Fizetési visszajelzés szalagok SimplePay után -->
     <div id="paymentAlertSuccess" class="payment-alert success" style="display: none;">
       <h3>🎉 Sikeres fizetés!</h3>
-      <p>Köszönjük a megrendelést! A tranzakció sikeres volt. A Billingo által kiállított hivatalos e-számlát és a rendelés részleteit elküldtük az Ön e-mail címére.</p>
+      <p>Köszönjük a megrendelést! A tranzakció sikeres volt. A visszaigazolást, a rendelés részleteit és a Billingo e-számlát elküldtük az Ön e-mail címére.</p>
     </div>
     <div id="paymentAlertFailed" class="payment-alert error" style="display: none;">
       <h3>⚠️ A fizetés megszakadt vagy sikertelen volt</h3>
@@ -402,7 +411,7 @@
               <input type="text" id="name" name="name" placeholder="Pl. Minta János" autocomplete="name" required />
             </div>
             <div class="form-group">
-              <label for="email" class="form-label">E-mail cím (ide érkezik az e-számla) *</label>
+              <label for="email" class="form-label">E-mail cím (ide érkezik az e-számla & értesítés) *</label>
               <input type="email" id="email" name="email" placeholder="Pl. minta.janos@gmail.com" autocomplete="email" required />
             </div>
           </div>
@@ -571,6 +580,16 @@
             <textarea id="message" name="message" placeholder="Pl. kapucsengő, csomagautomata azonosító, szállítási megjegyzés..." rows="3"></textarea>
           </div>
 
+          <!-- E-mail értesítési opció beállítása -->
+          <div class="email-notify-box">
+            <label class="checkbox-label">
+              <input type="checkbox" id="orderEmailConsent" checked />
+              <span class="legal-text">
+                📧 <strong>Kérek részletes e-mail értesítést a rendelés állapotáról:</strong> Küldjenek azonnali e-mail visszaigazolást a kifizetésről és a csomag előkészítéséről.
+              </span>
+            </label>
+          </div>
+
           <!-- SimplePay Kötelező Adattovábbítási Nyilatkozat -->
           <div class="form-legal-box">
             <label class="checkbox-label">
@@ -596,7 +615,115 @@
   </div>
 </section>
 
-<!-- Lebegő Gyors-Kosár gomb (mobilon és asztalin is látható, ha van tétel a kosárban) -->
+<!-- Felhasználói Autentikációs Modál Ablak (Bejelentkezés / Regisztráció / Profil) -->
+<div class="modal-backdrop" id="authModalBackdrop">
+  <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button type="button" class="close-modal-btn" id="closeAuthModalBtn" aria-label="Bezárás">&times;</button>
+
+    <!-- Fülek Bejelentkezéshez és Regisztrációhoz -->
+    <div class="auth-tabs-nav" id="authTabsNav">
+      <button type="button" class="auth-tab-btn active" id="tabLoginBtn">Bejelentkezés</button>
+      <button type="button" class="auth-tab-btn" id="tabRegisterBtn">Új fiók létrehozása</button>
+    </div>
+
+    <!-- 1. Bejelentkezés Nézet -->
+    <div class="auth-tab-content" id="viewLogin">
+      <h3 class="auth-modal-title" id="modalTitle">Üdvözöljük a méhészetünkben!</h3>
+      <p class="auth-modal-subtitle">Jelentkezzen be az elmentett címeihez és a rendelési értesítésekhez:</p>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">E-mail cím</label>
+          <input type="email" id="loginEmail" placeholder="minta@gmail.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Jelszó</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-primary auth-submit-btn">Bejelentkezés</button>
+      </form>
+    </div>
+
+    <!-- 2. Regisztráció Nézet -->
+    <div class="auth-tab-content" id="viewRegister" style="display: none;">
+      <h3 class="auth-modal-title">Fiók regisztráció</h3>
+      <p class="auth-modal-subtitle">Regisztráljon a gyorsabb rendeléshez és az automatikus e-mailes nyomon követéshez!</p>
+
+      <form id="registerForm" class="auth-form">
+        <div class="form-group">
+          <label for="regName" class="form-label">Teljes Név *</label>
+          <input type="text" id="regName" placeholder="Kovács Anna" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="regEmail" class="form-label">E-mail cím *</label>
+          <input type="email" id="regEmail" placeholder="kovacs.anna@gmail.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="regPassword" class="form-label">Jelszó (min. 6 karakter) *</label>
+          <input type="password" id="regPassword" minlength="6" placeholder="••••••••" required autocomplete="new-password" />
+        </div>
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="regPhone" class="form-label">Telefonszám</label>
+            <input type="tel" id="regPhone" placeholder="06 20 123 4567" />
+          </div>
+          <div class="form-group">
+            <label for="regZip" class="form-label">Irányítószám</label>
+            <input type="text" id="regZip" placeholder="4024" maxlength="4" />
+          </div>
+        </div>
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="regCity" class="form-label">Város</label>
+            <input type="text" id="regCity" placeholder="Debrecen" />
+          </div>
+          <div class="form-group">
+            <label for="regAddress" class="form-label">Utca, házszám</label>
+            <input type="text" id="regAddress" placeholder="Petőfi u. 4." />
+          </div>
+        </div>
+        <div class="email-notify-box">
+          <label class="checkbox-label">
+            <input type="checkbox" id="regEmailConsent" checked />
+            <span class="legal-text">
+              <strong>Kérek e-mail értesítéseket a rendeléseimről</strong> (állapotfrissítések, szállítási nyomkövetés).
+            </span>
+          </label>
+        </div>
+        <button type="submit" class="btn-primary auth-submit-btn">Fiók létrehozása</button>
+      </form>
+    </div>
+
+    <!-- 3. Profil & Korábbi Rendelések Nézet -->
+    <div class="auth-tab-content" id="viewProfile" style="display: none;">
+      <div class="profile-header">
+        <div class="profile-avatar">🐝</div>
+        <div class="profile-meta">
+          <h3 id="profileUserName">Felhasználó</h3>
+          <p id="profileUserEmail" class="profile-email-text">email@pelda.hu</p>
+        </div>
+      </div>
+
+      <div class="profile-preference-box">
+        <label class="checkbox-label">
+          <input type="checkbox" id="profileEmailConsent" />
+          <span class="legal-text">
+            <strong>E-mail értesítések kérése</strong> a megrendeléseimről és a szállításról
+          </span>
+        </label>
+      </div>
+
+      <h4 class="profile-orders-title">Korábbi megrendeléseim</h4>
+      <div class="profile-orders-list" id="profileOrdersList">
+        <p class="empty-orders-note">Rendelések betöltése...</p>
+      </div>
+
+      <button type="button" class="btn-logout" id="logoutBtn">Kijelentkezés</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lebegő Gyors-Kosár gomb -->
 <a href="#contact" class="floating-cart-btn" id="floatingCartBtn" aria-label="Ugrás a kosárhoz" style="display: none;">
   <span class="floating-cart-icon">🛒</span>
   <span class="floating-cart-count" id="floatingCartCount">0 db</span>
@@ -625,7 +752,7 @@
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-.87-.07z"/></svg>
       </a>
     </div>
-    <p>&copy; <span id="currentYear">2026</span> Mikló Méhészet. Minden jog fenntartva. | Biztonságos SimplePay fizetés & Billingo NAV számlázás.</p>
+    <p>&copy; <span id="currentYear">2026</span> Mikló Méhészet. Minden jog fenntartva. | Biztonságos SimplePay fizetés, Billingo NAV számlázás & E-mail értesítés.</p>
   </div>
 </footer>
 

@@ -12,6 +12,7 @@ import {
 import { loadHoneyProducts, initProductSearch } from './modules/products.js';
 import { initCalculatorAndCart, initQtyButtons, initCustomerTypeToggle, clearCart } from './modules/cart.js';
 import { initOrderAndSimplePay } from './modules/checkout.js';
+import { initAuth } from './modules/auth.js';
 
 function checkPaymentStatusParams() {
     const params = new URLSearchParams(window.location.search);
@@ -22,20 +23,21 @@ function checkPaymentStatusParams() {
     if (status === "success") {
         if (alertSuccess) alertSuccess.style.display = "block";
         clearCart();
-        showToast("A fizetés sikeres volt! A Billingo e-számlát elküldtük e-mailben.", "success");
+        showToast("A fizetés sikeres volt! A visszaigazolást és az e-számlát elküldtük e-mailben.", "success");
     } else if (status === "failed") {
         if (alertFailed) alertFailed.style.display = "block";
-        showToast("A fizetés sikertelen volt. Kérjük próbálja meg újra!", "error");
+        showToast("A fizetés megszakadt vagy sikertelen volt. Kérjük próbálja meg újra!", "error");
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     initAmbientPollen();
     initInteractiveBee();
-    initScrollReveal(); // <-- Ez teszi láthatóvá a szekciókat görgetéskor!
+    initScrollReveal();
     initMobileMenu();
     initHeaderScroll();
     loadHoneyProducts();
+    initAuth();
     initOrderAndSimplePay();
     initBackToTop();
     initActiveNavObserver();
