@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mikló – Prémium Családi Méhészet</title>
+
+  <!-- SEO Meta adatok -->
+  <meta name="description" content="Mikló - Prémium kézműves családi méhészet az Alföld szívéből. 100% nyers és tiszta napraforgó méz, akác méz és repce méz 250g, 500g és 900g kiszerelésben, közvetlen SimplePay bankkártyás fizetéssel és automatikus számlázással." />
+  <meta name="theme-color" content="#120A05" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Frissített stíluslap elérési út -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Strukturált adatok (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": "https://miklomez.hu/#localbusiness",
+      "name": "Mikló - Prémium Családi Méhészet",
+      "image": "https://raw.githubusercontent.com/LinkRiderWP/mezoldal/main/kepek/akacmez.jpg",
+      "url": "https://miklomez.hu",
+      "telephone": "+36203520468",
+      "email": "info@miklomez.hu",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Alföld",
+        "addressCountry": "HU"
+      },
+      "description": "Kézműves családi méhészet az Alföldön. 100% magyar termék, nyers és tiszta akác méz, napraforgó méz és repce méz közvetlenül a termelőtől kis- és nagytételben."
+    }
+  </script>
+</head>
+<body>
+
+<!-- Passzív Aranyló Háttérrészecskék (Particle Effect) -->
+<div class="ambient-particles" id="ambientParticles" aria-hidden="true"></div>
+
+<!-- Navigáció -->
+<header class="main-header">
+  <div class="nav-container">
+    <a href="#" class="logo" aria-label="Mikló Méhészet Főoldal">
+      <span class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2z"/>
+          <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="logo-text">Mikló <span class="logo-highlight">Méhészet</span></span>
+    </a>
+
+    <!-- Fő navigációs menü -->
+    <nav class="menu" id="menu">
+      <a href="#values" class="nav-link">Értékeink</a>
+      <a href="#products" class="nav-link">Kínálatunk</a>
+      <a href="#guide" class="nav-link">Mézkalauz</a>
+      <a href="#about" class="nav-link">Rólunk</a>
+      <a href="#contact" class="nav-link">Rendelés</a>
+    </nav>
+
+    <!-- Fejléc jobb oldali szekció: Közösségi ikonok & Hamburger -->
+    <div class="header-actions">
+      <div class="header-socials">
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+          </svg>
+        </a>
+        <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-.87-.07z"/>
+          </svg>
+        </a>
+      </div>
+
+      <button class="hamburger" id="hamburger" aria-label="Menü megnyitása" aria-expanded="false" aria-controls="menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero szekció -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+
+  <div class="hero-bee-container" title="Kattints a méhecskére!">
+    <div class="floating-bee-drifter">
+      <svg class="floating-bee" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M50 40 C45 35, 45 65, 50 60 C55 65, 55 35, 50 40 Z" fill="var(--primary-color)" />
+        <path d="M47 48 H53" />
+        <path d="M46 53 H54" />
+        <circle cx="50" cy="34" r="4" fill="var(--primary-color)" />
+        <path d="M48 31 Q45 27, 43 28" />
+        <path d="M52 31 Q55 27, 57 28" />
+        <path d="M48 44 C35 30, 25 35, 46 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+        <path d="M52 44 C65 30, 75 35, 54 47 Z" fill="rgba(245, 239, 230, 0.15)" stroke="var(--text-main)" />
+        <path d="M48 50 C38 45, 32 50, 47 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+        <path d="M52 50 C62 45, 68 50, 53 53 Z" fill="rgba(245, 239, 230, 0.1)" stroke="var(--text-main)" />
+        <path d="M50 60 L50 64" stroke="var(--primary-color)" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="container hero-content">
+    <h1>Magyarország folyékony aranya</h1>
+    <p>A vadvirágok tiszta nektárjától a méhek szorgos munkáján és a kíméletes, kézműves pergetésen át, egyenesen az Ön asztaláig.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Kínálatunk megtekintése</a>
+    </div>
+  </div>
+</section>
+
+<!-- Értékeink szekció -->
+<section id="values" class="values-section reveal">
+  <div class="container values-grid">
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <h3>100% magyar termék</h3>
+      <p>Válassza a tiszta, hazai minőséget! Évtizedes tapasztalattal és odafigyeléssel gondozzuk a családokat, hogy a legjobb minőség kerüljön az Ön asztalára.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3h8M6 6h12v3H6V6ZM6 9c0 6 2 12 6 12s6-6 6-12H6Z" />
+          <path d="M12 9v5M10 14h4" />
+        </svg>
+      </div>
+      <h3>Nyers és Tiszta</h3>
+      <p>Kóstolja meg a természet erejét! Mézeinket nem vetjük alá ipari hőkezelésnek vagy szűrésnek. Megőrzik minden természetes enzimüket és vitamintartalmukat.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4V6a4 4 0 0 0-4-4Z"/>
+          <path d="M12 12a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4 4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4Z"/>
+          <path d="M12 12a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4 4 4 0 0 0 4 4h2a4 4 0 0 0 4-4Z"/>
+          <path d="M16 12a4 4 0 0 0 4-4h2a4 4 0 0 0-4-4h-2a4 4 0 0 0-4 4v2Z"/>
+        </svg>
+      </div>
+      <h3>Helyi és Fenntartható</h3>
+      <p>Saját családi méhészetünkből, a természet tiszteletben tartásával, kíméletes technológiával dolgozunk a méhek védelmében.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Termékek szekció -->
+<section id="products" class="products-section reveal">
+  <div class="container">
+    <div class="section-title">
+      <h2>Mézkínálatunk</h2>
+      <p class="subtitle">Kézműves termékeink közvetlenül a termelőtől</p>
+
+      <div class="bulk-announcement">
+        <span class="announcement-badge">Kedvező nagytétel</span>
+        <p>Üveges mézeink <strong>250g, 500g és 900g</strong> kiszerelésben is elérhetők, nagyobb tételben pedig <strong>kiemelt kilogrammos árakon</strong> vásárolhat!</p>
+      </div>
+    </div>
+
+    <!-- Termékkereső sáv -->
+    <div class="products-search-container">
+      <div class="products-search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="productSearchInput" placeholder="Keresés név vagy ízvilág szerint (pl. akác, repce, hárs)..." aria-label="Mézek keresése" />
+        <button type="button" id="clearSearchBtn" class="clear-search-btn" aria-label="Keresés törlése">&times;</button>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
+        </div>
+      </div>
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
+        </div>
+      </div>
+      <div class="card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="card-content">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-price"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="noProductMatch" class="no-search-results" style="display: none;">
+      <p>🔍 Nem találtunk mézet a megadott keresési kifejezésre. Próbálja meg más kulcsszóval!</p>
+    </div>
+  </div>
+</section>
+
+<!-- Mézkalauz szekció -->
+<section id="guide" class="guide-section reveal">
+  <div class="container guide-wrapper">
+    <div class="section-title">
+      <h2>Mézkalauz & Élettani Hatások</h2>
+      <p class="subtitle">Melyik mézfajta milyen jótékony hatással bír a szervezetünkre?</p>
+    </div>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Napraforgó méz - Gazdag ásványi anyagokban és E-vitaminban</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>Intenzív aranysárga színű, gazdag ízvilágú különlegesség, amely kristályos textúrájával, klasszikus ízével tökéletes választás reggelikhez, teák ízesítéséhez és süteményekhez.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Akácméz - A torok és az emésztőrendszer kíméletes megnyugtatója</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>Világos színű, lágy ízű mézkülönlegesség, amely hosszan megőrzi folyékony állagát – tökéletes választás mindennapi édesítéshez, teákhoz vagy akár ajándékba is.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" type="button" aria-expanded="false">
+          <span>Repceméz - A gyomorbarát, alacsony savtartalmú krémméz</span>
+          <span class="accordion-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-content">
+          <p>Krémes állagú, enyhén fanyar ízű méz, amely finomszemcsésen kristályosodik – kiváló választás reggelihez, pirítósra kenve vagy teába keverve, valamint kímélő étrendhez.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Rólunk szekció -->
+<section id="about" class="about-section reveal">
+  <div class="container about-grid">
+    <div class="about-text">
+      <h2>Rólunk - Mikló Méhészet</h2>
+      <p>Családi méhészetünk az Alföld napsütötte tájain, a végtelen rónaságok szívében működik, ahol elkötelezetten, fenntartható módon gondozzuk méheinket. Méheink szabadon gyűjtenek az alföldi akácligetek, mezei vadvirágok és gyógynövények között, így minden évszak ízét megőrző, különleges és tiszta mézfajtákat készítenek.</p>
+      <p>Küldetésünk, hogy óvjuk a méhpopulációkat, támogassuk a tájegységünk biológiai sokféleségét, és tiszta, nyers mézet juttassunk el közvetlenül a kaptárunktól az Ön otthonába.</p>
+    </div>
+    <div class="about-image-container">
+      <div class="image-border-deco"></div>
+      <img src="kepek/akacmez.jpg" alt="Méhész munka közben az Alföldön" class="about-image" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<!-- Kapcsolat & Rendelés szekció (SimplePay & Billingo integrációval) -->
+<section id="contact" class="contact-section reveal">
+  <div class="container">
+    <div class="section-title">
+      <h2>Biztonságos Online Megrendelés</h2>
+      <p class="subtitle">Állítsa össze rendelését, fizessen bankkártyával a SimplePay védett felületén, és azonnal megkapja az e-számlát!</p>
+    </div>
+
+    <!-- Fizetési visszajelzés szalagok SimplePay után -->
+    <div id="paymentAlertSuccess" class="payment-alert success" style="display: none;">
+      <h3>🎉 Sikeres fizetés!</h3>
+      <p>Köszönjük a megrendelést! A tranzakció sikeres volt. A Billingo által kiállított hivatalos e-számlát és a rendelés részleteit elküldtük az Ön e-mail címére.</p>
+    </div>
+    <div id="paymentAlertFailed" class="payment-alert error" style="display: none;">
+      <h3>⚠️ A fizetés megszakadt vagy sikertelen volt</h3>
+      <p>A bankkártyás fizetési folyamat nem fejeződött be. Kérjük, próbálja meg újra, vagy válasszon másik kártyát!</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <h4>Telefonszám</h4>
+            <p><a href="tel:+36203520468">06 20 352 0468</a></p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <h4>E-mail cím</h4>
+            <p><a href="mailto:info@miklomez.hu">info@miklomez.hu</a></p>
+            <span class="detail-text">(Ügyfélszolgálat & nagykereskedelem)</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <h4>Helyszín</h4>
+            <p>Alföld, Magyarország<br><span class="detail-text">(Személyes átvétel és MPL kiszállítás)</span></p>
+          </div>
+        </div>
+
+        <!-- Fizetési és Számlázási megbízhatósági blokk -->
+        <div class="payment-trust-card">
+          <div class="trust-logos">
+            <span class="trust-badge simplepay">OTP SimplePay Garancia</span>
+            <span class="trust-badge billingo">Billingo NAV E-számla</span>
+          </div>
+          <p class="trust-desc">A fizetés 256 bites banki titkosítással ellátott felületen zajlik. Kártyaadatait weboldalunk nem látja és nem tárolja.</p>
+        </div>
+
+        <!-- Közösségi oldalak -->
+        <div class="social-box">
+          <h4>Kövessen minket:</h4>
+          <div class="social-links-row">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn instagram" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              <span>Instagram</span>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn facebook" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              <span>Facebook</span>
+            </a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-btn tiktok" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-.87-.07z"/></svg>
+              <span>TikTok</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Űrlap és Kalkulátor -->
+      <div class="contact-form-wrapper">
+        <form class="contact-form" id="contactForm">
+          <!-- Számlázási típus -->
+          <div class="customer-type-selector">
+            <label class="radio-label">
+              <input type="radio" name="customerType" value="individual" checked id="typeIndividual" />
+              <span>Magánszemélyként vásárolok</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="customerType" value="company" id="typeCompany" />
+              <span>Cégként vásárolok</span>
+            </label>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="name" class="form-label" id="nameLabel">Teljes Név *</label>
+              <input type="text" id="name" name="name" placeholder="Pl. Minta János" autocomplete="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label">E-mail cím (ide érkezik az e-számla) *</label>
+              <input type="email" id="email" name="email" placeholder="Pl. minta.janos@gmail.com" autocomplete="email" required />
+            </div>
+          </div>
+
+          <!-- Céges mezők (Billingo kötelező adatok) -->
+          <div class="form-row-grid company-fields" id="companyFields" style="display: none;">
+            <div class="form-group">
+              <label for="companyName" class="form-label">Cégnév *</label>
+              <input type="text" id="companyName" name="companyName" placeholder="Pl. Minta Kft." />
+            </div>
+            <div class="form-group">
+              <label for="taxNumber" class="form-label">Adószám *</label>
+              <input type="text" id="taxNumber" name="taxNumber" placeholder="Pl. 12345678-2-42" />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="phone" class="form-label">Telefonszám *</label>
+              <input type="tel" id="phone" name="phone" placeholder="Pl. 06 20 123 4567" autocomplete="tel" required />
+            </div>
+            <div class="form-group">
+              <label for="zip" class="form-label">Irányítószám *</label>
+              <input type="text" id="zip" name="zip" placeholder="Pl. 4024" maxlength="4" required />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="city" class="form-label">Település *</label>
+              <input type="text" id="city" name="city" placeholder="Pl. Debrecen" required />
+            </div>
+            <div class="form-group">
+              <label for="address" class="form-label">Utca, házszám, emelet/ajtó *</label>
+              <input type="text" id="address" name="address" placeholder="Pl. Kossuth Lajos utca 12. 2/4." autocomplete="street-address" required />
+            </div>
+          </div>
+
+          <!-- Termékkalkulátor -->
+          <div class="order-calculator-box" id="orderCalculatorBox">
+            <h4 class="calc-title">Rendelés összeállítása</h4>
+            <p class="calc-subtitle">Válassza ki a mézet és az üvegméretet:</p>
+
+            <div class="calc-row">
+              <div class="form-group select-group">
+                <label for="productSelect" class="form-label">Mézfajta választás</label>
+                <select id="productSelect">
+                  <option value="" disabled selected>Válasszon mézfajtát...</option>
+                </select>
+              </div>
+              <div class="form-group qty-group">
+                <label for="productQty" class="form-label" id="qtyLabel">Mennyiség</label>
+                <div class="qty-control">
+                  <button type="button" class="qty-btn qty-minus" aria-label="Csökkentés">-</button>
+                  <input type="number" id="productQty" min="1" value="1" inputmode="numeric" />
+                  <button type="button" class="qty-btn qty-plus" aria-label="Növelés">+</button>
+                </div>
+              </div>
+              <div class="btn-calc-wrapper">
+                <span class="form-label label-spacer">&nbsp;</span>
+                <button type="button" id="addProductBtn" class="btn-calc-add">Hozzáadás</button>
+              </div>
+            </div>
+
+            <!-- Üvegméret Választó -->
+            <div class="calc-options-row" id="calcOptionsRow" style="display: none;">
+              <span class="calc-options-label">Válasszon üvegméretet:</span>
+              <div class="jar-size-selector">
+                <label class="size-pill-label">
+                  <input type="radio" name="jarSize" value="250g" />
+                  <div class="size-pill-content">
+                    <span class="size-pill-title">250g</span>
+                    <span class="size-pill-price" id="pillPrice250">- Ft</span>
+                  </div>
+                </label>
+
+                <label class="size-pill-label">
+                  <input type="radio" name="jarSize" value="500g" />
+                  <div class="size-pill-content">
+                    <span class="size-pill-title">500g</span>
+                    <span class="size-pill-price" id="pillPrice500">- Ft</span>
+                  </div>
+                </label>
+
+                <label class="size-pill-label">
+                  <input type="radio" name="jarSize" value="900g" checked />
+                  <div class="size-pill-content">
+                    <span class="size-pill-title">900g</span>
+                    <span class="size-pill-price" id="pillPrice900">- Ft</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Kosár tartalma -->
+            <div class="calc-cart-container" id="cartContainer" style="display: none;">
+              <ul class="cart-list" id="cartList"></ul>
+              <div class="cart-summary">
+                <span>Fizetendő végösszeg:</span>
+                <strong id="cartTotal">0 Ft</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label">Megjegyzés a futárnak / méhésznek (opcionális)</label>
+            <textarea id="message" name="message" placeholder="Pl. kapucsengő, szállítási megjegyzés..." rows="3"></textarea>
+          </div>
+
+          <!-- SimplePay Kötelező Adattovábbítási Nyilatkozat -->
+          <div class="form-legal-box">
+            <label class="checkbox-label">
+              <input type="checkbox" id="simplepayConsent" required />
+              <span class="legal-text">
+                Elfogadom a(z) <a href="#" target="_blank">ÁSZF</a>-et és az <a href="#" target="_blank">Adatkezelési tájékoztatót</a>, valamint tudomásul veszem, hogy a személyes adataim átadásra kerülnek az <strong>OTP Mobil Kft. (SimplePay)</strong>, mint adatfeldolgozó részére.
+              </span>
+            </label>
+          </div>
+
+          <!-- Megrendelés gomb SimplePay logóval -->
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>Tovább a biztonságos SimplePay fizetéshez</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="submit-arrow-icon">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+        <div id="formFeedback" class="form-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Vissza a tetejére gomb -->
+<button id="backToTop" class="back-to-top" aria-label="Vissza a tetejére">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+</button>
+
+<!-- Lábléc -->
+<footer class="main-footer">
+  <div class="container footer-content">
+    <div class="footer-socials">
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+      </a>
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+      </a>
+      <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-.87-.07z"/></svg>
+      </a>
+    </div>
+    <p>&copy; <span id="currentYear">2026</span> Mikló Méhészet. Minden jog fenntartva. | Biztonságos SimplePay fizetés & Billingo NAV számlázás.</p>
+  </div>
+</footer>
+
+<!-- Frissített ES Module szkript belépési pont -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

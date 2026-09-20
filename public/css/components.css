@@ -1,0 +1,855 @@
+/* Gombok */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    min-height: 48px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: var(--transition-smooth);
+    animation: pulseButton 3.5s infinite alternate ease-in-out;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(229, 169, 60, 0.45);
+}
+
+@keyframes pulseButton {
+    0% { box-shadow: 0 4px 14px rgba(229, 169, 60, 0.2); }
+    100% { box-shadow: 0 4px 28px rgba(229, 169, 60, 0.55); }
+}
+
+.btn-card-order {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: 50px;
+    padding: 0.65rem 1.1rem;
+    min-height: 42px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: var(--transition-smooth);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-card-order:hover {
+    background-color: var(--primary-dark);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 169, 60, 0.35);
+}
+
+.btn-card-order svg {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.25s ease;
+}
+
+.btn-card-order:hover svg {
+    transform: translateX(3px);
+}
+
+.btn-calc-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.label-spacer {
+    visibility: hidden;
+}
+
+.btn-calc-add {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.85rem 1.2rem;
+    min-height: 48px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-calc-add:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+}
+
+.btn-submit {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    border: none;
+    padding: 1rem 1.4rem;
+    min-height: 54px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 15px rgba(229, 169, 60, 0.2);
+    animation: pulseButton 3.5s infinite alternate ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-dark);
+    color: #FFFFFF;
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.submit-arrow-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+}
+
+.btn-submit:hover .submit-arrow-icon {
+    transform: translateX(4px);
+}
+
+/* Szekciócímek */
+.section-title {
+    text-align: center;
+    margin-bottom: 2.2rem;
+}
+
+.section-title h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 0.6rem;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.6rem;
+}
+
+.section-title h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 75px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center;
+}
+
+.reveal.active .section-title h2::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.section-title .subtitle {
+    color: var(--text-muted);
+    font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+    font-style: italic;
+    margin-top: 0.4rem;
+    max-width: 650px;
+    margin-inline: auto;
+}
+
+/* Érték Kártyák */
+.value-card {
+    text-align: center;
+    padding: 2.5rem 1.8rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-glow);
+    transition: var(--transition-smooth);
+}
+
+.value-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(229, 169, 60, 0.3);
+}
+
+.value-icon {
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 1.5rem;
+    background-color: rgba(229, 169, 60, 0.08);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.value-icon svg {
+    width: 30px;
+    height: 30px;
+}
+
+.value-card:hover .value-icon {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    transform: scale(1.08) rotate(5deg);
+}
+
+.value-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: #FFFFFF;
+    margin-bottom: 0.8rem;
+}
+
+.value-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Termékkártyák */
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-smooth);
+    border: 1px solid var(--border-glow);
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(229, 169, 60, 0.25);
+}
+
+.card.is-sale {
+    border: 2px solid var(--accent-color);
+}
+
+.card-img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background-color: #1A100B;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+}
+
+.card:hover img {
+    transform: scale(1.04);
+}
+
+.floating-badge-sale {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: var(--accent-color);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(240, 122, 93, 0.3);
+    z-index: 5;
+}
+
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: #FFFFFF;
+    margin-bottom: 0.5rem;
+}
+
+.card-content p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    flex-grow: 1;
+}
+
+.card-size-selector-box {
+    background: rgba(18, 10, 5, 0.45);
+    border: 1px solid rgba(229, 169, 60, 0.15);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-bottom: 1.2rem;
+}
+
+.card-size-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.card-size-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+}
+
+.card-size-btn {
+    background: rgba(229, 169, 60, 0.05);
+    border: 1px solid rgba(229, 169, 60, 0.2);
+    color: var(--text-main);
+    padding: 0.5rem 0.2rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    text-align: center;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-size-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(229, 169, 60, 0.1);
+}
+
+.card-size-btn.active {
+    background: var(--primary-color);
+    color: var(--bg-dark);
+    font-weight: 700;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(229, 169, 60, 0.3);
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    border-top: 1px solid rgba(229, 169, 60, 0.15);
+    padding-top: 1rem;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.price {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+
+.card.is-sale .price {
+    color: var(--accent-color);
+}
+
+.bulk-price-box {
+    margin-top: 0.8rem;
+    padding: 0.6rem 0.85rem;
+    background-color: rgba(229, 169, 60, 0.05);
+    border: 1px dashed rgba(229, 169, 60, 0.3);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+}
+
+.bulk-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.bulk-text strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* Skeleton animáció */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton { pointer-events: none; }
+.skeleton-image, .skeleton-title, .skeleton-text, .skeleton-price {
+    background: linear-gradient(90deg, #2D1D14 25%, #3C2A1E 50%, #2D1D14 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+.skeleton-image { aspect-ratio: 4/3; }
+.skeleton-title { height: 20px; width: 60%; margin: 1.5rem; border-radius: 4px; }
+.skeleton-text { height: 12px; width: 80%; margin: 0 1.5rem 0.5rem; border-radius: 4px; }
+.skeleton-text.short { width: 50%; margin-bottom: 2rem; }
+.skeleton-price { height: 24px; width: 35%; margin: 1.5rem; border-radius: 4px; }
+
+/* Harmonika (Accordion) */
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+}
+
+.accordion-item {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.accordion-item:hover {
+    border-color: rgba(229, 169, 60, 0.25);
+}
+
+.accordion-header {
+    width: 100%;
+    padding: 1.2rem 1.4rem;
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    transition: var(--transition-smooth);
+}
+
+.accordion-header:hover {
+    color: var(--primary-color);
+}
+
+.accordion-icon {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    transition: var(--transition-smooth);
+    flex-shrink: 0;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 0 1.4rem;
+}
+
+.accordion-content p {
+    padding-bottom: 1.2rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+
+.accordion-item.active-item {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(229, 169, 60, 0.05);
+}
+
+.accordion-item.active-item .accordion-icon {
+    transform: rotate(45deg);
+    color: var(--accent-color);
+}
+
+.accordion-item.active-item .accordion-content {
+    max-height: 350px;
+}
+
+/* Info kártyák (Kapcsolat szekció) */
+.info-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-md);
+    padding: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    transition: var(--transition-smooth);
+}
+
+.info-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(229, 169, 60, 0.3);
+    box-shadow: var(--shadow-sm);
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    background-color: rgba(229, 169, 60, 0.08);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: var(--transition-smooth);
+}
+
+.info-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.info-card:hover .info-icon {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+}
+
+.info-text h4 {
+    font-size: 0.95rem;
+    color: #FFFFFF;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+}
+
+.info-text p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.info-text a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.info-text a:hover {
+    color: var(--primary-color);
+}
+
+.detail-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+/* Trust & Értesítés sávok */
+.payment-trust-card {
+    background-color: var(--bg-card);
+    border: 1px solid rgba(229, 169, 60, 0.25);
+    border-radius: var(--radius-md);
+    padding: 1.4rem;
+}
+
+.trust-logos {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+
+.trust-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+}
+
+.trust-badge.simplepay {
+    background-color: #0070BA;
+    color: #FFFFFF;
+}
+
+.trust-badge.billingo {
+    background-color: #27AE60;
+    color: #FFFFFF;
+}
+
+.trust-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.payment-alert {
+    padding: 1.4rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.payment-alert h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+.payment-alert p {
+    font-size: 0.92rem;
+}
+
+.payment-alert.success {
+    background-color: rgba(46, 125, 50, 0.2);
+    border: 1px solid #4CAF50;
+    color: #A5D6A7;
+}
+
+.payment-alert.error {
+    background-color: rgba(198, 40, 40, 0.2);
+    border: 1px solid #EF5350;
+    color: #FFCDD2;
+}
+
+/* Spotlight effekt asztali gépeken */
+@media (hover: hover) {
+    .card, .value-card, .accordion-item, .info-card, .contact-form-wrapper, .order-calculator-box, .social-box {
+        position: relative;
+    }
+
+    .card::before,
+    .value-card::before,
+    .accordion-item::before,
+    .info-card::before,
+    .contact-form-wrapper::before,
+    .order-calculator-box::before,
+    .social-box::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(229, 169, 60, 0.08), transparent 80%);
+        z-index: 0;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .card > *,
+    .value-card > *,
+    .accordion-item > *,
+    .info-card > *,
+    .contact-form-wrapper > *,
+    .order-calculator-box > *,
+    .social-box > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-img-wrapper {
+        z-index: 1;
+    }
+
+    .card:hover::before,
+    .value-card:hover::before,
+    .accordion-item:hover::before,
+    .info-card:hover::before,
+    .contact-form-wrapper:hover::before,
+    .order-calculator-box:hover::before,
+    .social-box:hover::before {
+        opacity: 1;
+    }
+}
+
+/* Mennyiség léptető gombok */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.qty-control {
+    display: flex;
+    align-items: stretch;
+    background-color: var(--bg-card);
+    border: 1px solid rgba(229, 169, 60, 0.25);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 48px;
+    transition: var(--transition-smooth);
+}
+
+.qty-control:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
+}
+
+.qty-control input {
+    width: 100% !important;
+    min-width: 36px;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem !important;
+    color: var(--text-main);
+    box-shadow: none !important;
+}
+
+.qty-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    width: 40px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.qty-btn:hover {
+    background-color: rgba(229, 169, 60, 0.1);
+    color: #FFFFFF;
+}
+
+/* Toast értesítések */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100% - 40px);
+}
+
+.toast {
+    background-color: rgba(18, 10, 5, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--text-main);
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(50px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.toast-warning { border: 1px solid rgba(240, 122, 93, 0.35); }
+.toast-warning .toast-icon { color: var(--accent-color); }
+
+.toast-error { border: 1px solid rgba(229, 115, 115, 0.35); }
+.toast-error .toast-icon { color: #E57373; }
+
+.toast-success { border: 1px solid rgba(129, 199, 132, 0.35); }
+.toast-success .toast-icon { color: #81C784; }
+
+/* Vissza a tetejére */
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: var(--transition-smooth);
+}
+
+.back-to-top svg {
+    width: 22px;
+    height: 22px;
+}
+
+.back-to-top:hover {
+    background-color: var(--primary-dark);
+    color: #FFFFFF;
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    animation: bounceBackToTop 3s ease-in-out infinite;
+}
+
+@keyframes bounceBackToTop {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
