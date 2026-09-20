@@ -160,8 +160,8 @@ export function renderCart() {
         }
     }
 
-    if (courierPriceEl) courierPriceEl.textContent = isFree ? "INGYENES" : "1 990 Ft";
-    if (parcelPriceEl) parcelPriceEl.textContent = isFree ? "INGYENES" : "990 Ft";
+    if (courierPriceEl) courierPriceEl.textContent = isFree ? "Ingyenes" : "1 990 Ft";
+    if (parcelPriceEl) parcelPriceEl.textContent = isFree ? "Ingyenes" : "990 Ft";
 
     let shippingFee = SHIPPING_PRICES[selectedShipping] || 0;
     if (isFree || selectedShipping === 'pickup') {

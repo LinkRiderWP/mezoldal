@@ -10,7 +10,7 @@ const emailService = require('../services/email.service');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-    throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókbból!");
+    throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókból!");
 }
 
 const paymentLimiter = rateLimit({
@@ -53,30 +53,25 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
 
         const { name, email, phone, zip, city, address, company, taxNumber } = customer;
 
-        // E-mail ellenőrzés
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email || !emailRegex.test(email.trim()) || email.length > 150) {
             return res.status(400).json({ success: false, message: "Érvénytelen e-mail cím." });
         }
 
-        // Név ellenőrzés
         if (!name || name.trim().split(/\s+/).length < 2 || name.trim().length > 100) {
             return res.status(400).json({ success: false, message: "Kérjük, adja meg teljes nevét!" });
         }
 
-        // Telefonszám ellenőrzés
         const cleanPhone = String(phone || '').replace(/[\s\-()]/g, "");
         const huPhoneRegex = /^(?:\+36|06)(?:1|20|30|70|52|53|54|33|34|36|37|42|44|45|46|47|48|49|56|57|59|62|63|66|68|69|72|73|74|75|76|77|78|79|82|83|84|85|87|88|89|92|93|94|95|96|99)\d{6,7}$/;
         if (!huPhoneRegex.test(cleanPhone)) {
             return res.status(400).json({ success: false, message: "Érvénytelen telefonszám formátum." });
         }
 
-        // Irányítószám ellenőrzés
         if (!zip || !/^\d{4}$/.test(String(zip).trim())) {
             return res.status(400).json({ success: false, message: "Érvénytelen 4 számjegyű irányítószám." });
         }
 
-        // Település és cím ellenőrzés
         if (!city || city.trim().length < 2 || city.trim().length > 50) {
             return res.status(400).json({ success: false, message: "Érvénytelen település név." });
         }
@@ -85,7 +80,6 @@ router.post('/create-payment', paymentLimiter, async (req, res) => {
             return res.status(400).json({ success: false, message: "Érvénytelen utca és házszám." });
         }
 
-        // Céges adatok ellenőrzése, ha megadták
         let cleanTaxNumber = "";
         let cleanCompany = "";
         if (company && company.trim().length > 0) {
@@ -258,7 +252,7 @@ router.post('/simplepay-ipn', async (req, res) => {
                     paidAt: paidOrderData.paidAt
                 });
 
-                // 1. Számlázás Billingo-val és auditálás
+                // 1. Billingo számlázás
                 const billingoResult = await createBillingoInvoice(paidOrderData);
                 if (billingoResult.success) {
                     await orderDocRef.update({
@@ -273,14 +267,20 @@ router.post('/simplepay-ipn', async (req, res) => {
                     });
                 }
 
-                // 2. Automatikus e-mail visszaigazolás küldése
+                // 2. Automatikus e-mail
                 if (paidOrderData.wantsEmailNotification !== false) {
                     await emailService.sendOrderConfirmation(paidOrderData);
                 }
             }
         }
 
-        const responsePayload = JSON.stringify(ipnData);
+        // A SimplePay v2 specifikáció megköveteli a receiveDate jelenlétét a válaszban!
+        const responseData = {
+            ...ipnData,
+            receiveDate: new Date().toISOString().replace(/\.\d{3}Z$/, '+01:00')
+        };
+
+        const responsePayload = JSON.stringify(responseData);
         const respSignature = simplePayService.calculateSignature(responsePayload);
 
         res.set({ 'Content-Type': 'application/json', 'Signature': respSignature });

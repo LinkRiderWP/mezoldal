@@ -20,6 +20,8 @@ function checkPaymentStatusParams() {
     const alertSuccess = document.getElementById("paymentAlertSuccess");
     const alertFailed = document.getElementById("paymentAlertFailed");
 
+    if (!status) return;
+
     if (status === "success") {
         if (alertSuccess) alertSuccess.style.display = "block";
         clearCart();
@@ -28,6 +30,10 @@ function checkPaymentStatusParams() {
         if (alertFailed) alertFailed.style.display = "block";
         showToast("A fizetés megszakadt vagy sikertelen volt. Kérjük próbálja meg újra!", "error");
     }
+
+    // Töröljük a paramétereket az URL-ből, hogy oldalfrissítésre (F5) ne fusson le újra
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
