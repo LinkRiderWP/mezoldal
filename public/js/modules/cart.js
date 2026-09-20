@@ -39,87 +39,34 @@ export function clearCart() {
     renderCart();
 }
 
-export function initCalculatorAndCart() {
-    const select = document.getElementById("productSelect");
-    const qtyInput = document.getElementById("productQty");
-    const addBtn = document.getElementById("addProductBtn");
-    const calcOptionsRow = document.getElementById("calcOptionsRow");
+export function addItemToCart(productIndex, size = "900g", qty = 1) {
+    const prod = products[productIndex];
+    if (!prod) return;
 
-    const pillPrice250 = document.getElementById("pillPrice250");
-    const pillPrice500 = document.getElementById("pillPrice500");
-    const pillPrice900 = document.getElementById("pillPrice900");
+    const itemPrice = prod.arak[size] || prod.arak["900g"];
+    const itemKey = `${prod.id}_${size}`;
+    const itemLabel = `${prod.cim} (${size}-os üveg)`;
 
-    if (!addBtn || !select || !qtyInput) return;
-
-    function updatePillPrices() {
-        const pIndex = select.value;
-        if (pIndex === "" || isNaN(pIndex)) return;
-
-        const prod = products[pIndex];
-        if (!prod || !prod.arak) return;
-
-        if (pillPrice250) pillPrice250.textContent = `${(prod.arak["250g"] || 0).toLocaleString('hu-HU')} Ft`;
-        if (pillPrice500) pillPrice500.textContent = `${(prod.arak["500g"] || 0).toLocaleString('hu-HU')} Ft`;
-        if (pillPrice900) pillPrice900.textContent = `${(prod.arak["900g"] || 0).toLocaleString('hu-HU')} Ft`;
+    const existingIndex = cart.findIndex((i) => i.key === itemKey);
+    if (existingIndex > -1) {
+        cart[existingIndex].qty += qty;
+    } else {
+        cart.push({
+            id: prod.id,
+            size: size,
+            key: itemKey,
+            cim: itemLabel,
+            price: itemPrice,
+            qty: qty,
+            unit: "db"
+        });
     }
 
-    select.addEventListener("change", () => {
-        const pIndex = select.value;
-        if (pIndex === "" || isNaN(pIndex)) return;
+    showToast(`"${itemLabel}" hozzáadva a kosárhoz!`, "success");
+    renderCart();
+}
 
-        calcOptionsRow.style.display = "flex";
-        updatePillPrices();
-    });
-
-    addBtn.addEventListener("click", () => {
-        const pIndex = select.value;
-        const qty = parseInt(qtyInput.value, 10);
-
-        if (pIndex === "" || isNaN(pIndex)) {
-            showToast("Kérjük, válasszon ki egy mézfajtát!", "warning");
-            return;
-        }
-
-        if (isNaN(qty) || qty < 1) {
-            showToast("Kérjük, érvényes mennyiséget adjon meg!", "warning");
-            return;
-        }
-
-        const prod = products[pIndex];
-        const selectedSizeRadio = document.querySelector('input[name="jarSize"]:checked');
-        const jarSize = selectedSizeRadio ? selectedSizeRadio.value : "900g";
-
-        const itemPrice = prod.arak[jarSize] || prod.arak["900g"];
-        const itemKey = `${prod.id}_${jarSize}`;
-        const itemLabel = `${prod.cim} (${jarSize}-os üveg)`;
-
-        const existingIndex = cart.findIndex((i) => i.key === itemKey);
-        if (existingIndex > -1) {
-            cart[existingIndex].qty += qty;
-        } else {
-            cart.push({
-                id: prod.id,
-                size: jarSize,
-                key: itemKey,
-                cim: itemLabel,
-                price: itemPrice,
-                qty: qty,
-                unit: "db"
-            });
-        }
-
-        showToast(`"${itemLabel}" hozzáadva a rendeléshez!`, "success");
-
-        select.value = "";
-        qtyInput.value = 1;
-        calcOptionsRow.style.display = "none";
-        const defaultSize = document.querySelector('input[name="jarSize"][value="900g"]');
-        if (defaultSize) defaultSize.checked = true;
-
-        renderCart();
-    });
-
-    // Szállítási opciók változásának figyelése
+export function initCalculatorAndCart() {
     document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             selectedShipping = e.target.value;
@@ -131,19 +78,18 @@ export function initCalculatorAndCart() {
 }
 
 export function renderCart() {
+    const emptyCartState = document.getElementById("emptyCartState");
     const cartContainer = document.getElementById("cartContainer");
     const cartList = document.getElementById("cartList");
     const cartSubtotal = document.getElementById("cartSubtotal");
     const cartShippingFee = document.getElementById("cartShippingFee");
     const cartTotal = document.getElementById("cartTotal");
 
-    // Jelvények és lebegő elemek
     const headerBadge = document.getElementById("headerCartBadge");
     const floatingBtn = document.getElementById("floatingCartBtn");
     const floatingCount = document.getElementById("floatingCartCount");
     const floatingTotal = document.getElementById("floatingCartTotal");
 
-    // Ingyenes szállítás csík
     const freeShippingText = document.getElementById("freeShippingText");
     const freeShippingProgress = document.getElementById("freeShippingProgress");
     const courierPriceEl = document.getElementById("shippingPriceCourier");
@@ -159,11 +105,15 @@ export function renderCart() {
     if (headerBadge) headerBadge.textContent = totalItemCount;
 
     if (cart.length === 0) {
+        if (emptyCartState) emptyCartState.style.display = "block";
         if (cartContainer) cartContainer.style.display = "none";
         if (floatingBtn) floatingBtn.style.display = "none";
+        if (freeShippingProgress) freeShippingProgress.style.width = "0%";
+        if (freeShippingText) freeShippingText.innerHTML = "Még 15 000 Ft az ingyenes szállításhoz!";
         return;
     }
 
+    if (emptyCartState) emptyCartState.style.display = "none";
     if (cartContainer) cartContainer.style.display = "block";
     if (floatingBtn) floatingBtn.style.display = "flex";
     if (cartList) cartList.innerHTML = "";
@@ -190,8 +140,6 @@ export function renderCart() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
           </svg>
         </button>
       </div>
@@ -199,25 +147,22 @@ export function renderCart() {
         cartList.appendChild(li);
     });
 
-    // Ingyenes szállítás kalkuláció
     const isFree = subtotal >= FREE_SHIPPING_LIMIT;
     const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_LIMIT) * 100));
 
     if (freeShippingProgress) freeShippingProgress.style.width = `${progressPercent}%`;
     if (freeShippingText) {
         if (isFree) {
-            freeShippingText.innerHTML = "🎉 Gratulálunk! Elérte az <strong>ingyenes házhozszállítást</strong>!";
+            freeShippingText.innerHTML = "🎉 Elérte az <strong>ingyenes házhozszállítást</strong>!";
         } else {
             const diff = FREE_SHIPPING_LIMIT - subtotal;
             freeShippingText.innerHTML = `Még <strong>${diff.toLocaleString('hu-HU')} Ft</strong> az ingyenes szállításhoz!`;
         }
     }
 
-    // Szállítási opciók árainak frissítése a felületen
     if (courierPriceEl) courierPriceEl.textContent = isFree ? "INGYENES" : "1 990 Ft";
     if (parcelPriceEl) parcelPriceEl.textContent = isFree ? "INGYENES" : "990 Ft";
 
-    // Kiválasztott szállítási díj kiszámítása
     let shippingFee = SHIPPING_PRICES[selectedShipping] || 0;
     if (isFree || selectedShipping === 'pickup') {
         shippingFee = 0;
@@ -232,7 +177,7 @@ export function renderCart() {
     if (floatingCount) floatingCount.textContent = `${totalItemCount} db méz`;
     if (floatingTotal) floatingTotal.textContent = `${finalTotal.toLocaleString('hu-HU')} Ft`;
 
-    // Kosár tételléptető és törlés gombok eseménykezelői
+    // Eseménykezelők
     document.querySelectorAll(".cart-qty-minus").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10);
@@ -259,33 +204,6 @@ export function renderCart() {
             cart.splice(index, 1);
             renderCart();
         });
-    });
-}
-
-export function initQtyButtons() {
-    const minusBtn = document.querySelector(".qty-minus");
-    const plusBtn = document.querySelector(".qty-plus");
-    const qtyInput = document.getElementById("productQty");
-
-    if (!minusBtn || !plusBtn || !qtyInput) return;
-
-    minusBtn.addEventListener("click", () => {
-        const val = parseInt(qtyInput.value, 10) || 1;
-        if (val > 1) qtyInput.value = val - 1;
-    });
-
-    plusBtn.addEventListener("click", () => {
-        const val = parseInt(qtyInput.value, 10) || 1;
-        qtyInput.value = val + 1;
-    });
-
-    qtyInput.addEventListener("keydown", (e) => {
-        if (["e", "E", "-", "+", ".", ","].includes(e.key)) e.preventDefault();
-    });
-
-    qtyInput.addEventListener("blur", () => {
-        let parsed = parseInt(qtyInput.value, 10);
-        if (isNaN(parsed) || parsed < 1) qtyInput.value = 1;
     });
 }
 

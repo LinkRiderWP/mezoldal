@@ -1,5 +1,6 @@
 import { products } from '../data/products.data.js';
 import { showToast, initCardGlow } from './ui.js';
+import { addItemToCart } from './cart.js';
 
 export function loadHoneyProducts() {
     const productsGrid = document.getElementById("productsGrid");
@@ -9,9 +10,6 @@ export function loadHoneyProducts() {
 
     products.forEach((product, index) => {
         const price900 = product.arak["900g"] || 0;
-        const bulkPriceText = product.nagy_tetel_ar
-            ? `${product.nagy_tetel_ar} (${product.nagy_tetel_minimum || 'min. 10 kg'})`
-            : "Egyedi árajánlat alapján";
 
         const card = document.createElement("article");
         card.className = `card ${product.isSale ? 'is-sale' : ''}`;
@@ -49,16 +47,6 @@ export function loadHoneyProducts() {
             </svg>
           </button>
         </div>
-
-        <div class="bulk-price-box">
-          <div class="bulk-info-main">
-            <span class="bulk-icon">📦</span>
-            <span class="bulk-text">Nagytétel ár: <strong>${bulkPriceText}</strong></span>
-          </div>
-          <a href="mailto:info@miklomez.hu?subject=Nagyt%C3%A9teles%20megrendel%C3%A9s%20-%20${encodeURIComponent(product.cim)}" class="bulk-contact-link">
-            ✉️ Nagytételes megrendelés e-mailben &rarr;
-          </a>
-        </div>
       </div>
     `;
 
@@ -69,7 +57,6 @@ export function loadHoneyProducts() {
     productsGrid.classList.add("loaded");
 
     initCardInteractions();
-    populateProductSelect();
     initCardGlow();
 }
 
@@ -100,54 +87,20 @@ function initCardInteractions() {
 
         if (orderBtn) {
             orderBtn.addEventListener("click", () => {
-                selectProductAndScrollToOrder(productIndex, currentSelectedSize);
+                addItemToCart(productIndex, currentSelectedSize, 1);
+                scrollToCheckout();
             });
         }
     });
 }
 
-function selectProductAndScrollToOrder(productIndex, size) {
-    const select = document.getElementById("productSelect");
-    const calcOptionsRow = document.getElementById("calcOptionsRow");
-    const calcBox = document.getElementById("orderCalculatorBox");
-
-    if (!select) return;
-
-    select.value = productIndex;
-    select.dispatchEvent(new Event("change"));
-
-    const sizeRadio = document.querySelector(`input[name="jarSize"][value="${size}"]`);
-    if (sizeRadio) sizeRadio.checked = true;
-
-    if (calcOptionsRow) calcOptionsRow.style.display = "flex";
-
-    if (calcBox) {
-        const yOffset = -90;
-        const y = calcBox.getBoundingClientRect().top + window.pageYOffset + yOffset;
+function scrollToCheckout() {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+        const yOffset = -70;
+        const y = contactSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: "smooth" });
-
-        calcBox.classList.add("highlight-pulse");
-        setTimeout(() => {
-            calcBox.classList.remove("highlight-pulse");
-        }, 1800);
     }
-
-    showToast(`Kiválasztva: ${products[productIndex].cim} (${size}). Adja hozzá a rendeléshez!`, "success");
-}
-
-export function populateProductSelect() {
-    const select = document.getElementById("productSelect");
-    if (!select) return;
-
-    select.innerHTML = '<option value="" disabled selected>Válasszon mézfajtát...</option>';
-
-    products.forEach((product, index) => {
-        const opt = document.createElement("option");
-        opt.value = index;
-        const p900 = product.arak["900g"] || 0;
-        opt.textContent = `${product.cim} (900g: ${p900.toLocaleString('hu-HU')} Ft)`;
-        select.appendChild(opt);
-    });
 }
 
 export function initProductSearch() {

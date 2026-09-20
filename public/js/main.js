@@ -10,7 +10,7 @@ import {
     showToast
 } from './modules/ui.js';
 import { loadHoneyProducts, initProductSearch } from './modules/products.js';
-import { initCalculatorAndCart, initQtyButtons, initCustomerTypeToggle, clearCart } from './modules/cart.js';
+import { initCalculatorAndCart, initCustomerTypeToggle, clearCart } from './modules/cart.js';
 import { initOrderAndSimplePay } from './modules/checkout.js';
 import { initAuth } from './modules/auth.js';
 
@@ -23,7 +23,7 @@ function checkPaymentStatusParams() {
     if (status === "success") {
         if (alertSuccess) alertSuccess.style.display = "block";
         clearCart();
-        showToast("A fizetés sikeres volt! A visszaigazolást és az e-számlát elküldtük e-mailben.", "success");
+        showToast("A fizetés sikeres volt! A visszaigazolást és a számlát elküldtük e-mailben.", "success");
     } else if (status === "failed") {
         if (alertFailed) alertFailed.style.display = "block";
         showToast("A fizetés megszakadt vagy sikertelen volt. Kérjük próbálja meg újra!", "error");
@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initActiveNavObserver();
     initAccordion();
     initCalculatorAndCart();
-    initQtyButtons();
     initProductSearch();
     initCustomerTypeToggle();
     checkPaymentStatusParams();
