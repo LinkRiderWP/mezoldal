@@ -86,6 +86,8 @@ export function initCalculatorAndCart() {
             cart[existingIndex].qty += qty;
         } else {
             cart.push({
+                id: prod.id, // pl. "akacmez"
+                size: jarSize, // pl. "900g"
                 key: itemKey,
                 cim: itemLabel,
                 price: itemPrice,

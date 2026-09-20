@@ -1,7 +1,9 @@
+// public/js/data/products.data.js
 export const products = [
     {
+        id: "napraforgomez",
         cim: "Napraforgó méz",
-        leiras: "Intenzív aranysárga színű, gazdag ízvilágú különlegesség, amely kristályos textúrájával, klasszikus ízével tökéletes választás reggelikhez, teák ízesítéséhez és süteményekhez.",
+        leiras: "Intenzív aranysárga színű, gazdag ízvilágú különlegesség...",
         kep: "kepek/mez.jpg",
         arak: { "250g": 990, "500g": 1790, "900g": 2890 },
         discountPercentage: 0,
@@ -10,8 +12,9 @@ export const products = [
         nagy_tetel_minimum: "min. 10 kg"
     },
     {
+        id: "akacmez",
         cim: "Akácméz",
-        leiras: "Világos színű, lágy ízű mézkülönlegesség, amely hosszan megőrzi folyékony állagát – tökéletes választás mindennapi édesítéshez vagy akár ajándékba is.",
+        leiras: "Világos színű, lágy ízű mézkülönlegesség...",
         kep: "kepek/akacmez.jpg",
         arak: { "250g": 1890, "500g": 2590, "900g": 3500 },
         discountPercentage: 25,
@@ -20,8 +23,9 @@ export const products = [
         nagy_tetel_minimum: "min. 10 kg"
     },
     {
+        id: "repcemez",
         cim: "Repceméz",
-        leiras: "Krémes állagú, enyhén fanyar ízű méz, amely finomszemcsésen kristályosodik – kiváló választás reggelihez, pirítósra kenve vagy teába keverve.",
+        leiras: "Krémes állagú, enyhén fanyar ízű méz...",
         kep: "kepek/repcemez.jpg",
         arak: { "250g": 1190, "500g": 1990, "900g": 2500 },
         discountPercentage: 0,
@@ -30,8 +34,9 @@ export const products = [
         nagy_tetel_minimum: "min. 10 kg"
     },
     {
+        id: "harsmez",
         cim: "Hársméz",
-        leiras: "Erőteljes, rendkívül aromás, fűszeres illatú igazi gyógyító mézkülönlegesség. Természetes nyugtató hatású, megfázásos tünetek enyhítésére és alvászavarok ellen kiváló.",
+        leiras: "Erőteljes, rendkívül aromás, fűszeres illatú...",
         kep: "kepek/harsmez.jpg",
         arak: { "250g": 1490, "500g": 2290, "900g": 3100 },
         discountPercentage: 0,

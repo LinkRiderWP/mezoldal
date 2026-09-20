@@ -15,6 +15,12 @@ jspm_packages/
 .env.production.local
 *.env
 
+# Firebase & Google Cloud titkos kulcsok (KRITIKUS!)
+firebase-service-account.json
+*service-account*.json
+*-adminsdk-*.json
+*.pem
+
 # 3. Naplófájlok és debug logok
 logs
 *.log
