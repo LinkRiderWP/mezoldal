@@ -6,11 +6,13 @@ const ADMIN_EMAIL = 'miklomeheszet@gmail.com';
 
 let allOrders = [];
 let allProducts = [];
+let availableImages = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     initTabs();
     initDirectLogin();
     initFilters();
+    initImageUploader();
     initAddProductForm();
     initLogout();
 
@@ -62,7 +64,7 @@ async function verifyAdminAccess() {
         if (res.ok && data.success && data.user?.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
             guard.style.display = "none";
             mainContent.style.display = "block";
-            await Promise.all([loadOrders(), loadCatalog()]);
+            await Promise.all([loadOrders(), loadCatalog(), loadAvailableImages()]);
         } else {
             showGuard();
         }
@@ -106,7 +108,147 @@ function initLogout() {
     }
 }
 
+// ============================================================
+// KÉPFELTÖLTÉS ÉS KÉPTÁR KEZELÉSE
+// ============================================================
+function initImageUploader() {
+    const dropzone = document.getElementById("imageDropzone");
+    const fileInput = document.getElementById("prodImageFileInput");
+    const changeBtn = document.getElementById("btnChangeImage");
+
+    if (!dropzone || !fileInput) return;
+
+    dropzone.addEventListener("click", () => fileInput.click());
+    if (changeBtn) changeBtn.addEventListener("click", () => fileInput.click());
+
+    // Drag and drop események
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.add("dragover");
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove("dragover");
+        });
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            uploadImageFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener("change", (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            uploadImageFile(e.target.files[0]);
+        }
+    });
+}
+
+async function uploadImageFile(file) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        showToast("Csak képformátum tölthető fel (JPG, PNG, WEBP)!", "error");
+        return;
+    }
+
+    const dropzone = document.getElementById("imageDropzone");
+    const originalText = dropzone.innerHTML;
+    dropzone.innerHTML = `<div class="dropzone-text">⏳ <strong>"${file.name}" feltöltése folyamatban...</strong></div>`;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        const res = await fetch('/api/admin/upload-image', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authApi.getToken()}`
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showToast("Kép sikeresen feltöltve a szerverre!", "success");
+            setSelectedImage(data.filePath);
+            await loadAvailableImages();
+        } else {
+            showToast(data.message || "Nem sikerült feltölteni a képet.", "error");
+        }
+    } catch {
+        showToast("Hálózati hiba a kép feltöltése során.", "error");
+    } finally {
+        dropzone.innerHTML = originalText;
+    }
+}
+
+function setSelectedImage(imagePath) {
+    const hiddenInput = document.getElementById("newProdImage");
+    const previewImg = document.getElementById("selectedImagePreview");
+    const nameText = document.getElementById("selectedImageNameText");
+
+    if (hiddenInput) hiddenInput.value = imagePath;
+    if (previewImg) previewImg.src = imagePath;
+    if (nameText) nameText.textContent = imagePath;
+
+    document.querySelectorAll(".gallery-chip-item").forEach(chip => {
+        chip.classList.toggle("active", chip.getAttribute("data-src") === imagePath);
+    });
+}
+
+async function loadAvailableImages() {
+    const galleryContainer = document.getElementById("quickGalleryContainer");
+    if (!galleryContainer) return;
+
+    try {
+        const res = await fetch('/api/admin/images', {
+            headers: { 'Authorization': `Bearer ${authApi.getToken()}` }
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            availableImages = data.images || [];
+            renderGalleryChips(availableImages);
+        }
+    } catch {
+        galleryContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nem sikerült lekérni a képtárat.</span>';
+    }
+}
+
+function renderGalleryChips(images) {
+    const galleryContainer = document.getElementById("quickGalleryContainer");
+    if (!galleryContainer) return;
+
+    if (images.length === 0) {
+        galleryContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nincs korábban feltöltött fotó.</span>';
+        return;
+    }
+
+    const currentSelected = document.getElementById("newProdImage")?.value || "kepek/mez.jpg";
+
+    galleryContainer.innerHTML = images.map(imgSrc => `
+        <div class="gallery-chip-item ${imgSrc === currentSelected ? 'active' : ''}" data-src="${imgSrc}" title="${imgSrc}">
+            <img src="${imgSrc}" alt="Kép" onerror="this.src='kepek/mez.jpg'" />
+        </div>
+    `).join('');
+
+    galleryContainer.querySelectorAll(".gallery-chip-item").forEach(chip => {
+        chip.addEventListener("click", () => {
+            const src = chip.getAttribute("data-src");
+            setSelectedImage(src);
+        });
+    });
+}
+
+// ============================================================
 // 1. MEGRENDELÉSEK & STATISZTIKA
+// ============================================================
 async function loadOrders() {
     const container = document.getElementById("adminOrdersContainer");
 
@@ -260,7 +402,9 @@ function initFilters() {
     if (refreshBtn) refreshBtn.addEventListener("click", () => loadOrders());
 }
 
+// ============================================================
 // 2. KÍNÁLAT KEZELÉSE
+// ============================================================
 async function loadCatalog() {
     const container = document.getElementById("adminCatalogList");
     const countKpi = document.getElementById("kpiActiveProducts");
@@ -356,7 +500,7 @@ function initAddProductForm() {
         const payload = {
             cim: document.getElementById("newProdTitle").value,
             leiras: document.getElementById("newProdDesc").value,
-            kep: document.getElementById("newProdImage").value,
+            kep: document.getElementById("newProdImage").value || "kepek/mez.jpg",
             price250: document.getElementById("price250").value,
             price500: document.getElementById("price500").value,
             price900: document.getElementById("price900").value,
@@ -379,6 +523,7 @@ function initAddProductForm() {
             if (res.ok && data.success) {
                 showToast(data.message, "success");
                 form.reset();
+                setSelectedImage("kepek/mez.jpg");
                 document.getElementById("salePercentGroup").style.display = "none";
                 await loadCatalog();
             } else {

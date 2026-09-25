@@ -251,7 +251,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Rendelések vezérlősávja (Keresés + szűrés) */
+/* Rendelések vezérlősávja */
 .orders-control-bar {
     display: flex;
     gap: 1.4rem;
@@ -335,7 +335,7 @@
     box-shadow: 0 4px 15px rgba(226, 161, 54, 0.3);
 }
 
-/* Rendelések listája & Rendelés Kártya */
+/* Rendelés Kártya és Részletek */
 .orders-cards-stream {
     display: flex;
     flex-direction: column;
@@ -412,7 +412,6 @@
     border: 1px solid rgba(226, 161, 54, 0.4);
 }
 
-/* Belső részletek elrendezése (2 oszlopos légies rács) */
 .order-grid-details {
     display: grid;
     grid-template-columns: minmax(320px, 1fr) minmax(380px, 1.25fr);
@@ -437,9 +436,6 @@
     margin-bottom: 1.2rem;
     padding-bottom: 0.6rem;
     border-bottom: 1px solid rgba(226, 161, 54, 0.12);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .order-box-panel p {
@@ -462,10 +458,8 @@
     border-radius: 10px;
     font-size: 0.88rem;
     color: var(--text-main);
-    line-height: 1.5;
 }
 
-/* Tételek Táblázat */
 .order-items-table {
     width: 100%;
     border-collapse: collapse;
@@ -479,7 +473,6 @@
     border-bottom: 1px solid rgba(226, 161, 54, 0.18);
     font-size: 0.82rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 .order-items-table td {
     padding: 0.95rem 0.6rem;
@@ -490,7 +483,6 @@
     border-bottom: none;
 }
 
-/* Alsó összegző sor */
 .order-bottom-summary {
     display: flex;
     justify-content: space-between;
@@ -539,7 +531,7 @@
 }
 
 /* ============================================================
-   2. KÍNÁLAT KEZELÉSE – TÁGAS KÉTOSZLOPOS NÉZET
+   KÍNÁLAT KEZELÉSE & KÉPFELTÖLTŐ MODUL
    ============================================================ */
 .catalog-management-grid {
     display: grid;
@@ -570,7 +562,6 @@
     line-height: 1.55;
 }
 
-/* Termék űrlap elemek */
 .dash-product-form {
     display: flex;
     flex-direction: column;
@@ -613,6 +604,154 @@
     box-shadow: 0 0 0 3px rgba(226, 161, 54, 0.2);
 }
 
+/* ============================================================
+   KÉPFELTÖLTŐ ÉS GALÉRIA MODUL STÍLUSAI
+   ============================================================ */
+.image-uploader-container {
+    background: rgba(18, 10, 6, 0.65);
+    border: 1px solid rgba(226, 161, 54, 0.18);
+    border-radius: 14px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.image-dropzone {
+    border: 2px dashed rgba(226, 161, 54, 0.35);
+    background: rgba(226, 161, 54, 0.03);
+    border-radius: 12px;
+    padding: 1.8rem 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+.image-dropzone:hover,
+.image-dropzone.dragover {
+    border-color: var(--primary-color);
+    background: rgba(226, 161, 54, 0.09);
+    transform: translateY(-2px);
+}
+
+.dropzone-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.2rem;
+}
+.dropzone-text {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+.dropzone-text strong {
+    color: var(--primary-color);
+}
+.dropzone-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* Előnézeti sáv */
+.image-preview-panel {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: rgba(12, 6, 3, 0.8);
+    border: 1px solid rgba(226, 161, 54, 0.25);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+}
+.image-preview-panel img {
+    width: 68px;
+    height: 68px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(226, 161, 54, 0.35);
+    background-color: #120A06;
+}
+.image-preview-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    overflow: hidden;
+}
+.preview-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    letter-spacing: 0.05em;
+}
+.image-preview-details strong {
+    font-size: 0.88rem;
+    color: #FFFFFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.btn-change-image {
+    background: none;
+    border: none;
+    color: var(--primary-light);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+}
+.btn-change-image:hover {
+    color: #FFFFFF;
+}
+
+/* Gyors galéria választó chips */
+.quick-gallery-box {
+    border-top: 1px dashed rgba(226, 161, 54, 0.18);
+    padding-top: 0.9rem;
+}
+.quick-gallery-title {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.7rem;
+}
+.quick-gallery-flow {
+    display: flex;
+    gap: 0.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+.gallery-chip-item {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: var(--transition-smooth);
+    background-color: #120A06;
+}
+.gallery-chip-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.gallery-chip-item:hover {
+    border-color: rgba(226, 161, 54, 0.5);
+    transform: scale(1.05);
+}
+.gallery-chip-item.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(226, 161, 54, 0.5);
+}
+
+/* Árak és Akciók */
 .dash-price-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -634,7 +773,7 @@
     border-radius: 12px;
 }
 
-/* Bolti Kínálat Lista Elemei */
+/* Bolti Kínálat Elemek */
 .catalog-items-flow {
     display: flex;
     flex-direction: column;
@@ -739,7 +878,6 @@
     line-height: 1.6;
 }
 
-/* Egyedi görgetősáv a listához */
 .catalog-items-flow::-webkit-scrollbar {
     width: 6px;
 }

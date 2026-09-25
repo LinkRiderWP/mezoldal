@@ -141,9 +141,43 @@
               <textarea id="newProdDesc" rows="3" placeholder="Sötétbarna, karakteres ízű, érrendszert támogató ritkaság..."></textarea>
             </div>
 
+            <!-- Interaktív Képfeltöltő és Képtár modul -->
             <div class="form-group">
-              <label class="form-label" for="newProdImage">Termékfotó elérési útja / URL *</label>
-              <input type="text" id="newProdImage" value="kepek/mez.jpg" placeholder="kepek/akacmez.jpg vagy https://..." required />
+              <label class="form-label">Termékfotó feltöltése vagy kiválasztása *</label>
+
+              <div class="image-uploader-container">
+                <input type="file" id="prodImageFileInput" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+
+                <!-- Húzd-ide feltöltő doboz -->
+                <div class="image-dropzone" id="imageDropzone">
+                  <div class="dropzone-icon">📸</div>
+                  <div class="dropzone-text">
+                    <strong>Kattintson ide a kép feltöltéséhez</strong> vagy húzza ide a fájlt
+                  </div>
+                  <span class="dropzone-hint">Támogatott: JPG, PNG, WEBP (max. 10 MB)</span>
+                </div>
+
+                <!-- Kiválasztott kép előnézete -->
+                <div class="image-preview-panel" id="imagePreviewPanel">
+                  <img id="selectedImagePreview" src="kepek/mez.jpg" alt="Kiválasztott fotó előnézete" />
+                  <div class="image-preview-details">
+                    <span class="preview-badge">Aktuális fotó</span>
+                    <strong id="selectedImageNameText">kepek/mez.jpg</strong>
+                    <button type="button" class="btn-change-image" id="btnChangeImage">Új kép választása</button>
+                  </div>
+                </div>
+
+                <!-- Rejtett input a backend felé küldendő kép URL-hez -->
+                <input type="hidden" id="newProdImage" value="kepek/mez.jpg" required />
+
+                <!-- Gyorsválasztó Képtár a szerveren lévő képekből -->
+                <div class="quick-gallery-box">
+                  <span class="quick-gallery-title">Vagy válasszon a feltöltött képek közül:</span>
+                  <div class="quick-gallery-flow" id="quickGalleryContainer">
+                    <!-- Dinamikusan tölti fel a JavaScript -->
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="dash-price-grid">
