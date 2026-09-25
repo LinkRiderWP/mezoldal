@@ -105,7 +105,7 @@
 <section class="hero">
   <div class="hero-overlay"></div>
 
-  <!-- Kisebb, letisztult, kontúros arany méhecske -->
+  <!-- Interaktív méhecske -->
   <div class="hero-bee-container" id="heroBee" aria-label="Interaktív méhecske">
     <div class="floating-bee-drifter">
       <svg class="floating-bee" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -265,25 +265,93 @@
 <section id="about" class="about-section reveal">
   <div class="container about-grid">
     <div class="about-text">
-      <h2>Rólunk - Mikló Méhészet</h2>
-      <p>Családi méhészetünk az Alföld napsütötte tájain működik. Méheink szabadon gyűjtenek a tiszta alföldi akácligetekben és mezei vadvirágokon, biztosítva a 100%-ban természetes, hamisítatlan minőséget.</p>
-      <p>Küldetésünk az egészséges méhcsaládok gondozása és a tiszta, nyers termelői méz eljuttatása közvetlenül az Ön otthonába.</p>
+      <h2>Rólunk – Mikló Méhészet</h2>
+      <p>Családi méhészetünk az Alföld napsütötte tájain működik. Kaptárainkat a legtisztább alföldi akácligetek és vadvirágos mezők mentén gondozzuk, hogy méheink természetes, háborítatlan környezetben gyűjthessék a virágok nektárját.</p>
+      <p>Számunkra a méhészkedés nem tömegtermelés, hanem hagyomány és gondoskodás: a mézet kíméletesen, hidegen pergetve töltjük üvegekbe, mindenféle ipari adalék és hőkezelés nélkül. Így pontosan azt a hamisítatlan, tiszta mézet kapja kézhez, amit mi is a családunk asztalára teszünk.</p>
+
+      <!-- Érthető, megbízható minőségi garanciák -->
+      <div class="about-features">
+        <div class="about-feature-item">
+          <div class="feature-icon">🍯</div>
+          <div class="feature-content">
+            <strong>100% Valódi Méz</strong>
+            <span>Hozzáadott cukor és adalékok nélkül</span>
+          </div>
+        </div>
+
+        <div class="about-feature-item">
+          <div class="feature-icon">👨‍🌾</div>
+          <div class="feature-content">
+            <strong>Családi Gazdaság</strong>
+            <span>Generációs tapasztalat az Alföld szívében</span>
+          </div>
+        </div>
+
+        <div class="about-feature-item">
+          <div class="feature-icon">🚚</div>
+          <div class="feature-content">
+            <strong>Közvetlenül a Kaptárból</strong>
+            <span>Saját termelésből egyenesen az Ön asztalára</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="about-image-wrapper" id="aboutVisualWrapper">
-      <div class="about-glow-aura" aria-hidden="true"></div>
+      <!-- Lágy háttérfény -->
+      <div class="about-backdrop-glow" aria-hidden="true"></div>
 
-      <div class="about-honeycomb-accent" aria-hidden="true">
-        <svg viewBox="0 0 160 160" fill="none">
-          <path d="M40 10 L70 27 L70 61 L40 78 L10 61 L10 27 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.35"/>
-          <path d="M100 45 L130 62 L130 96 L100 113 L70 96 L70 62 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.25"/>
-          <path d="M40 80 L70 97 L70 131 L40 148 L10 131 L10 97 Z" stroke="var(--primary-color)" stroke-width="1.2" stroke-opacity="0.2"/>
+      <!-- Matematikailag pontosan illeszkedő méhsejtrács a háttérben -->
+      <div class="about-honeycomb-grid" id="aboutHoneycomb" aria-hidden="true">
+        <svg viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 1. Oszlop -->
+          <polygon points="55,10 85,10 100,36 85,62 55,62 40,36" class="hex-cell hex-glow" />
+          <polygon points="55,62 85,62 100,88 85,114 55,114 40,88" class="hex-cell" />
+
+          <!-- 2. Oszlop -->
+          <polygon points="100,36 130,36 145,62 130,88 100,88 85,62" class="hex-cell" />
+          <polygon points="100,88 130,88 145,114 130,140 100,140 85,114" class="hex-cell hex-amber" />
+          <polygon points="100,140 130,140 145,166 130,192 100,192 85,166" class="hex-cell" />
+
+          <!-- 3. Oszlop -->
+          <polygon points="145,10 175,10 190,36 175,62 145,62 130,36" class="hex-cell" />
+          <polygon points="145,62 175,62 190,88 175,114 145,114 130,88" class="hex-cell hex-glow" />
+          <polygon points="145,114 175,114 190,140 175,166 145,166 130,140" class="hex-cell" />
+
+          <!-- 4. Oszlop -->
+          <polygon points="190,36 220,36 235,62 220,88 190,88 175,62" class="hex-cell" />
+          <polygon points="190,88 220,88 235,114 220,140 190,140 175,114" class="hex-cell hex-amber" />
         </svg>
       </div>
 
-      <div class="about-card-frame">
-        <div class="frame-shimmer-layer"></div>
-        <img src="kepek/akacmez.jpg" alt="Méhészet az Alföldön" class="about-image" loading="lazy" />
+      <!-- Bemutató kártya (Glow effekt nélkül) -->
+      <div class="about-showcase-card" id="aboutShowcaseCard">
+        <div class="about-image-stage">
+          <!-- Családi pecsét a fotó sarkában -->
+          <div class="about-seal-badge" id="aboutSealBadge">
+            <span class="seal-icon">🐝</span>
+            <div class="seal-text">
+              <span class="seal-text-top">Mikló Méhészet</span>
+              <span class="seal-text-bot">Családi Gazdaság</span>
+            </div>
+          </div>
+
+          <img src="kepek/akacmez.jpg" alt="Mikló Méhészet Termelői Méz" class="about-image" loading="lazy" />
+        </div>
+
+        <!-- Érthető, tiszta alsó sáv a "Rólunk" témában -->
+        <div class="about-card-footer">
+          <div class="about-card-meta">
+            <span class="about-card-badge-origin">Alföldi Vándorméhészet</span>
+            <h4 class="about-card-title">Tiszta, házi termelői méz</h4>
+          </div>
+
+          <!-- Két közvetlen, érthető jelvény -->
+          <div class="about-card-tags">
+            <span class="about-card-tag">🍯 100% valódi méz</span>
+            <span class="about-card-tag">🌼 Saját kaptárainkból</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -400,7 +468,7 @@
             <a href="#products" class="link-add-more">+ További méz hozzáadása</a>
           </div>
 
-          <!-- Dinamikus csomagsúly visszajelző kártya -->
+          <!-- Csomagsúly visszajelző -->
           <div class="cart-weight-badge" id="cartTotalWeightBadge">
             ⚖️ Csomag becsült összsúlya: <strong>0 kg</strong>
           </div>

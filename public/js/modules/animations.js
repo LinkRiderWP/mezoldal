@@ -31,40 +31,90 @@ export function initAmbientPollen() {
 }
 
 /**
- * 3D finom kártyadöntés a Rólunk képnél
+ * Tiszta 3D Parallaxis animáció a Rólunk bemutatóhoz
+ * - Selymes fizikai tehetetlenség (Smooth Lerp)
+ * - Nincs felesleges fénycsillanás (glow)
+ * - IntersectionObserver teljesítmény-optimalizálás
  */
 export function initAboutVisualInteractions() {
     const wrapper = document.getElementById("aboutVisualWrapper");
-    if (!wrapper || window.innerWidth < 992) return;
+    const card = document.getElementById("aboutShowcaseCard");
+    const seal = document.getElementById("aboutSealBadge");
+    const honeycomb = document.getElementById("aboutHoneycomb");
 
-    const frame = wrapper.querySelector(".about-card-frame");
-    if (!frame) return;
+    if (!wrapper || !card) return;
 
-    wrapper.addEventListener("mousemove", (e) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let isVisible = false;
+
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let currentRotX = 0;
+    let currentRotY = 0;
+
+    const ease = 0.085;
+
+    const onMouseMove = (e) => {
         const rect = wrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-        const rotateX = -(y / rect.height) * 8;
-        const rotateY = (x / rect.width) * 8;
+        const normX = (x / rect.width) * 2 - 1;
+        const normY = (y / rect.height) * 2 - 1;
 
-        frame.style.animationPlayState = "paused";
-        frame.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
-    });
+        // Visszafogott, elegáns dőlésszög (max 7 fok)
+        targetRotX = -normY * 7;
+        targetRotY = normX * 7;
+    };
+
+    wrapper.addEventListener("mousemove", onMouseMove, { passive: true });
 
     wrapper.addEventListener("mouseleave", () => {
-        frame.style.animationPlayState = "running";
-        frame.style.transform = "";
+        targetRotX = 0;
+        targetRotY = 0;
     });
+
+    function renderLoop() {
+        if (!isVisible) {
+            requestAnimationFrame(renderLoop);
+            return;
+        }
+
+        // Interpolált tehetetlenségi mozgás
+        currentRotX += (targetRotX - currentRotX) * ease;
+        currentRotY += (targetRotY - currentRotY) * ease;
+
+        // A kártya dőlése
+        card.style.transform = `perspective(1000px) rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg)`;
+
+        // Viaszpecsét finom parallaxis mozgása
+        if (seal) {
+            const sealX = -currentRotY * 0.7;
+            const sealY = currentRotX * 0.7;
+            seal.style.transform = `translate(${sealX.toFixed(2)}px, ${sealY.toFixed(2)}px)`;
+        }
+
+        // Háttér méhsejt enyhe ellentétes elmozdulása a mélységérzethez
+        if (honeycomb) {
+            const hx = currentRotY * 0.9;
+            const hy = -currentRotX * 0.9;
+            honeycomb.style.transform = `translate(${hx.toFixed(2)}px, ${hy.toFixed(2)}px)`;
+        }
+
+        requestAnimationFrame(renderLoop);
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+        isVisible = entry.isIntersecting;
+    }, { threshold: 0.1 });
+
+    observer.observe(wrapper);
+    requestAnimationFrame(renderLoop);
 }
 
 /**
- * Okos, geometriai méhsejt-méhecske
- * - Teljes mozgástér a képernyő legszéléig
- * - Természetes menekülés stabil oldalirányú kikerüléssel (nincs ugrálás/rezgés)
- * - Sarokban azonnali íves megkerülés az egér körül a szabad tér felé
- * - Kattintásra arany shockwave és szikrák robbanása
- * - Csillogó repülési fénycsík hátrahagyása
+ * Interaktív méhecske modul
  */
 export function initInteractiveBee() {
     const bee = document.querySelector(".hero-bee-container");
@@ -83,9 +133,8 @@ export function initInteractiveBee() {
     let homeX = 0, homeY = 0;
     let heroWidth = 0, heroHeight = 0;
     let trailTimer = 0;
-    let beeRadius = 20; // Dinamikusan számolva a valós szélességből
+    let beeRadius = 20;
 
-    // Oldalirányú menekülés állapota (hysterézis az ugrálás megelőzésére)
     let isDodging = false;
     let lateralSign = 0;
     let cornerTrapFrames = 0;
@@ -96,7 +145,6 @@ export function initInteractiveBee() {
         heroHeight = heroRect.height;
         bee.style.transform = "none";
         const beeRect = bee.getBoundingClientRect();
-        // A méhecske sugarának felvétele, hogy pontosan a szélig kimehessen
         beeRadius = Math.max(16, Math.min(beeRect.width, beeRect.height) / 2);
         homeX = (beeRect.left + beeRect.width / 2) - heroRect.left;
         homeY = (beeRect.top + beeRect.height / 2) - heroRect.top;
@@ -122,7 +170,6 @@ export function initInteractiveBee() {
     hero.addEventListener("touchend", () => { isMouseNear = false; isDodging = false; });
     hero.addEventListener("touchcancel", () => { isMouseNear = false; isDodging = false; });
 
-    // Vizuális kattintási effektus (Shockwave gyűrű + 360°-os szikrarobbanás)
     function triggerClickVisuals(originX, originY) {
         const shockwave = document.createElement("div");
         shockwave.className = "bee-shockwave";
@@ -159,7 +206,6 @@ export function initInteractiveBee() {
         }
     }
 
-    // Csillámcsík kibocsátása
     function emitTrailDot(posX, posY) {
         const dot = document.createElement("div");
         dot.className = "bee-trail-dot";
@@ -169,7 +215,6 @@ export function initInteractiveBee() {
         dot.addEventListener("animationend", () => dot.remove());
     }
 
-    // Kattintási esemény
     bee.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -203,14 +248,12 @@ export function initInteractiveBee() {
         const centerX = heroWidth * 0.5;
         const centerY = heroHeight * 0.5;
 
-        // A méhecske pontos sugara határolja a mozgásteret (teljesen kimehet a széléig)
         const wallPadding = beeRadius;
         const distToLeft = beeCenterX - wallPadding;
         const distToRight = (heroWidth - wallPadding) - beeCenterX;
         const distToTop = beeCenterY - wallPadding;
         const distToBottom = (heroHeight - wallPadding) - beeCenterY;
 
-        // Szűk zóna: csak akkor kezdődik az oldalirányú kikerülés, amikor tényleg a széléhez ért
         const wallZone = 40;
         const isNearLeft = distToLeft < wallZone;
         const isNearRight = distToRight < wallZone;
@@ -218,7 +261,6 @@ export function initInteractiveBee() {
         const isNearBottom = distToBottom < wallZone;
         const isNearAnyWall = isNearLeft || isNearRight || isNearTop || isNearBottom;
 
-        // 1. Cél felé navigáció (kattintás vagy kitörési manőver után)
         if (isAutoTraveling) {
             const tx = targetTravelX - currentX;
             const ty = targetTravelY - currentY;
@@ -238,9 +280,7 @@ export function initInteractiveBee() {
                 vx += fx;
                 vy += fy;
             }
-        }
-        // 2. Egér elöli menekülés
-        else if (isMouseNear && dist < proximity) {
+        } else if (isMouseNear && dist < proximity) {
             const force = (proximity - dist) / proximity;
             const nx = dx / dist;
             const ny = dy / dist;
@@ -312,7 +352,6 @@ export function initInteractiveBee() {
             cornerTrapFrames = 0;
         }
 
-        // 3. Nagyon szűk, puha rugómező közvetlenül a szélénél (csak az utolsó 20px-en fékez lágyan)
         const cushion = 20;
         if (distToLeft < cushion) {
             const r = (cushion - distToLeft) / cushion;
@@ -330,7 +369,6 @@ export function initInteractiveBee() {
             vy -= r * r * 1.8;
         }
 
-        // 4. Mozgás és súrlódás
         vx *= friction;
         vy *= friction;
         currentX += vx;
@@ -359,7 +397,6 @@ export function initInteractiveBee() {
         while (angleDiff > 180) angleDiff -= 360;
         currentAngleDeg += angleDiff * 0.14;
 
-        // 5. Kemény korlátok: pont a méhecske pereme érinti a képernyő legszélét
         let absoluteX = homeX + currentX;
         let absoluteY = homeY + currentY;
 
