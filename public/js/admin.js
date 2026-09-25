@@ -166,8 +166,8 @@ function renderOrders(orders) {
         const itemsRows = (ord.items || []).map(it => `
             <tr>
                 <td><strong>${it.name || it.cim}</strong></td>
-                <td>${it.size || ''}</td>
-                <td>${it.qty || it.quantity} db</td>
+                <td><span class="price-pill-tag">${it.size || ''}</span></td>
+                <td style="text-align: center;"><strong>${it.qty || it.quantity} db</strong></td>
                 <td style="text-align: right; color: var(--primary-color);"><strong>${Number(it.total || (it.price * it.qty)).toLocaleString('hu-HU')} Ft</strong></td>
             </tr>
         `).join('');
@@ -180,31 +180,31 @@ function renderOrders(orders) {
                     <span class="order-timestamp">📅 ${formattedDate}</span>
                 </div>
                 <div class="order-status-pills">
-                    <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? 'Kifizetve (SimplePay)' : 'Függőben'}</span>
+                    <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? '✓ Kifizetve (SimplePay)' : '⏳ Függőben'}</span>
                     ${ord.invoiceNumber ? `<span class="pill invoice">🧾 Számla: ${ord.invoiceNumber}</span>` : ''}
                 </div>
             </div>
 
             <div class="order-grid-details">
                 <div class="order-box-panel">
-                    <h4>👤 Vevő & Szállítás</h4>
+                    <h4>👤 Vevő & Szállítási Cím</h4>
                     <p><strong>Név:</strong> ${cust.name || 'N/A'} ${cust.company ? `(${cust.company})` : ''}</p>
                     ${cust.taxNumber ? `<p><strong>Adószám:</strong> ${cust.taxNumber}</p>` : ''}
-                    <p><strong>E-mail:</strong> <a href="mailto:${cust.email}" style="color: var(--primary-light);">${cust.email}</a></p>
-                    <p><strong>Telefonszám:</strong> <a href="tel:${cust.phone}" style="color: var(--primary-light);">${cust.phone}</a></p>
-                    <p><strong>Cím:</strong> ${cust.zip || ''} ${cust.city || ''}, ${cust.address || ''}</p>
-                    <p><strong>Szállítás:</strong> ${ord.shipping?.name || 'Futár'} (<strong>${ord.totalWeightKg || 0} kg</strong>)</p>
-                    ${ord.note ? `<p style="margin-top: 0.6rem; background: rgba(226,161,54,0.08); padding: 0.5rem 0.7rem; border-radius: 6px;"><strong>Megjegyzés a futárnak:</strong> "${ord.note}"</p>` : ''}
+                    <p><strong>E-mail:</strong> <a href="mailto:${cust.email}" style="color: var(--primary-light); text-decoration: underline;">${cust.email}</a></p>
+                    <p><strong>Telefonszám:</strong> <a href="tel:${cust.phone}" style="color: var(--primary-light); text-decoration: underline;">${cust.phone}</a></p>
+                    <p><strong>Kézbesítési Cím:</strong> ${cust.zip || ''} ${cust.city || ''}, ${cust.address || ''}</p>
+                    <p><strong>Szállítási Mód:</strong> ${ord.shipping?.name || 'Futár'} (Csomagsúly: <strong>${ord.totalWeightKg || 0} kg</strong>)</p>
+                    ${ord.note ? `<div class="order-note-bubble"><strong>Megjegyzés a futárnak:</strong> "${ord.note}"</div>` : ''}
                 </div>
 
                 <div class="order-box-panel">
-                    <h4>🍯 Rendelt Tételek</h4>
+                    <h4>🍯 Rendelt Tételek Listája</h4>
                     <table class="order-items-table">
                         <thead>
                             <tr>
-                                <th>Tétel</th>
+                                <th>Termék</th>
                                 <th>Kiszerelés</th>
-                                <th>Db</th>
+                                <th style="text-align: center;">Mennyiség</th>
                                 <th style="text-align: right;">Részösszeg</th>
                             </tr>
                         </thead>
@@ -216,12 +216,13 @@ function renderOrders(orders) {
             </div>
 
             <div class="order-bottom-summary">
-                <div style="font-size: 0.88rem; color: var(--text-muted);">
+                <div class="order-shipping-meta">
                     Szállítási díj: <strong>${ord.shipping?.price === 0 ? 'Ingyenes' : `${Number(ord.shipping?.price || 0).toLocaleString('hu-HU')} Ft`}</strong>
-                    ${ord.transactionId ? ` | Tranzakció ID: <code>${ord.transactionId}</code>` : ''}
+                    ${ord.transactionId ? ` &nbsp;|&nbsp; Tranzakció azonosító: <code>${ord.transactionId}</code>` : ''}
                 </div>
-                <div class="order-total-price">
-                    Fizetett Végösszeg: ${Number(ord.totalAmount || 0).toLocaleString('hu-HU')} Ft
+                <div class="order-total-price-box">
+                    <span class="order-total-label">Fizetett Végösszeg:</span>
+                    <span class="order-total-price">${Number(ord.totalAmount || 0).toLocaleString('hu-HU')} Ft</span>
                 </div>
             </div>
         </article>
@@ -296,16 +297,19 @@ function renderCatalog(products) {
             <div class="catalog-entry-left">
                 <img src="${prod.kep || 'kepek/mez.jpg'}" alt="${prod.cim}" class="catalog-entry-thumb" onerror="this.src='kepek/mez.jpg'" />
                 <div>
-                    <div class="catalog-entry-title">${prod.cim} ${prod.isSale ? '<span style="color:var(--accent-color); font-size:0.75rem;">(AKCIÓ -' + prod.discountPercentage + '%)</span>' : ''}</div>
+                    <div class="catalog-entry-title">
+                        <span>${prod.cim}</span>
+                        ${prod.isSale ? '<span class="pill" style="background: rgba(240, 122, 93, 0.2); color: var(--accent-color); font-size: 0.72rem; padding: 0.2rem 0.6rem;">AKCIÓ -' + prod.discountPercentage + '%</span>' : ''}
+                    </div>
                     <div class="catalog-entry-prices">
-                        250g: <strong>${(prod.arak?.["250g"] || 0).toLocaleString('hu-HU')} Ft</strong> | 
-                        500g: <strong>${(prod.arak?.["500g"] || 0).toLocaleString('hu-HU')} Ft</strong> | 
-                        900g: <strong>${(prod.arak?.["900g"] || 0).toLocaleString('hu-HU')} Ft</strong>
+                        <span class="price-pill-tag">250g: <strong>${(prod.arak?.["250g"] || 0).toLocaleString('hu-HU')} Ft</strong></span>
+                        <span class="price-pill-tag">500g: <strong>${(prod.arak?.["500g"] || 0).toLocaleString('hu-HU')} Ft</strong></span>
+                        <span class="price-pill-tag">900g: <strong>${(prod.arak?.["900g"] || 0).toLocaleString('hu-HU')} Ft</strong></span>
                     </div>
                 </div>
             </div>
             <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
-                🗑️ Termék törlése
+                🗑️ Törlés
             </button>
         </div>
     `).join('');
