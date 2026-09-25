@@ -1,12 +1,50 @@
 const crypto = require('crypto');
 const { db } = require('../config/firebase');
 
-const SHIPPING_CONFIG = {
-    courier: { name: 'MPL Házhozszállítás', price: 1990 },
-    parcel: { name: 'MPL Csomagautomata / PostaPont', price: 990 },
-    pickup: { name: 'Személyes átvétel', price: 0 }
+// Méz + üveg bruttó súlyok (kg)
+const WEIGHT_PER_SIZE = {
+    "250g": 0.45,
+    "500g": 0.80,
+    "900g": 1.35
 };
-const FREE_SHIPPING_LIMIT = 15000;
+// Törésbiztos kartondoboz és térkitöltő csomagolás alaptömege (kg)
+const BOX_BASE_WEIGHT = 0.35;
+
+// Valós MPL súlysávos szállítási díjtáblázat
+const SHIPPING_CONFIG = {
+    courier: {
+        name: 'MPL Házhozszállítás',
+        maxWeight: 100,
+        rates: [
+            { maxKg: 2, price: 1990 },
+            { maxKg: 5, price: 2490 },
+            { maxKg: 10, price: 2990 },
+            { maxKg: 20, price: 3990 },
+            { maxKg: 30, price: 5490 },
+            { maxKg: 999, price: 7990 }
+        ]
+    },
+    parcel: {
+        name: 'MPL Csomagautomata / PostaPont',
+        maxWeight: 20, // 20 kg felett az MPL automaták fizikailag nem fogadják a csomagot
+        rates: [
+            { maxKg: 2, price: 990 },
+            { maxKg: 5, price: 1490 },
+            { maxKg: 10, price: 1990 },
+            { maxKg: 20, price: 2790 }
+        ]
+    },
+    pickup: {
+        name: 'Személyes átvétel (Alföld)',
+        maxWeight: 9999,
+        rates: [
+            { maxKg: 9999, price: 0 }
+        ]
+    }
+};
+
+const FREE_SHIPPING_LIMIT = 18000;
+const FREE_SHIPPING_MAX_WEIGHT = 10; // Ingyenes szállítás normál lakossági mennyiségre (max 10 kg-ig)
 
 class OrderService {
     async verifyAndCalculateItems(items) {
@@ -17,6 +55,7 @@ class OrderService {
         });
 
         let itemsTotal = 0;
+        let itemsNetWeight = 0;
         const verifiedItems = [];
 
         for (const item of items) {
@@ -34,31 +73,71 @@ class OrderService {
             const lineTotal = officialUnitPrice * rawQty;
             itemsTotal += lineTotal;
 
+            const unitGrossWeight = WEIGHT_PER_SIZE[item.size] || 1.35;
+            itemsNetWeight += unitGrossWeight * rawQty;
+
             verifiedItems.push({
                 productId: item.id,
+                size: item.size,
                 name: `${productData.cim} (${item.size}-os üveg)`,
                 cim: `${productData.cim} (${item.size}-os üveg)`,
                 unitPrice: officialUnitPrice,
                 price: officialUnitPrice,
                 quantity: rawQty,
                 qty: rawQty,
+                weightKg: Math.round(unitGrossWeight * 100) / 100,
                 unit: "db",
                 total: lineTotal
             });
         }
 
-        return { verifiedItems, itemsTotal };
+        const totalWeightKg = Math.round((itemsNetWeight + BOX_BASE_WEIGHT) * 10) / 10;
+
+        return { verifiedItems, itemsTotal, totalWeightKg };
     }
 
-    calculateShipping(shippingMethod, itemsTotal) {
-        const chosenShippingKey = SHIPPING_CONFIG[shippingMethod] ? shippingMethod : 'courier';
-        const shippingOption = SHIPPING_CONFIG[chosenShippingKey];
-        const isFree = chosenShippingKey === 'pickup' || itemsTotal >= FREE_SHIPPING_LIMIT;
+    calculateShipping(shippingMethod, itemsTotal, totalWeightKg) {
+        let chosenMethod = SHIPPING_CONFIG[shippingMethod] ? shippingMethod : 'courier';
+
+        // Ha a csomag meghaladja a 20 kg-ot, az automata nem használható, automatikusan házhozszállításra váltunk
+        if (chosenMethod === 'parcel' && totalWeightKg > SHIPPING_CONFIG.parcel.maxWeight) {
+            chosenMethod = 'courier';
+        }
+
+        const option = SHIPPING_CONFIG[chosenMethod];
+
+        // Megfelelő súlysáv megkeresése
+        let baseShippingPrice = 0;
+        for (const tier of option.rates) {
+            if (totalWeightKg <= tier.maxKg) {
+                baseShippingPrice = tier.price;
+                break;
+            }
+        }
+
+        let finalShippingPrice = baseShippingPrice;
+        let isFree = false;
+
+        if (chosenMethod === 'pickup') {
+            finalShippingPrice = 0;
+            isFree = true;
+        } else if (itemsTotal >= FREE_SHIPPING_LIMIT) {
+            if (totalWeightKg <= FREE_SHIPPING_MAX_WEIGHT) {
+                finalShippingPrice = 0;
+                isFree = true;
+            } else {
+                // 10 kg feletti nagytételnél 1990 Ft alapkedvezményt kap a vevő
+                finalShippingPrice = Math.max(0, baseShippingPrice - 1990);
+            }
+        }
 
         return {
-            methodKey: chosenShippingKey,
-            name: shippingOption.name,
-            price: isFree ? 0 : shippingOption.price,
+            methodKey: chosenMethod,
+            name: `${option.name} (${totalWeightKg} kg)`,
+            rawName: option.name,
+            price: finalShippingPrice,
+            basePrice: baseShippingPrice,
+            weightKg: totalWeightKg,
             isFree
         };
     }
@@ -71,6 +150,7 @@ class OrderService {
             userId,
             items: verifiedItems,
             itemsTotal,
+            totalWeightKg: shipping.weightKg,
             shipping,
             customer,
             note: note ? String(note).trim().slice(0, 300) : "",

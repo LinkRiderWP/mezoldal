@@ -22,16 +22,17 @@ async function createBillingoInvoice(order) {
         comment: "Kézműves magyar méz"
     }));
 
-    // 2. Szállítási díj tétel
+    // 2. Szállítási díj tétel súlymegjelöléssel
     if (order.shipping && Number(order.shipping.price) > 0) {
+        const weightLabel = order.totalWeightKg ? ` - ${order.totalWeightKg} kg` : '';
         items.push({
-            name: `Kiszállítási díj (${order.shipping.name})`,
+            name: `Kiszállítási díj (${order.shipping.rawName || order.shipping.name}${weightLabel})`,
             unit_price: Number(order.shipping.price),
             unit_price_type: "gross",
             quantity: 1,
             unit: "db",
             vat: "AAM",
-            comment: "MPL szállítási szolgáltatás"
+            comment: "MPL szállítási szolgáltatás (törésbiztos csomagolásban)"
         });
     }
 
@@ -47,7 +48,7 @@ async function createBillingoInvoice(order) {
         emails: [order.customer.email]
     };
 
-    // Csak céges partner esetén küldünk adószámot (magánszemélynél a Billingo hibaüzenetet adhat üres stringre)
+    // Csak céges partner esetén küldünk adószámot
     if (order.customer.taxNumber && order.customer.taxNumber.trim().length > 0) {
         partnerPayload.taxcode = order.customer.taxNumber.trim();
     }

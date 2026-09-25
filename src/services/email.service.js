@@ -32,6 +32,7 @@ class EmailService {
         const city = escapeHtml(order.customer.city || '');
         const address = escapeHtml(order.customer.address || '');
         const phone = escapeHtml(order.customer.phone || '');
+        const totalWeight = order.totalWeightKg ? `${order.totalWeightKg} kg` : '';
         const fromAddress = process.env.EMAIL_FROM || '"Mikló Méhészet" <info@miklomez.hu>';
 
         const itemsRows = (order.items || []).map(item => {
@@ -86,6 +87,7 @@ class EmailService {
                     <p style="margin: 0 0 5px;"><strong>Szállítási adatok:</strong></p>
                     <p style="margin: 0; color: #C0B0A0;">${zip} ${city}, ${address}</p>
                     <p style="margin: 5px 0 0; color: #C0B0A0;">Telefonszám: ${phone}</p>
+                    ${totalWeight ? `<p style="margin: 5px 0 0; color: #E5A93C;">Csomag össztömege: ${totalWeight} (törésbiztos csomagolásban)</p>` : ''}
                 </div>
 
                 <table>
@@ -119,7 +121,7 @@ class EmailService {
         `;
 
         if (!this.transporter) {
-            console.log(`[MOCK EMAIL KÜLDÉS] Címzett: ${customerEmail} | Rendelés: ${order.orderRef}`);
+            console.log(`[MOCK EMAIL KÜLDÉS] Címzett: ${customerEmail} | Rendelés: ${order.orderRef} | Súly: ${totalWeight}`);
             return;
         }
 

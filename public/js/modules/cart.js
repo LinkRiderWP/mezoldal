@@ -1,11 +1,48 @@
 import { products } from '../data/products.data.js';
 import { showToast } from './ui.js';
 
-const FREE_SHIPPING_LIMIT = 15000;
-const SHIPPING_PRICES = {
-    courier: 1990,
-    parcel: 990,
-    pickup: 0
+// Méz + üveg bruttó súlyok (kg)
+const WEIGHT_PER_SIZE = {
+    "250g": 0.45,
+    "500g": 0.80,
+    "900g": 1.35
+};
+const BOX_BASE_WEIGHT = 0.35; // Doboz és törésbiztos védelem alaptömege
+
+const FREE_SHIPPING_LIMIT = 18000;
+const FREE_SHIPPING_MAX_WEIGHT = 10;
+
+// Súlyalapú szállítási díjtáblázat a kliensen
+const SHIPPING_CONFIG = {
+    courier: {
+        name: 'MPL Házhozszállítás',
+        maxWeight: 100,
+        rates: [
+            { maxKg: 2, price: 1990 },
+            { maxKg: 5, price: 2490 },
+            { maxKg: 10, price: 2990 },
+            { maxKg: 20, price: 3990 },
+            { maxKg: 30, price: 5490 },
+            { maxKg: 999, price: 7990 }
+        ]
+    },
+    parcel: {
+        name: 'MPL Csomagautomata / PostaPont',
+        maxWeight: 20,
+        rates: [
+            { maxKg: 2, price: 990 },
+            { maxKg: 5, price: 1490 },
+            { maxKg: 10, price: 1990 },
+            { maxKg: 20, price: 2790 }
+        ]
+    },
+    pickup: {
+        name: 'Személyes átvétel (Alföld)',
+        maxWeight: 9999,
+        rates: [
+            { maxKg: 9999, price: 0 }
+        ]
+    }
 };
 
 let cart = [];
@@ -66,6 +103,27 @@ export function addItemToCart(productIndex, size = "900g", qty = 1) {
     renderCart();
 }
 
+export function calculateCartWeight() {
+    if (cart.length === 0) return 0;
+    const itemsWeight = cart.reduce((sum, item) => {
+        const unitWeight = WEIGHT_PER_SIZE[item.size] || 1.35;
+        return sum + (unitWeight * item.qty);
+    }, 0);
+
+    return Math.round((itemsWeight + BOX_BASE_WEIGHT) * 10) / 10;
+}
+
+function getTierPrice(methodKey, weightKg) {
+    const config = SHIPPING_CONFIG[methodKey];
+    if (!config) return 0;
+    for (const tier of config.rates) {
+        if (weightKg <= tier.maxKg) {
+            return tier.price;
+        }
+    }
+    return config.rates[config.rates.length - 1].price;
+}
+
 export function initCalculatorAndCart() {
     document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -92,8 +150,13 @@ export function renderCart() {
 
     const freeShippingText = document.getElementById("freeShippingText");
     const freeShippingProgress = document.getElementById("freeShippingProgress");
+
+    const cartWeightBadge = document.getElementById("cartTotalWeightBadge");
     const courierPriceEl = document.getElementById("shippingPriceCourier");
     const parcelPriceEl = document.getElementById("shippingPriceParcel");
+    const parcelRadio = document.querySelector('input[name="shippingMethod"][value="parcel"]');
+    const parcelCard = document.getElementById("shippingCardParcel");
+    const parcelWarning = document.getElementById("parcelWeightWarning");
 
     try {
         localStorage.setItem("miklomez_cart", JSON.stringify(cart));
@@ -109,7 +172,7 @@ export function renderCart() {
         if (cartContainer) cartContainer.style.display = "none";
         if (floatingBtn) floatingBtn.style.display = "none";
         if (freeShippingProgress) freeShippingProgress.style.width = "0%";
-        if (freeShippingText) freeShippingText.innerHTML = "Még 15 000 Ft az ingyenes szállításhoz!";
+        if (freeShippingText) freeShippingText.innerHTML = `Még ${FREE_SHIPPING_LIMIT.toLocaleString('hu-HU')} Ft az ingyenes szállításhoz!`;
         return;
     }
 
@@ -147,37 +210,92 @@ export function renderCart() {
         cartList.appendChild(li);
     });
 
-    const isFree = subtotal >= FREE_SHIPPING_LIMIT;
-    const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_LIMIT) * 100));
+    // Csomagtömeg kiszámítása
+    const totalWeight = calculateCartWeight();
+    if (cartWeightBadge) {
+        cartWeightBadge.innerHTML = `⚖️ Csomag becsült összsúlya: <strong>${totalWeight} kg</strong> <span class="weight-note">(üvegekkel és törésbiztos csomagolással)</span>`;
+    }
 
+    // 20 kg automata korlát ellenőrzése
+    const isParcelTooHeavy = totalWeight > SHIPPING_CONFIG.parcel.maxWeight;
+    if (parcelRadio && parcelCard) {
+        if (isParcelTooHeavy) {
+            parcelRadio.disabled = true;
+            parcelCard.classList.add("disabled");
+            if (parcelWarning) parcelWarning.style.display = "block";
+
+            // Ha az automata volt bejelölve, kényszerített váltás házhozszállításra
+            if (selectedShipping === 'parcel') {
+                selectedShipping = 'courier';
+                const courierRadio = document.querySelector('input[name="shippingMethod"][value="courier"]');
+                if (courierRadio) courierRadio.checked = true;
+                showToast("A csomag meghaladja a 20 kg-ot, ezért automatikusan házhozszállításra váltottunk!", "warning");
+            }
+        } else {
+            parcelRadio.disabled = false;
+            parcelCard.classList.remove("disabled");
+            if (parcelWarning) parcelWarning.style.display = "none";
+        }
+    }
+
+    // Súly szerinti szállítási árak
+    let courierBasePrice = getTierPrice('courier', totalWeight);
+    let parcelBasePrice = getTierPrice('parcel', totalWeight);
+
+    const isFreeEligible = subtotal >= FREE_SHIPPING_LIMIT;
+    let courierFinalPrice = courierBasePrice;
+    let parcelFinalPrice = parcelBasePrice;
+
+    if (isFreeEligible) {
+        if (totalWeight <= FREE_SHIPPING_MAX_WEIGHT) {
+            courierFinalPrice = 0;
+            parcelFinalPrice = 0;
+        } else {
+            // 10 kg felett 1990 Ft kedvezmény
+            courierFinalPrice = Math.max(0, courierBasePrice - 1990);
+            parcelFinalPrice = Math.max(0, parcelBasePrice - 1990);
+        }
+    }
+
+    if (courierPriceEl) {
+        courierPriceEl.textContent = courierFinalPrice === 0 ? "Ingyenes" : `${courierFinalPrice.toLocaleString('hu-HU')} Ft`;
+    }
+    if (parcelPriceEl) {
+        parcelPriceEl.textContent = isParcelTooHeavy ? "Nem elérhető" : (parcelFinalPrice === 0 ? "Ingyenes" : `${parcelFinalPrice.toLocaleString('hu-HU')} Ft`);
+    }
+
+    // Aktuálisan kiválasztott szállítási díj
+    let activeShippingFee = 0;
+    if (selectedShipping === 'courier') activeShippingFee = courierFinalPrice;
+    else if (selectedShipping === 'parcel') activeShippingFee = parcelFinalPrice;
+    else if (selectedShipping === 'pickup') activeShippingFee = 0;
+
+    const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_LIMIT) * 100));
     if (freeShippingProgress) freeShippingProgress.style.width = `${progressPercent}%`;
+
     if (freeShippingText) {
-        if (isFree) {
-            freeShippingText.innerHTML = "🎉 Elérte az <strong>ingyenes házhozszállítást</strong>!";
+        if (isFreeEligible) {
+            if (totalWeight <= FREE_SHIPPING_MAX_WEIGHT) {
+                freeShippingText.innerHTML = "🎉 Elérte az <strong>ingyenes házhozszállítást</strong>!";
+            } else {
+                freeShippingText.innerHTML = "🎉 18 000 Ft feletti rendelés: <strong>1 990 Ft szállítási kedvezmény</strong> érvényesítve a nagysúlyú csomagra!";
+            }
         } else {
             const diff = FREE_SHIPPING_LIMIT - subtotal;
             freeShippingText.innerHTML = `Még <strong>${diff.toLocaleString('hu-HU')} Ft</strong> az ingyenes szállításhoz!`;
         }
     }
 
-    if (courierPriceEl) courierPriceEl.textContent = isFree ? "Ingyenes" : "1 990 Ft";
-    if (parcelPriceEl) parcelPriceEl.textContent = isFree ? "Ingyenes" : "990 Ft";
-
-    let shippingFee = SHIPPING_PRICES[selectedShipping] || 0;
-    if (isFree || selectedShipping === 'pickup') {
-        shippingFee = 0;
-    }
-
-    const finalTotal = subtotal + shippingFee;
+    const finalTotal = subtotal + activeShippingFee;
 
     if (cartSubtotal) cartSubtotal.textContent = `${subtotal.toLocaleString('hu-HU')} Ft`;
-    if (cartShippingFee) cartShippingFee.textContent = shippingFee === 0 ? "Ingyenes" : `${shippingFee.toLocaleString('hu-HU')} Ft`;
+    if (cartShippingFee) cartShippingFee.textContent = activeShippingFee === 0 ? "Ingyenes" : `${activeShippingFee.toLocaleString('hu-HU')} Ft`;
     if (cartTotal) cartTotal.textContent = `${finalTotal.toLocaleString('hu-HU')} Ft`;
 
-    if (floatingCount) floatingCount.textContent = `${totalItemCount} db méz`;
+    if (floatingCount) floatingCount.textContent = `${totalItemCount} db méz (${totalWeight} kg)`;
     if (floatingTotal) floatingTotal.textContent = `${finalTotal.toLocaleString('hu-HU')} Ft`;
 
-    // Eseménykezelők
+    // Eseménykezelők a mennyiség gombokhoz
     document.querySelectorAll(".cart-qty-minus").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10);

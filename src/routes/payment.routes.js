@@ -36,8 +36,11 @@ router.post('/create-payment', paymentLimiter, validatePaymentPayload, async (re
         const customer = req.sanitizedCustomer;
         const optionalUser = extractOptionalUser(req);
 
-        const { verifiedItems, itemsTotal } = await orderService.verifyAndCalculateItems(items);
-        const shipping = orderService.calculateShipping(shippingMethod, itemsTotal);
+        // Verifikált tételek és pontos csomagsúly számítása a Firestore alapján
+        const { verifiedItems, itemsTotal, totalWeightKg } = await orderService.verifyAndCalculateItems(items);
+
+        // Súly- és értékalapú szállítási díj kiszámítása
+        const shipping = orderService.calculateShipping(shippingMethod, itemsTotal, totalWeightKg);
         const orderRef = `MM-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
         const order = await orderService.saveNewOrder({
