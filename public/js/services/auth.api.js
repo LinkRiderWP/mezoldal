@@ -1,3 +1,4 @@
+// public/js/services/auth.api.js
 const TOKEN_KEY = 'miklomez_auth_token';
 
 export const authApi = {
@@ -13,10 +14,15 @@ export const authApi = {
     async getProfile() {
         const token = this.getToken();
         if (!token) return null;
-        const res = await fetch('/api/auth/me', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return await res.json();
+        try {
+            const res = await fetch('/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return await res.json();
+        } catch (err) {
+            console.error("Hiba a profil lekérésekor:", err);
+            return null;
+        }
     },
     async login(email, password) {
         const res = await fetch('/api/auth/login', {
@@ -54,7 +60,15 @@ export const authApi = {
             },
             body: JSON.stringify({ currentPassword, newPassword })
         });
-        return await res.json();
+        const data = await res.json();
+
+        // Ha a jelszó sikeresen megváltozott, és a szerver új tokent adott ki,
+        // azonnal frissítjük a helyi tárolóban, így a felhasználó nem jelentkezik ki.
+        if (data.success && data.token) {
+            this.setToken(data.token);
+        }
+
+        return data;
     },
     async updatePreferences(wantsEmailNotification) {
         const res = await fetch('/api/auth/preferences', {

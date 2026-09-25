@@ -1,16 +1,17 @@
+// src/routes/auth.routes.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { db } = require('../config/firebase');
+const { authenticate, ADMIN_EMAIL } = require('../middlewares/auth.middleware');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error("KRITIKUS: JWT_SECRET hiányzik a környezeti változókból!");
 }
 
-// Sebességkorlátozás bejelentkezésre és regisztrációra
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
@@ -21,27 +22,16 @@ const authLimiter = rateLimit({
 
 function generateToken(user) {
     return jwt.sign(
-        { id: user.id, email: user.email, name: user.name },
+        {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role || 'customer',
+            tokenVersion: user.tokenVersion || 1
+        },
         JWT_SECRET,
         { expiresIn: '30d' }
     );
-}
-
-// Token hitelesítő middleware
-function authenticate(req, res, next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, message: "Hiányzó vagy érvénytelen token." });
-    }
-
-    const token = authHeader.split(' ')[1];
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(401).json({ success: false, message: "Lejárt vagy érvénytelen munkamenet." });
-    }
 }
 
 // 1. Regisztráció
@@ -53,12 +43,26 @@ router.post('/register', authLimiter, async (req, res) => {
             return res.status(400).json({ success: false, message: "A név, e-mail cím és jelszó megadása kötelező!" });
         }
 
-        if (typeof password !== 'string' || password.length < 6 || password.length > 72) {
-            return res.status(400).json({ success: false, message: "A jelszónak legalább 6 karakternek kell lennie!" });
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // BIZTONSÁGI VÉDELEM: Az adminisztrátori cím nem regisztrálható nyilvános űrlapon!
+        if (normalizedEmail === ADMIN_EMAIL.toLowerCase()) {
+            return res.status(400).json({
+                success: false,
+                message: "Ez az e-mail cím fenntartott belső adminisztrátori cím. Nyilvánosan nem regisztrálható!"
+            });
+        }
+
+        // Jelszóerősség: legalább 8 karakter, legalább 1 betű és 1 szám
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,72}$/;
+        if (typeof password !== 'string' || !passwordRegex.test(password)) {
+            return res.status(400).json({
+                success: false,
+                message: "A jelszónak legalább 8 karakterből kell állnia, és tartalmaznia kell legalább egy betűt és egy számot!"
+            });
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const normalizedEmail = email.toLowerCase().trim();
         if (!emailRegex.test(normalizedEmail) || normalizedEmail.length > 150) {
             return res.status(400).json({ success: false, message: "Érvénytelen e-mail cím formátum!" });
         }
@@ -82,6 +86,8 @@ router.post('/register', authLimiter, async (req, res) => {
             email: normalizedEmail,
             password: hashedPassword,
             name: name.trim(),
+            role: 'customer',
+            tokenVersion: 1,
             phone: phone ? String(phone).trim().slice(0, 30) : "",
             zip: zip ? String(zip).trim().slice(0, 10) : "",
             city: city ? String(city).trim().slice(0, 50) : "",
@@ -177,7 +183,7 @@ router.get('/me', authenticate, async (req, res) => {
     }
 });
 
-// 4. Mentett szállítási / számlázási adatok módosítása
+// 4. Szállítási / számlázási adatok módosítása
 router.put('/profile', authenticate, async (req, res) => {
     try {
         const { name, phone, zip, city, address, company, taxNumber } = req.body;
@@ -215,7 +221,7 @@ router.put('/profile', authenticate, async (req, res) => {
     }
 });
 
-// 5. Jelszó módosítása
+// 5. Jelszó módosítása (régi tokenek érvénytelenítésével)
 router.put('/change-password', authenticate, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -224,8 +230,12 @@ router.put('/change-password', authenticate, async (req, res) => {
             return res.status(400).json({ success: false, message: "Kérjük adja meg jelenlegi és új jelszavát!" });
         }
 
-        if (typeof newPassword !== 'string' || newPassword.length < 6) {
-            return res.status(400).json({ success: false, message: "Az új jelszónak legalább 6 karakter hosszúnak kell lennie!" });
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,72}$/;
+        if (typeof newPassword !== 'string' || !passwordRegex.test(newPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: "Az új jelszónak legalább 8 karakterből kell állnia, és tartalmaznia kell legalább egy betűt és egy számot!"
+            });
         }
 
         const userDocRef = db.collection('users').doc(req.user.id);
@@ -241,12 +251,25 @@ router.put('/change-password', authenticate, async (req, res) => {
         }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        const newTokenVersion = (user.tokenVersion || 1) + 1;
+
         await userDocRef.update({
             password: hashedNewPassword,
+            tokenVersion: newTokenVersion,
             passwordUpdatedAt: new Date().toISOString()
         });
 
-        return res.json({ success: true, message: "Jelszava sikeresen megváltoztatva!" });
+        // Új token generálása a jelenlegi munkamenet folytatásához
+        const freshToken = generateToken({
+            ...user,
+            tokenVersion: newTokenVersion
+        });
+
+        return res.json({
+            success: true,
+            token: freshToken,
+            message: "Jelszava sikeresen megváltoztatva! A többi aktív munkamenet megszakadt."
+        });
     } catch (error) {
         console.error("Jelszócsere hiba:", error);
         return res.status(500).json({ success: false, message: "Nem sikerült módosítani a jelszót." });

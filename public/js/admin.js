@@ -2,11 +2,22 @@
 import { authApi } from './services/auth.api.js';
 import { showToast } from './modules/ui.js';
 
-const ADMIN_EMAIL = 'miklomeheszet@gmail.com';
-
 let allOrders = [];
 let allProducts = [];
 let availableImages = [];
+
+/**
+ * XSS és HTML injektálás megelőzése
+ */
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     initTabs();
@@ -61,7 +72,7 @@ async function verifyAdminAccess() {
         });
         const data = await res.json();
 
-        if (res.ok && data.success && data.user?.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        if (res.ok && data.success && data.user?.role === 'admin') {
             guard.style.display = "none";
             mainContent.style.display = "block";
             await Promise.all([loadOrders(), loadCatalog(), loadAvailableImages()]);
@@ -158,7 +169,7 @@ async function uploadImageFile(file) {
 
     const dropzone = document.getElementById("imageDropzone");
     const originalText = dropzone.innerHTML;
-    dropzone.innerHTML = `<div class="dropzone-text">⏳ <strong>"${file.name}" feltöltése folyamatban...</strong></div>`;
+    dropzone.innerHTML = `<div class="dropzone-text">⏳ <strong>"${escapeHtml(file.name)}" feltöltése folyamatban...</strong></div>`;
 
     const formData = new FormData();
     formData.append("image", file);
@@ -232,8 +243,8 @@ function renderGalleryChips(images) {
     const currentSelected = document.getElementById("newProdImage")?.value || "kepek/mez.jpg";
 
     galleryContainer.innerHTML = images.map(imgSrc => `
-        <div class="gallery-chip-item ${imgSrc === currentSelected ? 'active' : ''}" data-src="${imgSrc}" title="${imgSrc}">
-            <img src="${imgSrc}" alt="Kép" onerror="this.src='kepek/mez.jpg'" />
+        <div class="gallery-chip-item ${imgSrc === currentSelected ? 'active' : ''}" data-src="${escapeHtml(imgSrc)}" title="${escapeHtml(imgSrc)}">
+            <img src="${escapeHtml(imgSrc)}" alt="Kép" onerror="this.src='kepek/mez.jpg'" />
         </div>
     `).join('');
 
@@ -246,7 +257,7 @@ function renderGalleryChips(images) {
 }
 
 // ============================================================
-// 1. MEGRENDELÉSEK & STATISZTIKA
+// 1. MEGRENDELÉSEK & STATISZTIKA (XSS-BIZTOSÍTVA)
 // ============================================================
 async function loadOrders() {
     const container = document.getElementById("adminOrdersContainer");
@@ -262,7 +273,7 @@ async function loadOrders() {
             updateKPICards();
             renderOrders(allOrders);
         } else {
-            container.innerHTML = `<div class="admin-state-note">❌ ${data.message || 'Nem sikerült betölteni a rendeléseket.'}</div>`;
+            container.innerHTML = `<div class="admin-state-note">❌ ${escapeHtml(data.message || 'Nem sikerült betölteni a rendeléseket.')}</div>`;
         }
     } catch {
         container.innerHTML = `<div class="admin-state-note">❌ Hálózati hiba a rendelések lekérésekor.</div>`;
@@ -306,36 +317,41 @@ function renderOrders(orders) {
 
         const itemsRows = (ord.items || []).map(it => `
             <tr>
-                <td><strong>${it.name || it.cim}</strong></td>
-                <td><span class="price-pill-tag">${it.size || ''}</span></td>
-                <td style="text-align: center;"><strong>${it.qty || it.quantity} db</strong></td>
-                <td style="text-align: right; color: var(--primary-color);"><strong>${Number(it.total || (it.price * it.qty)).toLocaleString('hu-HU')} Ft</strong></td>
+                <td><strong>${escapeHtml(it.name || it.cim)}</strong></td>
+                <td><span class="price-pill-tag">${escapeHtml(it.size || '')}</span></td>
+                <td style="text-align: center;"><strong>${Number(it.qty || it.quantity || 1)} db</strong></td>
+                <td style="text-align: right; color: var(--primary-color);">
+                    <strong>${Number(it.total || (it.price * (it.qty || 1))).toLocaleString('hu-HU')} Ft</strong>
+                </td>
             </tr>
         `).join('');
+
+        const safeEmail = escapeHtml(cust.email || '');
+        const safePhone = escapeHtml(cust.phone || '');
 
         return `
         <article class="order-full-card">
             <div class="order-top-row">
                 <div>
-                    <span class="order-main-tag">#${ord.orderRef}</span>
-                    <span class="order-timestamp">${formattedDate}</span>
+                    <span class="order-main-tag">#${escapeHtml(ord.orderRef)}</span>
+                    <span class="order-timestamp">${escapeHtml(formattedDate)}</span>
                 </div>
                 <div class="order-status-pills">
                     <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? '✓ Kifizetve (SimplePay)' : 'Függőben'}</span>
-                    ${ord.invoiceNumber ? `<span class="pill invoice">Számla: ${ord.invoiceNumber}</span>` : ''}
+                    ${ord.invoiceNumber ? `<span class="pill invoice">Számla: ${escapeHtml(ord.invoiceNumber)}</span>` : ''}
                 </div>
             </div>
 
             <div class="order-grid-details">
                 <div class="order-box-panel">
                     <h4>Vevő & Szállítási Cím</h4>
-                    <p><strong>Név:</strong> ${cust.name || 'N/A'} ${cust.company ? `(${cust.company})` : ''}</p>
-                    ${cust.taxNumber ? `<p><strong>Adószám:</strong> ${cust.taxNumber}</p>` : ''}
-                    <p><strong>E-mail:</strong> <a href="mailto:${cust.email}" style="color: var(--primary-light); text-decoration: underline;">${cust.email}</a></p>
-                    <p><strong>Telefonszám:</strong> <a href="tel:${cust.phone}" style="color: var(--primary-light); text-decoration: underline;">${cust.phone}</a></p>
-                    <p><strong>Kézbesítési Cím:</strong> ${cust.zip || ''} ${cust.city || ''}, ${cust.address || ''}</p>
-                    <p><strong>Szállítási Mód:</strong> ${ord.shipping?.name || 'Futár'} (Csomagsúly: <strong>${ord.totalWeightKg || 0} kg</strong>)</p>
-                    ${ord.note ? `<div class="order-note-bubble"><strong>Megjegyzés a futárnak:</strong> "${ord.note}"</div>` : ''}
+                    <p><strong>Név:</strong> ${escapeHtml(cust.name || 'N/A')} ${cust.company ? `(${escapeHtml(cust.company)})` : ''}</p>
+                    ${cust.taxNumber ? `<p><strong>Adószám:</strong> ${escapeHtml(cust.taxNumber)}</p>` : ''}
+                    <p><strong>E-mail:</strong> <a href="mailto:${encodeURIComponent(cust.email || '')}" style="color: var(--primary-light); text-decoration: underline;">${safeEmail}</a></p>
+                    <p><strong>Telefonszám:</strong> <a href="tel:${safePhone}" style="color: var(--primary-light); text-decoration: underline;">${safePhone}</a></p>
+                    <p><strong>Kézbesítési Cím:</strong> ${escapeHtml(cust.zip || '')} ${escapeHtml(cust.city || '')}, ${escapeHtml(cust.address || '')}</p>
+                    <p><strong>Szállítási Mód:</strong> ${escapeHtml(ord.shipping?.name || 'Futár')} (Csomagsúly: <strong>${escapeHtml(ord.totalWeightKg || 0)} kg</strong>)</p>
+                    ${ord.note ? `<div class="order-note-bubble"><strong>Megjegyzés a futárnak:</strong> "${escapeHtml(ord.note)}"</div>` : ''}
                 </div>
 
                 <div class="order-box-panel">
@@ -359,7 +375,7 @@ function renderOrders(orders) {
             <div class="order-bottom-summary">
                 <div class="order-shipping-meta">
                     Szállítási díj: <strong>${ord.shipping?.price === 0 ? 'Ingyenes' : `${Number(ord.shipping?.price || 0).toLocaleString('hu-HU')} Ft`}</strong>
-                    ${ord.transactionId ? ` &nbsp;|&nbsp; Tranzakció azonosító: <code>${ord.transactionId}</code>` : ''}
+                    ${ord.transactionId ? ` &nbsp;|&nbsp; Tranzakció azonosító: <code>${escapeHtml(ord.transactionId)}</code>` : ''}
                 </div>
                 <div class="order-total-price-box">
                     <span class="order-total-label">Fizetett Végösszeg:</span>
@@ -436,13 +452,13 @@ function renderCatalog(products) {
     }
 
     container.innerHTML = products.map(prod => `
-        <div class="catalog-entry-row" data-id="${prod.id}">
+        <div class="catalog-entry-row" data-id="${escapeHtml(prod.id)}">
             <div class="catalog-entry-left">
-                <img src="${prod.kep || 'kepek/mez.jpg'}" alt="${prod.cim}" class="catalog-entry-thumb" onerror="this.src='kepek/mez.jpg'" />
+                <img src="${escapeHtml(prod.kep || 'kepek/mez.jpg')}" alt="${escapeHtml(prod.cim)}" class="catalog-entry-thumb" onerror="this.src='kepek/mez.jpg'" />
                 <div>
                     <div class="catalog-entry-title">
-                        <span>${prod.cim}</span>
-                        ${prod.isSale ? '<span class="pill" style="background: rgba(240, 122, 93, 0.2); color: var(--accent-color); font-size: 0.72rem; padding: 0.2rem 0.6rem;">AKCIÓ -' + prod.discountPercentage + '%</span>' : ''}
+                        <span>${escapeHtml(prod.cim)}</span>
+                        ${prod.isSale ? '<span class="pill" style="background: rgba(240, 122, 93, 0.2); color: var(--accent-color); font-size: 0.72rem; padding: 0.2rem 0.6rem;">AKCIÓ -' + escapeHtml(prod.discountPercentage) + '%</span>' : ''}
                     </div>
                     <div class="catalog-entry-prices">
                         <span class="price-pill-tag">250g: <strong>${(prod.arak?.["250g"] || 0).toLocaleString('hu-HU')} Ft</strong></span>
@@ -452,17 +468,16 @@ function renderCatalog(products) {
                 </div>
             </div>
             <div class="catalog-entry-actions">
-                <button type="button" class="btn-edit-entry" data-id="${prod.id}">
+                <button type="button" class="btn-edit-entry" data-id="${escapeHtml(prod.id)}">
                     Szerkesztés
                 </button>
-                <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
+                <button type="button" class="btn-delete-entry" data-id="${escapeHtml(prod.id)}" data-title="${escapeHtml(prod.cim)}">
                     Törlés
                 </button>
             </div>
         </div>
     `).join('');
 
-    // Szerkesztés gombok eseményei
     container.querySelectorAll(".btn-edit-entry").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const id = e.currentTarget.getAttribute("data-id");
@@ -470,7 +485,6 @@ function renderCatalog(products) {
         });
     });
 
-    // Törlés gombok eseményei
     container.querySelectorAll(".btn-delete-entry").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             const id = e.currentTarget.getAttribute("data-id");
@@ -481,7 +495,7 @@ function renderCatalog(products) {
             }
 
             try {
-                const res = await fetch(`/api/admin/products/${id}`, {
+                const res = await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${authApi.getToken()}` }
                 });
@@ -489,7 +503,6 @@ function renderCatalog(products) {
 
                 if (res.ok && resData.success) {
                     showToast(resData.message, "success");
-                    // Ha a jelenleg törölt terméket szerkesztettük, megszakítjuk
                     if (document.getElementById("editProductId").value === id) {
                         cancelEditProduct();
                     }
@@ -508,7 +521,6 @@ function startEditProduct(id) {
     const prod = allProducts.find(p => p.id === id);
     if (!prod) return;
 
-    // Mezők kitöltése a meglévő termék adataival
     document.getElementById("editProductId").value = prod.id;
     document.getElementById("newProdTitle").value = prod.cim || "";
     document.getElementById("newProdDesc").value = prod.leiras || "";
@@ -525,7 +537,6 @@ function startEditProduct(id) {
 
     setSelectedImage(prod.kep || "kepek/mez.jpg");
 
-    // Űrlap fejléc és gombok átváltása szerkesztési módra
     const titleEl = document.getElementById("formCardTitle");
     const descEl = document.getElementById("formCardDesc");
     const submitBtn = document.getElementById("saveProductBtn");
@@ -537,7 +548,6 @@ function startEditProduct(id) {
     submitBtn.textContent = "Módosítások mentése";
     cancelBtn.style.display = "inline-flex";
 
-    // Finom görgetés az űrlaphoz
     const formCard = document.getElementById("addProductForm");
     if (formCard) {
         formCard.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -601,7 +611,7 @@ function initAddProductForm() {
         };
 
         try {
-            const url = isEditing ? `/api/admin/products/${editId}` : '/api/admin/products';
+            const url = isEditing ? `/api/admin/products/${encodeURIComponent(editId)}` : '/api/admin/products';
             const method = isEditing ? 'PUT' : 'POST';
 
             const res = await fetch(url, {
