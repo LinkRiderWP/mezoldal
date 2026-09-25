@@ -1,0 +1,376 @@
+/* ============================================================
+   ADMINISZTRÁCIÓS FELÜLET STÍLUSAI
+   ============================================================ */
+
+.admin-body {
+    background-color: #0E0704;
+    min-height: 100vh;
+}
+
+.admin-header {
+    background: rgba(18, 10, 6, 0.95);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+}
+
+.admin-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.admin-secure-badge {
+    background: rgba(226, 161, 54, 0.12);
+    border: 1px solid rgba(226, 161, 54, 0.3);
+    color: var(--primary-light);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+}
+
+.admin-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-back-shop {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+.btn-back-shop:hover { color: var(--primary-color); }
+
+.btn-admin-logout {
+    background: transparent;
+    border: 1px solid rgba(240, 122, 93, 0.4);
+    color: var(--accent-color);
+    padding: 0.45rem 1rem;
+    border-radius: 50px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.btn-admin-logout:hover {
+    background: var(--accent-color);
+    color: #FFFFFF;
+}
+
+/* Guard doboz */
+.admin-auth-guard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem 0;
+}
+
+.guard-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-lg);
+    max-width: 440px;
+    width: 100%;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.guard-icon { font-size: 3rem; margin-bottom: 1rem; }
+.guard-card h2 { font-family: 'Playfair Display', serif; color: #FFFFFF; margin-bottom: 0.6rem; font-size: 1.4rem; }
+.guard-card p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+/* Fő tartalom & Fülek */
+.admin-main {
+    padding: 2.5rem 0 5rem;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(226, 161, 54, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.admin-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
+}
+
+.admin-tab:hover { color: #FFFFFF; background: rgba(226, 161, 54, 0.08); }
+.admin-tab.active {
+    color: var(--bg-dark);
+    background: var(--primary-color);
+    font-weight: 700;
+}
+
+.admin-view { display: none; }
+.admin-view.active { display: block; }
+
+/* Rendelések szűrősáv */
+.orders-toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+    flex-wrap: wrap;
+}
+
+.orders-toolbar .search-wrap { flex: 1; min-width: 280px; }
+.orders-toolbar input,
+.orders-toolbar select {
+    width: 100%;
+    background-color: var(--bg-card);
+    border: 1px solid rgba(226, 161, 54, 0.25);
+    color: var(--text-main);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+}
+
+.orders-toolbar .filter-wrap {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.btn-refresh {
+    background: rgba(226, 161, 54, 0.15);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-light);
+    border-radius: var(--radius-md);
+    padding: 0 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Rendelés kártyák */
+.orders-list { display: flex; flex-direction: column; gap: 1.2rem; }
+
+.admin-order-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: var(--transition-smooth);
+}
+.admin-order-card:hover { border-color: rgba(226, 161, 54, 0.35); }
+
+.admin-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(226, 161, 54, 0.15);
+    padding-bottom: 0.9rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.order-ref-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: #FFFFFF;
+}
+
+.order-date-text { font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem; }
+
+.badges-group { display: flex; align-items: center; gap: 0.5rem; }
+
+.status-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.status-tag.paid { background: rgba(129, 199, 132, 0.2); color: #81C784; border: 1px solid #81C784; }
+.status-tag.pending { background: rgba(240, 122, 93, 0.2); color: var(--accent-color); border: 1px solid var(--accent-color); }
+.status-tag.invoice { background: rgba(226, 161, 54, 0.2); color: var(--primary-light); }
+
+.admin-order-body {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.8rem;
+}
+
+.order-info-section h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary-light);
+    margin-bottom: 0.6rem;
+}
+
+.order-info-section p {
+    font-size: 0.86rem;
+    color: var(--text-main);
+    line-height: 1.5;
+    margin-bottom: 0.3rem;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    font-size: 0.84rem;
+}
+.order-items-table th { text-align: left; color: var(--text-muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(226, 161, 54, 0.15); }
+.order-items-table td { padding: 0.45rem 0; border-bottom: 1px solid rgba(226, 161, 54, 0.08); }
+
+.admin-order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(226, 161, 54, 0.15);
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.order-total-highlight {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Kínálat kezelése nézet */
+.catalog-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.admin-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-lg);
+    padding: 1.8rem;
+}
+
+.admin-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: #FFFFFF;
+    margin-bottom: 0.3rem;
+}
+
+.card-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.4rem;
+}
+
+.prices-triple-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+}
+
+.sale-box-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.sale-percent-wrap { max-width: 140px; }
+
+/* Kínálat elemek listája az adminban */
+.catalog-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+.catalog-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: rgba(18, 10, 6, 0.6);
+    border: 1px solid rgba(226, 161, 54, 0.15);
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+}
+
+.catalog-item-info {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.catalog-item-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    background-color: #120A06;
+}
+
+.catalog-item-title {
+    font-weight: 600;
+    color: #FFFFFF;
+    font-size: 0.92rem;
+}
+
+.catalog-item-prices {
+    font-size: 0.78rem;
+    color: var(--primary-light);
+}
+
+.btn-delete-product {
+    background: rgba(240, 122, 93, 0.12);
+    border: 1px solid rgba(240, 122, 93, 0.35);
+    color: var(--accent-color);
+    padding: 0.4rem 0.85rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    white-space: nowrap;
+}
+.btn-delete-product:hover {
+    background: var(--accent-color);
+    color: #FFFFFF;
+}
+
+.admin-loading, .admin-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+@media (max-width: 992px) {
+    .catalog-grid-layout { grid-template-columns: 1fr; }
+    .admin-order-body { grid-template-columns: 1fr; gap: 1rem; }
+    .admin-header-content { flex-direction: column; align-items: flex-start; }
+}

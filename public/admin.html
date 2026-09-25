@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Adminisztrációs Pult – Mikló Méhészet</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="admin-body">
+
+<!-- Admin Fejléc -->
+<header class="admin-header">
+  <div class="container admin-header-content">
+    <div class="admin-brand">
+      <a href="/" class="logo">
+          <span class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2z"/>
+              <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+            </svg>
+          </span>
+        <span class="logo-text">Mikló <span class="logo-highlight">Vezérlőpult</span></span>
+      </a>
+      <span class="admin-secure-badge">👑 Admin: miklomeheszet@gmail.com</span>
+    </div>
+
+    <div class="admin-nav-actions">
+      <a href="/" class="btn-back-shop">← Vissza a Webshopba</a>
+      <button type="button" class="btn-admin-logout" id="adminLogoutBtn">Kijelentkezés</button>
+    </div>
+  </div>
+</header>
+
+<!-- Belépés szükséges figyelmeztető doboz (ha nincs token vagy nem miklomeheszet@gmail.com) -->
+<div class="container admin-auth-guard" id="adminAuthGuard" style="display: none;">
+  <div class="guard-card">
+    <div class="guard-icon">🔒</div>
+    <h2>Adminisztrátori azonosítás szükséges</h2>
+    <p>Ehhez a felülethez kizárólag a <strong>miklomeheszet@gmail.com</strong> fiókkal lehet hozzáférni.</p>
+
+    <form id="adminDirectLoginForm" class="guard-login-form">
+      <div class="form-group">
+        <label class="form-label" for="guardEmail">Admin e-mail cím</label>
+        <input type="email" id="guardEmail" value="miklomeheszet@gmail.com" readonly required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="guardPassword">Jelszó</label>
+        <input type="password" id="guardPassword" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Bejelentkezés az Admin Felületre</button>
+    </form>
+  </div>
+</div>
+
+<!-- Fő admin tartalom -->
+<main class="container admin-main" id="adminMainContent" style="display: none;">
+
+  <!-- Fülváltó sáv -->
+  <div class="admin-tabs">
+    <button type="button" class="admin-tab active" data-tab="orders">
+      📦 Megrendelések (<span id="ordersCountBadge">0</span>)
+    </button>
+    <button type="button" class="admin-tab" data-tab="catalog">
+      🍯 Mézkínálat Kezelése (<span id="productsCountBadge">0</span>)
+    </button>
+  </div>
+
+  <!-- 1. FÜL: MEGRENDELÉSEK -->
+  <section class="admin-view active" id="viewOrders">
+    <div class="orders-toolbar">
+      <div class="search-wrap">
+        <input type="text" id="orderSearchInput" placeholder="Keresés név, e-mail vagy rendelési azonosító alapján..." />
+      </div>
+      <div class="filter-wrap">
+        <select id="orderStatusFilter">
+          <option value="ALL">Összes státusz</option>
+          <option value="PAID">Csak Kifizetett (SimplePay)</option>
+          <option value="PENDING">Csak Függőben lévő</option>
+        </select>
+        <button type="button" class="btn-refresh" id="refreshOrdersBtn" title="Frissítés">🔄 Frissítés</button>
+      </div>
+    </div>
+
+    <div class="orders-list" id="adminOrdersContainer">
+      <div class="admin-loading">Megrendelések betöltése...</div>
+    </div>
+  </section>
+
+  <!-- 2. FÜL: KÍNÁLAT KEZELÉSE -->
+  <section class="admin-view" id="viewCatalog">
+    <div class="catalog-grid-layout">
+
+      <!-- Új méz űrlap -->
+      <div class="catalog-form-col">
+        <div class="admin-card">
+          <h3>➕ Új méz hozzáadása a kínálathoz</h3>
+          <p class="card-hint">A megadott termék azonnal megjelenik a főoldalon és rendelhetővé válik.</p>
+
+          <form id="addProductForm" class="add-product-form">
+            <div class="form-group">
+              <label class="form-label" for="newProdTitle">Méz megnevezése *</label>
+              <input type="text" id="newProdTitle" placeholder="pl. Erdei Mézharmat méz" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newProdDesc">Rövid leírás, élettani hatás</label>
+              <textarea id="newProdDesc" rows="2" placeholder="Gazdag ásványianyag tartalmú ritkaság..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newProdImage">Kép elérési útja / URL</label>
+              <input type="text" id="newProdImage" value="kepek/mez.jpg" placeholder="kepek/akacmez.jpg vagy https://..." required />
+            </div>
+
+            <div class="prices-triple-grid">
+              <div class="form-group">
+                <label class="form-label" for="price250">250 g ár (Ft) *</label>
+                <input type="number" id="price250" min="100" step="10" placeholder="1290" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="price500">500 g ár (Ft) *</label>
+                <input type="number" id="price500" min="100" step="10" placeholder="2190" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="price900">900 g ár (Ft) *</label>
+                <input type="number" id="price900" min="100" step="10" placeholder="3190" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="bulkPrice">Nagytételes ár (opcionális)</label>
+              <input type="text" id="bulkPrice" placeholder="pl. 2200 Ft / kg" />
+            </div>
+
+            <div class="sale-box-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="newProdIsSale" />
+                <span>Akciós méz</span>
+              </label>
+              <div class="form-group sale-percent-wrap" id="salePercentGroup" style="display: none;">
+                <label class="form-label" for="newProdDiscount">Kedvezmény (%)</label>
+                <input type="number" id="newProdDiscount" min="1" max="90" value="15" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="saveProductBtn" style="width: 100%; margin-top: 1rem;">
+              Méz közzététele a webshopban
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Jelenlegi kínálat lista törlési lehetőséggel -->
+      <div class="catalog-list-col">
+        <div class="admin-card">
+          <h3>🍯 Aktuális kínálat (<span id="catalogCountSub">0</span>)</h3>
+          <p class="card-hint">Kattintson a "Törlés" gombra egy mézfajta azonnali eltávolításához.</p>
+
+          <div class="catalog-items-list" id="adminCatalogList">
+            <div class="admin-loading">Kínálat betöltése...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

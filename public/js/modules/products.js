@@ -1,15 +1,38 @@
-import { products } from '../data/products.data.js';
+// public/js/modules/products.js
 import { showToast, initCardGlow } from './ui.js';
 import { addItemToCart } from './cart.js';
 
-export function loadHoneyProducts() {
+let loadedProducts = [];
+
+export function getLoadedProducts() {
+    return loadedProducts;
+}
+
+export async function loadHoneyProducts() {
     const productsGrid = document.getElementById("productsGrid");
     if (!productsGrid) return;
 
+    productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">🍯 Kínálat betöltése a méhészetből...</div>';
+
+    try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+            loadedProducts = data.products;
+        } else {
+            productsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">A kínálat jelenleg frissítés alatt áll.</div>';
+            return;
+        }
+    } catch (err) {
+        console.error("Hiba a termékek betöltésekor:", err);
+        return;
+    }
+
     productsGrid.innerHTML = "";
 
-    products.forEach((product, index) => {
-        const price900 = product.arak["900g"] || 0;
+    loadedProducts.forEach((product, index) => {
+        const price900 = product.arak?.["900g"] || 0;
 
         const card = document.createElement("article");
         card.className = `card ${product.isSale ? 'is-sale' : ''}`;
@@ -18,7 +41,7 @@ export function loadHoneyProducts() {
 
         card.innerHTML = `
       <div class="card-img-wrapper">
-        <img src="${product.kep}" alt="${product.cim}" loading="lazy" />
+        <img src="${product.kep || 'kepek/mez.jpg'}" alt="${product.cim}" loading="lazy" onerror="this.src='kepek/mez.jpg'" />
         ${product.isSale ? `<span class="floating-badge-sale">AKCIÓ -${product.discountPercentage}%</span>` : ""}
       </div>
       <div class="card-content">
@@ -63,7 +86,7 @@ export function loadHoneyProducts() {
 function initCardInteractions() {
     document.querySelectorAll(".card[data-product-index]").forEach((card) => {
         const productIndex = parseInt(card.getAttribute("data-product-index"), 10);
-        const product = products[productIndex];
+        const product = loadedProducts[productIndex];
         if (!product) return;
 
         const sizeBtns = card.querySelectorAll(".card-size-btn");
@@ -87,7 +110,7 @@ function initCardInteractions() {
 
         if (orderBtn) {
             orderBtn.addEventListener("click", () => {
-                addItemToCart(productIndex, currentSelectedSize, 1);
+                addItemToCart(productIndex, currentSelectedSize, 1, loadedProducts);
                 scrollToCheckout();
             });
         }

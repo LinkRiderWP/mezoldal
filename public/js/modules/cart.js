@@ -1,18 +1,17 @@
-import { products } from '../data/products.data.js';
+// public/js/modules/cart.js
 import { showToast } from './ui.js';
+import { getLoadedProducts } from './products.js';
 
-// Méz + üveg bruttó súlyok (kg)
 const WEIGHT_PER_SIZE = {
     "250g": 0.45,
     "500g": 0.80,
     "900g": 1.35
 };
-const BOX_BASE_WEIGHT = 0.35; // Doboz és törésbiztos védelem alaptömege
+const BOX_BASE_WEIGHT = 0.35;
 
 const FREE_SHIPPING_LIMIT = 18000;
 const FREE_SHIPPING_MAX_WEIGHT = 10;
 
-// Súlyalapú szállítási díjtáblázat a kliensen
 const SHIPPING_CONFIG = {
     courier: {
         name: 'MPL Házhozszállítás',
@@ -76,8 +75,9 @@ export function clearCart() {
     renderCart();
 }
 
-export function addItemToCart(productIndex, size = "900g", qty = 1) {
-    const prod = products[productIndex];
+export function addItemToCart(productIndex, size = "900g", qty = 1, customProducts = null) {
+    const productsList = customProducts || getLoadedProducts();
+    const prod = productsList[productIndex];
     if (!prod) return;
 
     const itemPrice = prod.arak[size] || prod.arak["900g"];
@@ -210,13 +210,11 @@ export function renderCart() {
         cartList.appendChild(li);
     });
 
-    // Csomagtömeg kiszámítása
     const totalWeight = calculateCartWeight();
     if (cartWeightBadge) {
         cartWeightBadge.innerHTML = `⚖️ Csomag becsült összsúlya: <strong>${totalWeight} kg</strong> <span class="weight-note">(üvegekkel és törésbiztos csomagolással)</span>`;
     }
 
-    // 20 kg automata korlát ellenőrzése
     const isParcelTooHeavy = totalWeight > SHIPPING_CONFIG.parcel.maxWeight;
     if (parcelRadio && parcelCard) {
         if (isParcelTooHeavy) {
@@ -224,7 +222,6 @@ export function renderCart() {
             parcelCard.classList.add("disabled");
             if (parcelWarning) parcelWarning.style.display = "block";
 
-            // Ha az automata volt bejelölve, kényszerített váltás házhozszállításra
             if (selectedShipping === 'parcel') {
                 selectedShipping = 'courier';
                 const courierRadio = document.querySelector('input[name="shippingMethod"][value="courier"]');
@@ -238,7 +235,6 @@ export function renderCart() {
         }
     }
 
-    // Súly szerinti szállítási árak
     let courierBasePrice = getTierPrice('courier', totalWeight);
     let parcelBasePrice = getTierPrice('parcel', totalWeight);
 
@@ -251,7 +247,6 @@ export function renderCart() {
             courierFinalPrice = 0;
             parcelFinalPrice = 0;
         } else {
-            // 10 kg felett 1990 Ft kedvezmény
             courierFinalPrice = Math.max(0, courierBasePrice - 1990);
             parcelFinalPrice = Math.max(0, parcelBasePrice - 1990);
         }
@@ -264,7 +259,6 @@ export function renderCart() {
         parcelPriceEl.textContent = isParcelTooHeavy ? "Nem elérhető" : (parcelFinalPrice === 0 ? "Ingyenes" : `${parcelFinalPrice.toLocaleString('hu-HU')} Ft`);
     }
 
-    // Aktuálisan kiválasztott szállítási díj
     let activeShippingFee = 0;
     if (selectedShipping === 'courier') activeShippingFee = courierFinalPrice;
     else if (selectedShipping === 'parcel') activeShippingFee = parcelFinalPrice;
@@ -295,7 +289,6 @@ export function renderCart() {
     if (floatingCount) floatingCount.textContent = `${totalItemCount} db méz (${totalWeight} kg)`;
     if (floatingTotal) floatingTotal.textContent = `${finalTotal.toLocaleString('hu-HU')} Ft`;
 
-    // Eseménykezelők a mennyiség gombokhoz
     document.querySelectorAll(".cart-qty-minus").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const idx = parseInt(e.currentTarget.getAttribute("data-index"), 10);
