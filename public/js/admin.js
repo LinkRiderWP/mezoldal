@@ -18,22 +18,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function initTabs() {
-    const tabs = document.querySelectorAll(".admin-tab");
+    const tabs = document.querySelectorAll(".dash-tab");
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             tabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
 
-            const targetView = tab.getAttribute("data-tab");
-            document.querySelectorAll(".admin-view").forEach(view => {
-                view.classList.remove("active");
+            const targetId = tab.getAttribute("data-target");
+            document.querySelectorAll(".dash-view-section").forEach(sec => {
+                sec.classList.remove("active");
             });
 
-            if (targetView === "orders") {
-                document.getElementById("viewOrders").classList.add("active");
-            } else if (targetView === "catalog") {
-                document.getElementById("viewCatalog").classList.add("active");
-            }
+            const activeSection = document.getElementById(targetId);
+            if (activeSection) activeSection.classList.add("active");
         });
     });
 
@@ -69,8 +66,7 @@ async function verifyAdminAccess() {
         } else {
             showGuard();
         }
-    } catch (err) {
-        console.error("Admin ellenőrzési hiba:", err);
+    } catch {
         showGuard();
     }
 }
@@ -105,17 +101,14 @@ function initLogout() {
     if (btn) {
         btn.addEventListener("click", () => {
             authApi.removeToken();
-            window.location.reload();
+            window.location.href = "/";
         });
     }
 }
 
-// ==========================================
-// 1. MEGRENDELÉSEK BETÖLTÉSE ÉS MEGJELENÍTÉSE
-// ==========================================
+// 1. MEGRENDELÉSEK & STATISZTIKA
 async function loadOrders() {
     const container = document.getElementById("adminOrdersContainer");
-    const countBadge = document.getElementById("ordersCountBadge");
 
     try {
         const res = await fetch('/api/admin/orders', {
@@ -125,14 +118,35 @@ async function loadOrders() {
 
         if (res.ok && data.success) {
             allOrders = data.orders || [];
-            if (countBadge) countBadge.textContent = allOrders.length;
+            updateKPICards();
             renderOrders(allOrders);
         } else {
-            container.innerHTML = `<div class="admin-empty">❌ ${data.message || 'Nem sikerült betölteni a rendeléseket.'}</div>`;
+            container.innerHTML = `<div class="admin-state-note">❌ ${data.message || 'Nem sikerült betölteni a rendeléseket.'}</div>`;
         }
-    } catch (err) {
-        container.innerHTML = `<div class="admin-empty">❌ Hálózati hiba a rendelések lekérésekor.</div>`;
+    } catch {
+        container.innerHTML = `<div class="admin-state-note">❌ Hálózati hiba a rendelések lekérésekor.</div>`;
     }
+}
+
+function updateKPICards() {
+    const revEl = document.getElementById("kpiRevenue");
+    const totalEl = document.getElementById("kpiTotalOrders");
+    const pendingEl = document.getElementById("kpiPendingOrders");
+
+    let totalRevenue = 0;
+    let pendingCount = 0;
+
+    allOrders.forEach(ord => {
+        if (ord.status === 'PAID') {
+            totalRevenue += Number(ord.totalAmount || 0);
+        } else {
+            pendingCount++;
+        }
+    });
+
+    if (revEl) revEl.textContent = `${totalRevenue.toLocaleString('hu-HU')} Ft`;
+    if (totalEl) totalEl.textContent = `${allOrders.length} db`;
+    if (pendingEl) pendingEl.textContent = `${pendingCount} db`;
 }
 
 function renderOrders(orders) {
@@ -140,7 +154,7 @@ function renderOrders(orders) {
     if (!container) return;
 
     if (!orders || orders.length === 0) {
-        container.innerHTML = '<div class="admin-empty">📭 Még nem érkezett megrendelés a rendszerbe.</div>';
+        container.innerHTML = '<div class="admin-state-note">📭 Nincs megjeleníthető megrendelés a kiválasztott szűrők alapján.</div>';
         return;
     }
 
@@ -159,41 +173,39 @@ function renderOrders(orders) {
         `).join('');
 
         return `
-        <article class="admin-order-card">
-            <div class="admin-order-header">
+        <article class="order-full-card">
+            <div class="order-top-row">
                 <div>
-                    <span class="order-ref-title">#${ord.orderRef}</span>
-                    <span class="order-date-text">📅 ${formattedDate}</span>
+                    <span class="order-main-tag">#${ord.orderRef}</span>
+                    <span class="order-timestamp">📅 ${formattedDate}</span>
                 </div>
-                <div class="badges-group">
-                    <span class="status-tag ${isPaid ? 'paid' : 'pending'}">${isPaid ? 'Kifizetve (SimplePay)' : 'Függőben'}</span>
-                    ${ord.invoiceNumber ? `<span class="status-tag invoice">🧾 Számla: ${ord.invoiceNumber}</span>` : ''}
+                <div class="order-status-pills">
+                    <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? 'Kifizetve (SimplePay)' : 'Függőben'}</span>
+                    ${ord.invoiceNumber ? `<span class="pill invoice">🧾 Számla: ${ord.invoiceNumber}</span>` : ''}
                 </div>
             </div>
 
-            <div class="admin-order-body">
-                <!-- Vevőadatok -->
-                <div class="order-info-section">
-                    <h4>👤 Vevő & Kézbesítés</h4>
+            <div class="order-grid-details">
+                <div class="order-box-panel">
+                    <h4>👤 Vevő & Szállítás</h4>
                     <p><strong>Név:</strong> ${cust.name || 'N/A'} ${cust.company ? `(${cust.company})` : ''}</p>
                     ${cust.taxNumber ? `<p><strong>Adószám:</strong> ${cust.taxNumber}</p>` : ''}
                     <p><strong>E-mail:</strong> <a href="mailto:${cust.email}" style="color: var(--primary-light);">${cust.email}</a></p>
-                    <p><strong>Telefon:</strong> <a href="tel:${cust.phone}" style="color: var(--primary-light);">${cust.phone}</a></p>
-                    <p><strong>Szállítási cím:</strong> ${cust.zip || ''} ${cust.city || ''}, ${cust.address || ''}</p>
-                    <p><strong>Szállítási mód:</strong> ${ord.shipping?.name || 'Futár'} (<strong>${ord.totalWeightKg || 0} kg</strong>)</p>
-                    ${ord.note ? `<p style="margin-top: 0.5rem; background: rgba(226,161,54,0.08); padding: 0.4rem; border-radius: 4px;"><strong>Megjegyzés a futárnak:</strong> "${ord.note}"</p>` : ''}
+                    <p><strong>Telefonszám:</strong> <a href="tel:${cust.phone}" style="color: var(--primary-light);">${cust.phone}</a></p>
+                    <p><strong>Cím:</strong> ${cust.zip || ''} ${cust.city || ''}, ${cust.address || ''}</p>
+                    <p><strong>Szállítás:</strong> ${ord.shipping?.name || 'Futár'} (<strong>${ord.totalWeightKg || 0} kg</strong>)</p>
+                    ${ord.note ? `<p style="margin-top: 0.6rem; background: rgba(226,161,54,0.08); padding: 0.5rem 0.7rem; border-radius: 6px;"><strong>Megjegyzés a futárnak:</strong> "${ord.note}"</p>` : ''}
                 </div>
 
-                <!-- Tételek -->
-                <div class="order-info-section">
+                <div class="order-box-panel">
                     <h4>🍯 Rendelt Tételek</h4>
                     <table class="order-items-table">
                         <thead>
                             <tr>
                                 <th>Tétel</th>
-                                <th>Méret</th>
-                                <th>Darab</th>
-                                <th style="text-align: right;">Ár</th>
+                                <th>Kiszerelés</th>
+                                <th>Db</th>
+                                <th style="text-align: right;">Részösszeg</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,15 +215,13 @@ function renderOrders(orders) {
                 </div>
             </div>
 
-            <div class="admin-order-footer">
-                <div>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">
-                        Szállítás: <strong>${ord.shipping?.price === 0 ? 'Ingyenes' : `${Number(ord.shipping?.price || 0).toLocaleString('hu-HU')} Ft`}</strong>
-                        ${ord.transactionId ? ` | Tranzakció azonosító: <code>${ord.transactionId}</code>` : ''}
-                    </span>
+            <div class="order-bottom-summary">
+                <div style="font-size: 0.88rem; color: var(--text-muted);">
+                    Szállítási díj: <strong>${ord.shipping?.price === 0 ? 'Ingyenes' : `${Number(ord.shipping?.price || 0).toLocaleString('hu-HU')} Ft`}</strong>
+                    ${ord.transactionId ? ` | Tranzakció ID: <code>${ord.transactionId}</code>` : ''}
                 </div>
-                <div class="order-total-highlight">
-                    Végösszeg: ${Number(ord.totalAmount || 0).toLocaleString('hu-HU')} Ft
+                <div class="order-total-price">
+                    Fizetett Végösszeg: ${Number(ord.totalAmount || 0).toLocaleString('hu-HU')} Ft
                 </div>
             </div>
         </article>
@@ -232,9 +242,12 @@ function initFilters() {
             const ref = (ord.orderRef || '').toLowerCase();
             const name = (ord.customer?.name || '').toLowerCase();
             const email = (ord.customer?.email || '').toLowerCase();
-            const matchesQuery = ref.includes(query) || name.includes(query) || email.includes(query);
+            const phone = (ord.customer?.phone || '').toLowerCase();
+            const city = (ord.customer?.city || '').toLowerCase();
 
+            const matchesQuery = ref.includes(query) || name.includes(query) || email.includes(query) || phone.includes(query) || city.includes(query);
             const matchesStatus = (status === 'ALL') || (ord.status === status);
+
             return matchesQuery && matchesStatus;
         });
 
@@ -246,12 +259,10 @@ function initFilters() {
     if (refreshBtn) refreshBtn.addEventListener("click", () => loadOrders());
 }
 
-// ==========================================
-// 2. KÍNÁLAT KEZELÉSE (HOZZÁADÁS ÉS TÖRLÉS)
-// ==========================================
+// 2. KÍNÁLAT KEZELÉSE
 async function loadCatalog() {
     const container = document.getElementById("adminCatalogList");
-    const countBadge = document.getElementById("productsCountBadge");
+    const countKpi = document.getElementById("kpiActiveProducts");
     const countSub = document.getElementById("catalogCountSub");
 
     try {
@@ -260,14 +271,14 @@ async function loadCatalog() {
 
         if (res.ok && data.success) {
             allProducts = data.products || [];
-            if (countBadge) countBadge.textContent = allProducts.length;
+            if (countKpi) countKpi.textContent = `${allProducts.length} db`;
             if (countSub) countSub.textContent = allProducts.length;
             renderCatalog(allProducts);
         } else {
-            container.innerHTML = '<div class="admin-empty">Nem sikerült betölteni a kínálatot.</div>';
+            container.innerHTML = '<div class="admin-state-note">Nem sikerült betölteni a kínálatot.</div>';
         }
     } catch {
-        container.innerHTML = '<div class="admin-empty">Hálózati hiba a kínálat betöltésekor.</div>';
+        container.innerHTML = '<div class="admin-state-note">Hálózati hiba a kínálat betöltésekor.</div>';
     }
 }
 
@@ -276,36 +287,35 @@ function renderCatalog(products) {
     if (!container) return;
 
     if (products.length === 0) {
-        container.innerHTML = '<div class="admin-empty">A kínálat jelenleg üres.</div>';
+        container.innerHTML = '<div class="admin-state-note">A bolt kínálata jelenleg üres.</div>';
         return;
     }
 
     container.innerHTML = products.map(prod => `
-        <div class="catalog-item-row" data-id="${prod.id}">
-            <div class="catalog-item-info">
-                <img src="${prod.kep || 'kepek/mez.jpg'}" alt="${prod.cim}" class="catalog-item-thumb" onerror="this.src='kepek/mez.jpg'" />
+        <div class="catalog-entry-row" data-id="${prod.id}">
+            <div class="catalog-entry-left">
+                <img src="${prod.kep || 'kepek/mez.jpg'}" alt="${prod.cim}" class="catalog-entry-thumb" onerror="this.src='kepek/mez.jpg'" />
                 <div>
-                    <div class="catalog-item-title">${prod.cim} ${prod.isSale ? '<span style="color:var(--accent-color); font-size:0.75rem;">(AKCIÓ)</span>' : ''}</div>
-                    <div class="catalog-item-prices">
+                    <div class="catalog-entry-title">${prod.cim} ${prod.isSale ? '<span style="color:var(--accent-color); font-size:0.75rem;">(AKCIÓ -' + prod.discountPercentage + '%)</span>' : ''}</div>
+                    <div class="catalog-entry-prices">
                         250g: <strong>${(prod.arak?.["250g"] || 0).toLocaleString('hu-HU')} Ft</strong> | 
                         500g: <strong>${(prod.arak?.["500g"] || 0).toLocaleString('hu-HU')} Ft</strong> | 
                         900g: <strong>${(prod.arak?.["900g"] || 0).toLocaleString('hu-HU')} Ft</strong>
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn-delete-product" data-id="${prod.id}" data-title="${prod.cim}">
-                🗑️ Törlés
+            <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
+                🗑️ Termék törlése
             </button>
         </div>
     `).join('');
 
-    // Törlés eseménykezelők
-    container.querySelectorAll(".btn-delete-product").forEach(btn => {
+    container.querySelectorAll(".btn-delete-entry").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             const id = e.currentTarget.getAttribute("data-id");
             const title = e.currentTarget.getAttribute("data-title");
 
-            if (!confirm(`Biztosan törölni szeretné a(z) "${title}" mézet a kínálatból?`)) {
+            if (!confirm(`Biztosan törölni szeretné a(z) "${title}" mézet a webshopból?`)) {
                 return;
             }
 
@@ -322,8 +332,8 @@ function renderCatalog(products) {
                 } else {
                     showToast(resData.message || "Nem sikerült törölni a terméket.", "error");
                 }
-            } catch (err) {
-                showToast("Hiba a törlési művelet közben.", "error");
+            } catch {
+                showToast("Hiba a törlési művelet során.", "error");
             }
         });
     });
@@ -370,11 +380,11 @@ function initAddProductForm() {
             } else {
                 showToast(data.message || "Nem sikerült hozzáadni a mézet.", "error");
             }
-        } catch (err) {
+        } catch {
             showToast("Hiba a méz mentése során.", "error");
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = "Méz közzététele a webshopban";
+            submitBtn.textContent = "Méz felvétele a kínálatba";
         }
     });
 }

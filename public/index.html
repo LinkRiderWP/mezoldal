@@ -269,7 +269,6 @@
       <p>Családi méhészetünk az Alföld napsütötte tájain működik. Kaptárainkat a legtisztább alföldi akácligetek és vadvirágos mezők mentén gondozzuk, hogy méheink természetes, háborítatlan környezetben gyűjthessék a virágok nektárját.</p>
       <p>Számunkra a méhészkedés nem tömegtermelés, hanem hagyomány és gondoskodás: a mézet kíméletesen, hidegen pergetve töltjük üvegekbe, mindenféle ipari adalék és hőkezelés nélkül. Így pontosan azt a hamisítatlan, tiszta mézet kapja kézhez, amit mi is a családunk asztalára teszünk.</p>
 
-      <!-- Érthető, megbízható minőségi garanciák -->
       <div class="about-features">
         <div class="about-feature-item">
           <div class="feature-icon">🍯</div>
@@ -298,36 +297,25 @@
     </div>
 
     <div class="about-image-wrapper" id="aboutVisualWrapper">
-      <!-- Lágy háttérfény -->
       <div class="about-backdrop-glow" aria-hidden="true"></div>
 
-      <!-- Matematikailag pontosan illeszkedő méhsejtrács a háttérben -->
       <div class="about-honeycomb-grid" id="aboutHoneycomb" aria-hidden="true">
         <svg viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- 1. Oszlop -->
           <polygon points="55,10 85,10 100,36 85,62 55,62 40,36" class="hex-cell hex-glow" />
           <polygon points="55,62 85,62 100,88 85,114 55,114 40,88" class="hex-cell" />
-
-          <!-- 2. Oszlop -->
           <polygon points="100,36 130,36 145,62 130,88 100,88 85,62" class="hex-cell" />
           <polygon points="100,88 130,88 145,114 130,140 100,140 85,114" class="hex-cell hex-amber" />
           <polygon points="100,140 130,140 145,166 130,192 100,192 85,166" class="hex-cell" />
-
-          <!-- 3. Oszlop -->
           <polygon points="145,10 175,10 190,36 175,62 145,62 130,36" class="hex-cell" />
           <polygon points="145,62 175,62 190,88 175,114 145,114 130,88" class="hex-cell hex-glow" />
           <polygon points="145,114 175,114 190,140 175,166 145,166 130,140" class="hex-cell" />
-
-          <!-- 4. Oszlop -->
           <polygon points="190,36 220,36 235,62 220,88 190,88 175,62" class="hex-cell" />
           <polygon points="190,88 220,88 235,114 220,140 190,140 175,114" class="hex-cell hex-amber" />
         </svg>
       </div>
 
-      <!-- Bemutató kártya (Glow effekt nélkül) -->
       <div class="about-showcase-card" id="aboutShowcaseCard">
         <div class="about-image-stage">
-          <!-- Családi pecsét a fotó sarkában -->
           <div class="about-seal-badge" id="aboutSealBadge">
             <span class="seal-icon">🐝</span>
             <div class="seal-text">
@@ -335,18 +323,14 @@
               <span class="seal-text-bot">Családi Gazdaság</span>
             </div>
           </div>
-
           <img src="kepek/akacmez.jpg" alt="Mikló Méhészet Termelői Méz" class="about-image" loading="lazy" />
         </div>
 
-        <!-- Érthető, tiszta alsó sáv a "Rólunk" témában -->
         <div class="about-card-footer">
           <div class="about-card-meta">
             <span class="about-card-badge-origin">Alföldi Vándorméhészet</span>
             <h4 class="about-card-title">Tiszta, házi termelői méz</h4>
           </div>
-
-          <!-- Két közvetlen, érthető jelvény -->
           <div class="about-card-tags">
             <span class="about-card-tag">🍯 100% valódi méz</span>
             <span class="about-card-tag">🌼 Saját kaptárainkból</span>
@@ -375,7 +359,6 @@
     </div>
 
     <form class="checkout-layout" id="contactForm">
-      <!-- 1. Bal oszlop -->
       <div class="checkout-col checkout-form-card">
         <div class="checkout-block-header">
           <span class="step-num">1</span>
@@ -442,7 +425,6 @@
         </div>
       </div>
 
-      <!-- 2. Jobb oszlop -->
       <div class="checkout-col checkout-summary-card">
         <div class="checkout-block-header">
           <span class="step-num">2</span>
@@ -468,7 +450,6 @@
             <a href="#products" class="link-add-more">+ További méz hozzáadása</a>
           </div>
 
-          <!-- Csomagsúly visszajelző -->
           <div class="cart-weight-badge" id="cartTotalWeightBadge">
             ⚖️ Csomag becsült összsúlya: <strong>0 kg</strong>
           </div>
@@ -562,9 +543,9 @@
   </div>
 </section>
 
-<!-- Felhasználói Autentikációs Modál -->
+<!-- Letisztult, Prémium Felhasználói / Admin Modál -->
 <div class="modal-backdrop" id="authModalBackdrop">
-  <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="auth-modal" role="dialog" aria-modal="true">
     <button type="button" class="close-modal-btn" id="closeAuthModalBtn" aria-label="Bezárás">&times;</button>
 
     <div class="auth-tabs-nav" id="authTabsNav">
@@ -574,8 +555,8 @@
 
     <!-- Bejelentkezés -->
     <div class="auth-tab-content" id="viewLogin">
-      <h3 class="auth-modal-title" id="modalTitle">Bejelentkezés</h3>
-      <p class="auth-modal-subtitle">Adatai automatikusan kitöltődnek a gyorsabb rendeléshez:</p>
+      <h3 class="auth-modal-title">Bejelentkezés</h3>
+      <p class="auth-modal-subtitle">Jelentkezzen be mentett adatai eléréséhez:</p>
 
       <form id="loginForm" class="auth-form">
         <div class="form-group">
@@ -593,7 +574,7 @@
     <!-- Regisztráció -->
     <div class="auth-tab-content" id="viewRegister" style="display: none;">
       <h3 class="auth-modal-title">Új fiók létrehozása</h3>
-      <p class="auth-modal-subtitle">Regisztráljon az egyszerűbb rendeléskövetéshez!</p>
+      <p class="auth-modal-subtitle">Regisztráljon a gyorsabb rendeléshez és kedvezményekhez!</p>
 
       <form id="registerForm" class="auth-form">
         <div class="form-group">
@@ -628,39 +609,26 @@
             <input type="text" id="regAddress" placeholder="Kossuth u. 12." />
           </div>
         </div>
-        <div class="email-notify-box">
-          <label class="checkbox-label">
-            <input type="checkbox" id="regEmailConsent" checked />
-            <span class="legal-text">Kérek e-mail értesítéseket a rendeléseimről.</span>
-          </label>
-        </div>
         <button type="submit" class="btn-primary auth-submit-btn">Fiók létrehozása</button>
       </form>
     </div>
 
-    <!-- Profil -->
+    <!-- Profil gyors-összegző (nem zsúfolt rendeléslista!) -->
     <div class="auth-tab-content" id="viewProfile" style="display: none;">
-      <div class="profile-header">
-        <div class="profile-avatar">🐝</div>
-        <div class="profile-meta">
-          <h3 id="profileUserName">Felhasználó</h3>
-          <p id="profileUserEmail" class="profile-email-text">email@pelda.hu</p>
+      <div class="profile-card-clean">
+        <div class="profile-avatar-clean">🐝</div>
+        <h3 id="profileUserName" class="profile-name-clean">Mikló Árpád</h3>
+        <p id="profileUserEmail" class="profile-email-clean">miklomeheszet@gmail.com</p>
+      </div>
+
+      <div class="profile-actions-clean">
+        <div id="adminDirectAccessArea" style="display: none;">
+          <a href="/admin.html" class="btn-admin-direct-link">
+            👑 Belépés a Teljes Vezérlőpultra (Megrendelések & Kínálat) →
+          </a>
         </div>
+        <button type="button" class="btn-logout-clean" id="logoutBtn">Kijelentkezés</button>
       </div>
-
-      <div class="profile-preference-box">
-        <label class="checkbox-label">
-          <input type="checkbox" id="profileEmailConsent" />
-          <span class="legal-text">E-mail értesítések kérése a megrendelésekről</span>
-        </label>
-      </div>
-
-      <h4 class="profile-orders-title">Korábbi megrendeléseim</h4>
-      <div class="profile-orders-list" id="profileOrdersList">
-        <p class="empty-orders-note">Rendelések betöltése...</p>
-      </div>
-
-      <button type="button" class="btn-logout" id="logoutBtn">Kijelentkezés</button>
     </div>
   </div>
 </div>
@@ -680,7 +648,6 @@
   </svg>
 </button>
 
-<!-- Lábléc -->
 <footer class="main-footer">
   <div class="container footer-content">
     <div class="footer-socials">
