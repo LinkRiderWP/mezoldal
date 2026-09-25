@@ -1,11 +1,11 @@
 /* ============================================================
-   LETISZTULT, PRÉMIUM AUTENTIKÁCIÓS MODÁL
+   LETISZTULT, PRÉMIUM AUTENTIKÁCIÓS & PROFIL MODÁL
    ============================================================ */
 
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background-color: rgba(6, 3, 2, 0.82);
+    background-color: rgba(6, 3, 2, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 3000;
@@ -29,7 +29,7 @@
     border: 1px solid rgba(226, 161, 54, 0.35);
     border-radius: 18px;
     width: 100%;
-    max-width: 420px;
+    max-width: 520px;
     padding: 2.2rem 2rem;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     max-height: 92vh;
@@ -114,37 +114,279 @@
     padding: 0.85rem;
 }
 
-/* Profil nézet a modálban */
+/* ============================================================
+   BŐVÍTETT PROFIL KÖZPONT STÍLUSOK
+   ============================================================ */
+
 .profile-card-clean {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    text-align: left;
     background: rgba(226, 161, 54, 0.06);
     border: 1px solid rgba(226, 161, 54, 0.2);
-    border-radius: 12px;
-    padding: 1.8rem 1rem;
-    margin-bottom: 1.5rem;
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.2rem;
 }
 
 .profile-avatar-clean {
-    font-size: 2.8rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(226, 161, 54, 0.12);
+    border: 1px solid rgba(226, 161, 54, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.profile-meta-clean {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .profile-name-clean {
     font-family: 'Playfair Display', serif;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     color: #FFFFFF;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .profile-email-clean {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: var(--primary-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* Profil Belső Alfülek */
+.profile-subtabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    background-color: rgba(18, 10, 6, 0.6);
+    padding: 0.35rem;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 161, 54, 0.15);
+    margin-bottom: 1.4rem;
+}
+
+.profile-subtab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.55rem 0.4rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    text-align: center;
+}
+
+.profile-subtab-btn:hover {
+    color: #FFFFFF;
+}
+
+.profile-subtab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(226, 161, 54, 0.3);
+}
+
+.profile-subtab-pane {
+    display: none;
+}
+
+.profile-subtab-pane.active {
+    display: block;
+    animation: fadeInSubtab 0.25s ease forwards;
+}
+
+@keyframes fadeInSubtab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Rendelési Előzmények Kártyák */
+.user-orders-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 0.3rem;
+}
+
+.user-order-card {
+    background: rgba(18, 10, 6, 0.65);
+    border: 1px solid rgba(226, 161, 54, 0.18);
+    border-radius: 12px;
+    padding: 0.95rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed rgba(226, 161, 54, 0.15);
+    padding-bottom: 0.45rem;
+}
+
+.user-order-ref {
+    font-weight: 700;
+    color: #FFFFFF;
+    font-size: 0.88rem;
+}
+
+.user-order-date {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+.user-order-items-summary {
+    font-size: 0.82rem;
+    color: var(--text-main);
+    line-height: 1.45;
+}
+
+.user-order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.2rem;
+}
+
+.user-order-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.user-order-pill.paid {
+    background: rgba(129, 199, 132, 0.15);
+    color: #81C784;
+    border: 1px solid rgba(129, 199, 132, 0.4);
+}
+
+.user-order-pill.pending {
+    background: rgba(240, 122, 93, 0.15);
+    color: var(--accent-color);
+    border: 1px solid rgba(240, 122, 93, 0.4);
+}
+
+.user-order-total {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.empty-user-orders {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    border: 1px dashed rgba(226, 161, 54, 0.2);
+    border-radius: 12px;
+}
+
+/* Beállítások & Értesítés Kapcsoló */
+.profile-setting-row {
+    background: rgba(18, 10, 6, 0.6);
+    border: 1px solid rgba(226, 161, 54, 0.18);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.setting-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.setting-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.setting-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* Modern iOS-stílusú Toggle kapcsoló */
+.switch-control {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch-control input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.15);
+    transition: 0.3s;
+    border-radius: 34px;
+    border: 1px solid rgba(226, 161, 54, 0.3);
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.switch-control input:checked + .switch-slider {
+    background-color: var(--primary-color);
+}
+
+.switch-control input:checked + .switch-slider:before {
+    transform: translateX(20px);
+}
+
+/* Profil Alsó Műveleti Sáv */
 .profile-actions-clean {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+    margin-top: 1.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(226, 161, 54, 0.2);
 }
 
 .btn-admin-direct-link {
@@ -156,7 +398,7 @@
     text-decoration: none;
     font-weight: 700;
     font-size: 0.9rem;
-    padding: 0.9rem 1rem;
+    padding: 0.85rem 1rem;
     border-radius: 50px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(226, 161, 54, 0.35);

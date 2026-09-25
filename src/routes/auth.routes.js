@@ -12,8 +12,8 @@ if (!JWT_SECRET) {
 
 // Sebességkorlátozás bejelentkezésre és regisztrációra
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 perc
-    max: 10, // maximum 10 kísérlet / IP
+    windowMs: 15 * 60 * 1000,
+    max: 10,
     message: { success: false, message: "Túl sok próbálkozás ebből a hálózatból. Kérjük várjon 15 percet!" },
     standardHeaders: true,
     legacyHeaders: false
@@ -54,7 +54,7 @@ router.post('/register', authLimiter, async (req, res) => {
         }
 
         if (typeof password !== 'string' || password.length < 6 || password.length > 72) {
-            return res.status(400).json({ success: false, message: "A jelszónak 6 és 72 karakter között kell lennie!" });
+            return res.status(400).json({ success: false, message: "A jelszónak legalább 6 karakternek kell lennie!" });
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -159,7 +159,6 @@ router.get('/me', authenticate, async (req, res) => {
         const user = userDoc.data();
         delete user.password;
 
-        // Csak a hitelesített fiókhoz tartozó rendelések lekérése
         const ordersSnapshot = await db.collection('orders')
             .where('userId', '==', req.user.id)
             .get();
@@ -178,7 +177,83 @@ router.get('/me', authenticate, async (req, res) => {
     }
 });
 
-// 4. Értesítési beállítás frissítése
+// 4. Mentett szállítási / számlázási adatok módosítása
+router.put('/profile', authenticate, async (req, res) => {
+    try {
+        const { name, phone, zip, city, address, company, taxNumber } = req.body;
+
+        if (!name || name.trim().length === 0) {
+            return res.status(400).json({ success: false, message: "A név megadása kötelező!" });
+        }
+
+        const updatedData = {
+            name: name.trim().slice(0, 100),
+            phone: phone ? String(phone).trim().slice(0, 30) : "",
+            zip: zip ? String(zip).trim().slice(0, 10) : "",
+            city: city ? String(city).trim().slice(0, 50) : "",
+            address: address ? String(address).trim().slice(0, 100) : "",
+            company: company ? String(company).trim().slice(0, 100) : "",
+            taxNumber: taxNumber ? String(taxNumber).trim().slice(0, 30) : "",
+            updatedAt: new Date().toISOString()
+        };
+
+        const userDocRef = db.collection('users').doc(req.user.id);
+        await userDocRef.update(updatedData);
+
+        const freshDoc = await userDocRef.get();
+        const freshUser = freshDoc.data();
+        delete freshUser.password;
+
+        return res.json({
+            success: true,
+            user: freshUser,
+            message: "A profiladatok sikeresen mentve lettek!"
+        });
+    } catch (error) {
+        console.error("Profil módosítási hiba:", error);
+        return res.status(500).json({ success: false, message: "Nem sikerült frissíteni a profiladatokat." });
+    }
+});
+
+// 5. Jelszó módosítása
+router.put('/change-password', authenticate, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: "Kérjük adja meg jelenlegi és új jelszavát!" });
+        }
+
+        if (typeof newPassword !== 'string' || newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: "Az új jelszónak legalább 6 karakter hosszúnak kell lennie!" });
+        }
+
+        const userDocRef = db.collection('users').doc(req.user.id);
+        const userDoc = await userDocRef.get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ success: false, message: "Felhasználó nem található." });
+        }
+
+        const user = userDoc.data();
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "A megadott jelenlegi jelszó helytelen!" });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        await userDocRef.update({
+            password: hashedNewPassword,
+            passwordUpdatedAt: new Date().toISOString()
+        });
+
+        return res.json({ success: true, message: "Jelszava sikeresen megváltoztatva!" });
+    } catch (error) {
+        console.error("Jelszócsere hiba:", error);
+        return res.status(500).json({ success: false, message: "Nem sikerült módosítani a jelszót." });
+    }
+});
+
+// 6. Értesítési beállítás frissítése
 router.put('/preferences', authenticate, async (req, res) => {
     try {
         const { wantsEmailNotification } = req.body;

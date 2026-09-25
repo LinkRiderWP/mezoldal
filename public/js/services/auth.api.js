@@ -34,6 +34,28 @@ export const authApi = {
         });
         return await res.json();
     },
+    async updateProfile(payload) {
+        const res = await fetch('/api/auth/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.getToken()}`
+            },
+            body: JSON.stringify(payload)
+        });
+        return await res.json();
+    },
+    async changePassword(currentPassword, newPassword) {
+        const res = await fetch('/api/auth/change-password', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.getToken()}`
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+        return await res.json();
+    },
     async updatePreferences(wantsEmailNotification) {
         const res = await fetch('/api/auth/preferences', {
             method: 'PUT',

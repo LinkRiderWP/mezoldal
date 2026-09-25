@@ -543,17 +543,18 @@
   </div>
 </section>
 
-<!-- Letisztult, Prémium Felhasználói / Admin Modál -->
+<!-- Letisztult, Prémium Felhasználói / Profil Modál -->
 <div class="modal-backdrop" id="authModalBackdrop">
   <div class="auth-modal" role="dialog" aria-modal="true">
     <button type="button" class="close-modal-btn" id="closeAuthModalBtn" aria-label="Bezárás">&times;</button>
 
+    <!-- Bejelentkezés / Regisztráció váltófül (kijelentkezett állapotban) -->
     <div class="auth-tabs-nav" id="authTabsNav">
       <button type="button" class="auth-tab-btn active" id="tabLoginBtn">Bejelentkezés</button>
       <button type="button" class="auth-tab-btn" id="tabRegisterBtn">Új fiók</button>
     </div>
 
-    <!-- Bejelentkezés -->
+    <!-- 1. FŐ NÉZET: Bejelentkezés -->
     <div class="auth-tab-content" id="viewLogin">
       <h3 class="auth-modal-title">Bejelentkezés</h3>
       <p class="auth-modal-subtitle">Jelentkezzen be mentett adatai eléréséhez:</p>
@@ -571,7 +572,7 @@
       </form>
     </div>
 
-    <!-- Regisztráció -->
+    <!-- 2. FŐ NÉZET: Új fiók létrehozása -->
     <div class="auth-tab-content" id="viewRegister" style="display: none;">
       <h3 class="auth-modal-title">Új fiók létrehozása</h3>
       <p class="auth-modal-subtitle">Regisztráljon a gyorsabb rendeléshez és kedvezményekhez!</p>
@@ -613,21 +614,121 @@
       </form>
     </div>
 
-    <!-- Profil gyors-összegző (nem zsúfolt rendeléslista!) -->
+    <!-- 3. FŐ NÉZET: Bővített Felhasználói Profil & Irányítóközpont -->
     <div class="auth-tab-content" id="viewProfile" style="display: none;">
+      <!-- Profil Kártya és Fejléc -->
       <div class="profile-card-clean">
         <div class="profile-avatar-clean">🐝</div>
-        <h3 id="profileUserName" class="profile-name-clean">Mikló Árpád</h3>
-        <p id="profileUserEmail" class="profile-email-clean">miklomeheszet@gmail.com</p>
+        <div class="profile-meta-clean">
+          <h3 id="profileUserName" class="profile-name-clean">Mikló Felhasználó</h3>
+          <p id="profileUserEmail" class="profile-email-clean">felhasznalo@email.hu</p>
+        </div>
       </div>
 
+      <!-- Belső alfülek a profilban -->
+      <div class="profile-subtabs-nav">
+        <button type="button" class="profile-subtab-btn active" data-subtab="profileOrdersPane">
+          Rendeléseim
+        </button>
+        <button type="button" class="profile-subtab-btn" data-subtab="profileDataPane">
+          Mentett adatok
+        </button>
+        <button type="button" class="profile-subtab-btn" data-subtab="profileSettingsPane">
+          Beállítások
+        </button>
+      </div>
+
+      <!-- 1. Altab: Rendelések listája -->
+      <div class="profile-subtab-pane active" id="profileOrdersPane">
+        <div class="user-orders-stream" id="userOrdersList">
+          <div class="empty-user-orders">Rendelési előzmények betöltése...</div>
+        </div>
+      </div>
+
+      <!-- 2. Altab: Szállítási és Számlázási adatok szerkesztése -->
+      <div class="profile-subtab-pane" id="profileDataPane">
+        <form id="editProfileForm" class="auth-form">
+          <div class="form-group">
+            <label for="profEditName" class="form-label">Teljes Név *</label>
+            <input type="text" id="profEditName" required autocomplete="name" />
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="profEditPhone" class="form-label">Telefonszám</label>
+              <input type="tel" id="profEditPhone" placeholder="06 20 123 4567" />
+            </div>
+            <div class="form-group">
+              <label for="profEditZip" class="form-label">Irányítószám</label>
+              <input type="text" id="profEditZip" maxlength="4" />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="profEditCity" class="form-label">Település</label>
+              <input type="text" id="profEditCity" />
+            </div>
+            <div class="form-group">
+              <label for="profEditAddress" class="form-label">Utca, házszám</label>
+              <input type="text" id="profEditAddress" />
+            </div>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="profEditCompany" class="form-label">Cégnév (opcionális)</label>
+              <input type="text" id="profEditCompany" placeholder="Minta Kft." />
+            </div>
+            <div class="form-group">
+              <label for="profEditTax" class="form-label">Adószám</label>
+              <input type="text" id="profEditTax" placeholder="12345678-2-42" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit-btn" id="btnSaveProfile">
+            Adatok mentése
+          </button>
+        </form>
+      </div>
+
+      <!-- 3. Altab: Jelszócsere és Értesítési beállítások -->
+      <div class="profile-subtab-pane" id="profileSettingsPane">
+        <div class="profile-setting-row">
+          <div class="setting-info">
+            <span class="setting-title">E-mail értesítések</span>
+            <span class="setting-desc">Értesítés a csomag állapotáról és akciókról</span>
+          </div>
+          <label class="switch-control">
+            <input type="checkbox" id="userEmailPrefToggle" checked />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <form id="changePasswordForm" class="auth-form" style="margin-top: 0.8rem;">
+          <h4 style="font-size: 0.95rem; color: #FFFFFF; font-weight: 600; margin-bottom: 0.4rem;">Jelszó módosítása</h4>
+          <div class="form-group">
+            <label for="currentPasswordInput" class="form-label">Jelenlegi jelszó</label>
+            <input type="password" id="currentPasswordInput" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <div class="form-group">
+            <label for="newPasswordInput" class="form-label">Új jelszó (min. 6 karakter)</label>
+            <input type="password" id="newPasswordInput" minlength="6" placeholder="••••••••" required autocomplete="new-password" />
+          </div>
+          <button type="submit" class="btn-primary auth-submit-btn" id="btnSavePassword">
+            Jelszó megváltoztatása
+          </button>
+        </form>
+      </div>
+
+      <!-- Alsó Közös Műveleti Sáv (Admin gomb & Kijelentkezés) -->
       <div class="profile-actions-clean">
         <div id="adminDirectAccessArea" style="display: none;">
           <a href="/admin.html" class="btn-admin-direct-link">
             👑 Belépés a Teljes Vezérlőpultra (Megrendelések & Kínálat) →
           </a>
         </div>
-        <button type="button" class="btn-logout-clean" id="logoutBtn">Kijelentkezés</button>
+        <button type="button" class="btn-logout-clean" id="logoutBtn">Kijelentkezés a fiókból</button>
       </div>
     </div>
   </div>
@@ -648,6 +749,7 @@
   </svg>
 </button>
 
+<!-- Lábléc -->
 <footer class="main-footer">
   <div class="container footer-content">
     <div class="footer-socials">

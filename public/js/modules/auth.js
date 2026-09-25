@@ -4,6 +4,7 @@ import { showToast } from './ui.js';
 
 const ADMIN_EMAIL = 'miklomeheszet@gmail.com';
 let currentUser = null;
+let userOrders = [];
 
 export function getToken() {
     return authApi.getToken();
@@ -19,6 +20,7 @@ export async function initAuth() {
     }
     updateAuthUI();
     initAuthModalEvents();
+    initProfileSubtabs();
 }
 
 async function refreshUserData() {
@@ -26,7 +28,11 @@ async function refreshUserData() {
         const data = await authApi.getProfile();
         if (data?.success) {
             currentUser = data.user;
+            userOrders = data.orders || [];
             prefillCheckoutForm(data.user);
+            populateProfileForm(data.user);
+            renderUserOrders(userOrders);
+            syncNotificationToggle(data.user.wantsEmailNotification !== false);
         } else {
             logout(false);
         }
@@ -38,6 +44,7 @@ async function refreshUserData() {
 export function logout(notify = true) {
     authApi.removeToken();
     currentUser = null;
+    userOrders = [];
     updateAuthUI();
     closeAuthModal();
     if (notify) showToast("Sikeresen kijelentkezett!", "success");
@@ -74,10 +81,178 @@ function updateAuthUI() {
 
 export function prefillCheckoutForm(user) {
     if (!user) return;
-    const map = { name: user.name, email: user.email, phone: user.phone, zip: user.zip, city: user.city, address: user.address };
+    const map = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        zip: user.zip,
+        city: user.city,
+        address: user.address,
+        companyName: user.company,
+        taxNumber: user.taxNumber
+    };
     for (const [id, val] of Object.entries(map)) {
         const input = document.getElementById(id);
         if (input && !input.value) input.value = val || "";
+    }
+}
+
+function populateProfileForm(user) {
+    if (!user) return;
+    const nameField = document.getElementById("profEditName");
+    const phoneField = document.getElementById("profEditPhone");
+    const zipField = document.getElementById("profEditZip");
+    const cityField = document.getElementById("profEditCity");
+    const addressField = document.getElementById("profEditAddress");
+    const compField = document.getElementById("profEditCompany");
+    const taxField = document.getElementById("profEditTax");
+
+    if (nameField) nameField.value = user.name || "";
+    if (phoneField) phoneField.value = user.phone || "";
+    if (zipField) zipField.value = user.zip || "";
+    if (cityField) cityField.value = user.city || "";
+    if (addressField) addressField.value = user.address || "";
+    if (compField) compField.value = user.company || "";
+    if (taxField) taxField.value = user.taxNumber || "";
+}
+
+function syncNotificationToggle(val) {
+    const toggle = document.getElementById("userEmailPrefToggle");
+    if (toggle) toggle.checked = val;
+}
+
+function renderUserOrders(orders) {
+    const container = document.getElementById("userOrdersList");
+    if (!container) return;
+
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<div class="empty-user-orders">Még nem adott le rendelést webáruházunkban.</div>';
+        return;
+    }
+
+    container.innerHTML = orders.map(ord => {
+        const isPaid = ord.status === 'PAID';
+        const dateStr = ord.createdAt ? new Date(ord.createdAt).toLocaleDateString('hu-HU') : 'N/A';
+        const itemsSummary = (ord.items || []).map(it => `${it.name || it.cim} (${it.qty || 1} db)`).join(', ');
+
+        return `
+            <div class="user-order-card">
+                <div class="user-order-header">
+                    <span class="user-order-ref">#${ord.orderRef}</span>
+                    <span class="user-order-date">${dateStr}</span>
+                </div>
+                <div class="user-order-items-summary">
+                    ${itemsSummary || 'Méz rendelés'}
+                </div>
+                <div class="user-order-footer">
+                    <span class="user-order-pill ${isPaid ? 'paid' : 'pending'}">
+                        ${isPaid ? '✓ Kifizetve' : 'Függőben'}
+                    </span>
+                    <strong class="user-order-total">${Number(ord.totalAmount || 0).toLocaleString('hu-HU')} Ft</strong>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function initProfileSubtabs() {
+    const subtabs = document.querySelectorAll(".profile-subtab-btn");
+    subtabs.forEach(btn => {
+        btn.addEventListener("click", () => {
+            subtabs.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const targetPaneId = btn.getAttribute("data-subtab");
+            document.querySelectorAll(".profile-subtab-pane").forEach(pane => {
+                pane.classList.remove("active");
+            });
+
+            const activePane = document.getElementById(targetPaneId);
+            if (activePane) activePane.classList.add("active");
+        });
+    });
+
+    // 1. Profiladatok mentése esemény
+    const editForm = document.getElementById("editProfileForm");
+    if (editForm) {
+        editForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("btnSaveProfile");
+            btn.disabled = true;
+            btn.textContent = "Mentés...";
+
+            const payload = {
+                name: document.getElementById("profEditName").value,
+                phone: document.getElementById("profEditPhone").value,
+                zip: document.getElementById("profEditZip").value,
+                city: document.getElementById("profEditCity").value,
+                address: document.getElementById("profEditAddress").value,
+                company: document.getElementById("profEditCompany").value,
+                taxNumber: document.getElementById("profEditTax").value
+            };
+
+            try {
+                const res = await authApi.updateProfile(payload);
+                if (res.success && res.user) {
+                    currentUser = res.user;
+                    updateAuthUI();
+                    prefillCheckoutForm(res.user);
+                    showToast("Profiladatai sikeresen frissültek!", "success");
+                } else {
+                    showToast(res.message || "Nem sikerült frissíteni az adatokat.", "error");
+                }
+            } catch {
+                showToast("Hiba történt a profil mentése során.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Adatok mentése";
+            }
+        });
+    }
+
+    // 2. Jelszócsere esemény
+    const pwdForm = document.getElementById("changePasswordForm");
+    if (pwdForm) {
+        pwdForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("btnSavePassword");
+            const curInput = document.getElementById("currentPasswordInput");
+            const newInput = document.getElementById("newPasswordInput");
+
+            btn.disabled = true;
+            btn.textContent = "Módosítás folyamatban...";
+
+            try {
+                const res = await authApi.changePassword(curInput.value, newInput.value);
+                if (res.success) {
+                    showToast("Jelszava sikeresen megváltoztatva!", "success");
+                    pwdForm.reset();
+                } else {
+                    showToast(res.message || "Nem sikerült módosítani a jelszót.", "error");
+                }
+            } catch {
+                showToast("Hiba a jelszó módosítása során.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Jelszó megváltoztatása";
+            }
+        });
+    }
+
+    // 3. Értesítési preferencia kapcsoló
+    const prefToggle = document.getElementById("userEmailPrefToggle");
+    if (prefToggle) {
+        prefToggle.addEventListener("change", async () => {
+            const wants = prefToggle.checked;
+            try {
+                const res = await authApi.updatePreferences(wants);
+                if (res.success) {
+                    showToast(wants ? "E-mail értesítések bekapcsolva." : "E-mail értesítések kikapcsolva.", "success");
+                }
+            } catch {
+                showToast("Nem sikerült elmenteni az értesítési beállítást.", "warning");
+            }
+        });
     }
 }
 
@@ -96,7 +271,6 @@ function initAuthModalEvents() {
 
     if (openBtn) {
         openBtn.addEventListener("click", () => {
-            // Ha az admin van bejelentkezve, a fejléc gombja azonnal átviszi a dedikált Vezérlőpultra!
             if (currentUser && currentUser.email && currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 window.location.href = "/admin.html";
                 return;
@@ -107,6 +281,7 @@ function initAuthModalEvents() {
                 if (viewLogin) viewLogin.style.display = "none";
                 if (viewRegister) viewRegister.style.display = "none";
                 if (viewProfile) viewProfile.style.display = "block";
+                refreshUserData(); // Legfrissebb rendelések és adatok lekérése a modál megnyitásakor
             } else {
                 if (authTabsNav) authTabsNav.style.display = "flex";
                 if (viewProfile) viewProfile.style.display = "none";
@@ -146,8 +321,8 @@ function initAuthModalEvents() {
             if (res.success && res.token) {
                 authApi.setToken(res.token);
                 currentUser = res.user;
+                await refreshUserData();
                 updateAuthUI();
-                prefillCheckoutForm(res.user);
                 closeAuthModal();
 
                 if (currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
@@ -182,8 +357,8 @@ function initAuthModalEvents() {
                 if (res.success && res.token) {
                     authApi.setToken(res.token);
                     currentUser = res.user;
+                    await refreshUserData();
                     updateAuthUI();
-                    prefillCheckoutForm(res.user);
                     closeAuthModal();
                     registerForm.reset();
 
