@@ -40,7 +40,7 @@
     font-weight: 700;
 }
 
-/* Ingyenes szállítás indikátor */
+/* Ingyenes szallitas indikator */
 .free-shipping-box {
     background: rgba(26, 16, 9, 0.65);
     border: 1px solid var(--border-glow);
@@ -72,7 +72,7 @@
     transition: width 0.4s ease;
 }
 
-/* Kosárlista */
+/* Kosarlista */
 .cart-list {
     list-style: none;
     display: flex;
@@ -180,6 +180,28 @@
     justify-content: space-between;
     font-size: 0.86rem;
     color: var(--text-muted);
+}
+
+.shipping-discount-highlight {
+    color: #81C784;
+    font-weight: 600;
+}
+
+.shipping-discount-highlight .discount-value {
+    color: #81C784;
+}
+
+.shipping-discount-tag {
+    font-size: 0.76rem;
+    color: #81C784;
+    margin-left: 0.35rem;
+}
+
+.shipping-strike {
+    text-decoration: line-through;
+    color: var(--text-subtle);
+    font-size: 0.78rem;
+    margin-left: 0.35rem;
 }
 
 .cart-summary {
