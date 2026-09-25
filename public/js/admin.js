@@ -318,17 +318,17 @@ function renderOrders(orders) {
             <div class="order-top-row">
                 <div>
                     <span class="order-main-tag">#${ord.orderRef}</span>
-                    <span class="order-timestamp">📅 ${formattedDate}</span>
+                    <span class="order-timestamp">${formattedDate}</span>
                 </div>
                 <div class="order-status-pills">
-                    <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? '✓ Kifizetve (SimplePay)' : '⏳ Függőben'}</span>
-                    ${ord.invoiceNumber ? `<span class="pill invoice">🧾 Számla: ${ord.invoiceNumber}</span>` : ''}
+                    <span class="pill ${isPaid ? 'paid' : 'pending'}">${isPaid ? '✓ Kifizetve (SimplePay)' : 'Függőben'}</span>
+                    ${ord.invoiceNumber ? `<span class="pill invoice">Számla: ${ord.invoiceNumber}</span>` : ''}
                 </div>
             </div>
 
             <div class="order-grid-details">
                 <div class="order-box-panel">
-                    <h4>👤 Vevő & Szállítási Cím</h4>
+                    <h4>Vevő & Szállítási Cím</h4>
                     <p><strong>Név:</strong> ${cust.name || 'N/A'} ${cust.company ? `(${cust.company})` : ''}</p>
                     ${cust.taxNumber ? `<p><strong>Adószám:</strong> ${cust.taxNumber}</p>` : ''}
                     <p><strong>E-mail:</strong> <a href="mailto:${cust.email}" style="color: var(--primary-light); text-decoration: underline;">${cust.email}</a></p>
@@ -453,10 +453,10 @@ function renderCatalog(products) {
             </div>
             <div class="catalog-entry-actions">
                 <button type="button" class="btn-edit-entry" data-id="${prod.id}">
-                    ✏️ Szerkesztés
+                    Szerkesztés
                 </button>
                 <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
-                    🗑️ Törlés
+                    Törlés
                 </button>
             </div>
         </div>
@@ -560,7 +560,7 @@ function cancelEditProduct() {
     const submitBtn = document.getElementById("saveProductBtn");
     const cancelBtn = document.getElementById("cancelEditBtn");
 
-    titleEl.textContent = "➕ Új méz hozzáadása";
+    titleEl.textContent = "Új méz hozzáadása";
     titleEl.classList.remove("is-editing");
     descEl.textContent = "A hozzáadott termék azonnal elérhetővé válik a vásárlók számára.";
     submitBtn.textContent = "Méz felvétele a kínálatba";
