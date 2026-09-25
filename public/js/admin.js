@@ -121,7 +121,6 @@ function initImageUploader() {
     dropzone.addEventListener("click", () => fileInput.click());
     if (changeBtn) changeBtn.addEventListener("click", () => fileInput.click());
 
-    // Drag and drop események
     ['dragenter', 'dragover'].forEach(eventName => {
         dropzone.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -403,7 +402,7 @@ function initFilters() {
 }
 
 // ============================================================
-// 2. KÍNÁLAT KEZELÉSE
+// 2. KÍNÁLAT KEZELÉSE & SZERKESZTÉSE
 // ============================================================
 async function loadCatalog() {
     const container = document.getElementById("adminCatalogList");
@@ -452,12 +451,26 @@ function renderCatalog(products) {
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
-                🗑️ Törlés
-            </button>
+            <div class="catalog-entry-actions">
+                <button type="button" class="btn-edit-entry" data-id="${prod.id}">
+                    ✏️ Szerkesztés
+                </button>
+                <button type="button" class="btn-delete-entry" data-id="${prod.id}" data-title="${prod.cim}">
+                    🗑️ Törlés
+                </button>
+            </div>
         </div>
     `).join('');
 
+    // Szerkesztés gombok eseményei
+    container.querySelectorAll(".btn-edit-entry").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const id = e.currentTarget.getAttribute("data-id");
+            startEditProduct(id);
+        });
+    });
+
+    // Törlés gombok eseményei
     container.querySelectorAll(".btn-delete-entry").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             const id = e.currentTarget.getAttribute("data-id");
@@ -476,6 +489,10 @@ function renderCatalog(products) {
 
                 if (res.ok && resData.success) {
                     showToast(resData.message, "success");
+                    // Ha a jelenleg törölt terméket szerkesztettük, megszakítjuk
+                    if (document.getElementById("editProductId").value === id) {
+                        cancelEditProduct();
+                    }
                     await loadCatalog();
                 } else {
                     showToast(resData.message || "Nem sikerült törölni a terméket.", "error");
@@ -487,15 +504,89 @@ function renderCatalog(products) {
     });
 }
 
-function initAddProductForm() {
+function startEditProduct(id) {
+    const prod = allProducts.find(p => p.id === id);
+    if (!prod) return;
+
+    // Mezők kitöltése a meglévő termék adataival
+    document.getElementById("editProductId").value = prod.id;
+    document.getElementById("newProdTitle").value = prod.cim || "";
+    document.getElementById("newProdDesc").value = prod.leiras || "";
+    document.getElementById("price250").value = prod.arak?.["250g"] || "";
+    document.getElementById("price500").value = prod.arak?.["500g"] || "";
+    document.getElementById("price900").value = prod.arak?.["900g"] || "";
+    document.getElementById("bulkPrice").value = prod.nagy_tetel_ar || "";
+
+    const isSaleCheckbox = document.getElementById("newProdIsSale");
+    const salePercentGroup = document.getElementById("salePercentGroup");
+    isSaleCheckbox.checked = Boolean(prod.isSale);
+    document.getElementById("newProdDiscount").value = prod.discountPercentage || 15;
+    salePercentGroup.style.display = isSaleCheckbox.checked ? "block" : "none";
+
+    setSelectedImage(prod.kep || "kepek/mez.jpg");
+
+    // Űrlap fejléc és gombok átváltása szerkesztési módra
+    const titleEl = document.getElementById("formCardTitle");
+    const descEl = document.getElementById("formCardDesc");
+    const submitBtn = document.getElementById("saveProductBtn");
+    const cancelBtn = document.getElementById("cancelEditBtn");
+
+    titleEl.textContent = `✏️ "${prod.cim}" szerkesztése`;
+    titleEl.classList.add("is-editing");
+    descEl.textContent = "Módosítsa az árakat, leírást vagy fotót, majd kattintson a módosítások mentésére.";
+    submitBtn.textContent = "Módosítások mentése";
+    cancelBtn.style.display = "inline-flex";
+
+    // Finom görgetés az űrlaphoz
+    const formCard = document.getElementById("addProductForm");
+    if (formCard) {
+        formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    showToast(`"${prod.cim}" betöltve a szerkesztőbe.`, "info");
+}
+
+function cancelEditProduct() {
     const form = document.getElementById("addProductForm");
     if (!form) return;
+
+    form.reset();
+    document.getElementById("editProductId").value = "";
+    setSelectedImage("kepek/mez.jpg");
+    document.getElementById("salePercentGroup").style.display = "none";
+
+    const titleEl = document.getElementById("formCardTitle");
+    const descEl = document.getElementById("formCardDesc");
+    const submitBtn = document.getElementById("saveProductBtn");
+    const cancelBtn = document.getElementById("cancelEditBtn");
+
+    titleEl.textContent = "➕ Új méz hozzáadása";
+    titleEl.classList.remove("is-editing");
+    descEl.textContent = "A hozzáadott termék azonnal elérhetővé válik a vásárlók számára.";
+    submitBtn.textContent = "Méz felvétele a kínálatba";
+    cancelBtn.style.display = "none";
+}
+
+function initAddProductForm() {
+    const form = document.getElementById("addProductForm");
+    const cancelBtn = document.getElementById("cancelEditBtn");
+    if (!form) return;
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+            cancelEditProduct();
+            showToast("Szerkesztés megszakítva.", "warning");
+        });
+    }
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById("saveProductBtn");
+        const editId = document.getElementById("editProductId").value;
+        const isEditing = Boolean(editId);
+
         submitBtn.disabled = true;
-        submitBtn.textContent = "Mentés folyamatban...";
+        submitBtn.textContent = isEditing ? "Módosítások mentése..." : "Mentés folyamatban...";
 
         const payload = {
             cim: document.getElementById("newProdTitle").value,
@@ -510,8 +601,11 @@ function initAddProductForm() {
         };
 
         try {
-            const res = await fetch('/api/admin/products', {
-                method: 'POST',
+            const url = isEditing ? `/api/admin/products/${editId}` : '/api/admin/products';
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authApi.getToken()}`
@@ -522,18 +616,16 @@ function initAddProductForm() {
             const data = await res.json();
             if (res.ok && data.success) {
                 showToast(data.message, "success");
-                form.reset();
-                setSelectedImage("kepek/mez.jpg");
-                document.getElementById("salePercentGroup").style.display = "none";
+                cancelEditProduct();
                 await loadCatalog();
             } else {
-                showToast(data.message || "Nem sikerült hozzáadni a mézet.", "error");
+                showToast(data.message || "Nem sikerült elmenteni a módosításokat.", "error");
             }
         } catch {
-            showToast("Hiba a méz mentése során.", "error");
+            showToast("Hiba történt a méz mentése során.", "error");
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = "Méz felvétele a kínálatba";
+            submitBtn.textContent = isEditing ? "Módosítások mentése" : "Méz felvétele a kínálatba";
         }
     });
 }

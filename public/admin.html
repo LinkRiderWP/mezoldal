@@ -94,7 +94,7 @@
       📦 Megrendelések Áttekintése
     </button>
     <button type="button" class="dash-tab" data-target="catalogSection">
-      🍯 Mézkínálat Kezelése (Hozzáadás & Törlés)
+      🍯 Mézkínálat Kezelése (Hozzáadás, Szerkesztés & Törlés)
     </button>
   </div>
 
@@ -124,13 +124,16 @@
   <section class="dash-view-section" id="catalogSection">
     <div class="catalog-management-grid">
 
-      <!-- Új méz felvétele -->
+      <!-- Új méz felvétele vagy meglévő szerkesztése -->
       <div class="catalog-panel-form">
         <div class="dash-card">
-          <h3 class="dash-card-title">➕ Új méz hozzáadása</h3>
-          <p class="dash-card-desc">A hozzáadott termék azonnal elérhetővé válik a vásárlók számára.</p>
+          <h3 class="dash-card-title" id="formCardTitle">➕ Új méz hozzáadása</h3>
+          <p class="dash-card-desc" id="formCardDesc">A hozzáadott termék azonnal elérhetővé válik a vásárlók számára.</p>
 
           <form id="addProductForm" class="dash-product-form">
+            <!-- Rejtett azonosító szerkesztés esetén -->
+            <input type="hidden" id="editProductId" value="" />
+
             <div class="form-group">
               <label class="form-label" for="newProdTitle">Méz fajtája, megnevezése *</label>
               <input type="text" id="newProdTitle" placeholder="pl. Gesztenyeméz" required />
@@ -148,7 +151,6 @@
               <div class="image-uploader-container">
                 <input type="file" id="prodImageFileInput" accept="image/png, image/jpeg, image/webp" style="display: none;" />
 
-                <!-- Húzd-ide feltöltő doboz -->
                 <div class="image-dropzone" id="imageDropzone">
                   <div class="dropzone-icon">📸</div>
                   <div class="dropzone-text">
@@ -157,7 +159,6 @@
                   <span class="dropzone-hint">Támogatott: JPG, PNG, WEBP (max. 10 MB)</span>
                 </div>
 
-                <!-- Kiválasztott kép előnézete -->
                 <div class="image-preview-panel" id="imagePreviewPanel">
                   <img id="selectedImagePreview" src="kepek/mez.jpg" alt="Kiválasztott fotó előnézete" />
                   <div class="image-preview-details">
@@ -167,15 +168,11 @@
                   </div>
                 </div>
 
-                <!-- Rejtett input a backend felé küldendő kép URL-hez -->
                 <input type="hidden" id="newProdImage" value="kepek/mez.jpg" required />
 
-                <!-- Gyorsválasztó Képtár a szerveren lévő képekből -->
                 <div class="quick-gallery-box">
                   <span class="quick-gallery-title">Vagy válasszon a feltöltött képek közül:</span>
-                  <div class="quick-gallery-flow" id="quickGalleryContainer">
-                    <!-- Dinamikusan tölti fel a JavaScript -->
-                  </div>
+                  <div class="quick-gallery-flow" id="quickGalleryContainer"></div>
                 </div>
               </div>
             </div>
@@ -211,9 +208,15 @@
               </div>
             </div>
 
-            <button type="submit" class="btn-primary" id="saveProductBtn" style="width: 100%; margin-top: 1rem;">
-              Méz felvétele a kínálatba
-            </button>
+            <!-- Gombok csoportja: Mentés és Mégse szerkesztéskor -->
+            <div class="form-submit-actions">
+              <button type="submit" class="btn-primary" id="saveProductBtn" style="flex: 1;">
+                Méz felvétele a kínálatba
+              </button>
+              <button type="button" class="btn-cancel-edit" id="cancelEditBtn" style="display: none;">
+                Mégse
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -222,7 +225,7 @@
       <div class="catalog-panel-list">
         <div class="dash-card">
           <h3 class="dash-card-title">🍯 Bolti kínálat (<span id="catalogCountSub">0</span>)</h3>
-          <p class="dash-card-desc">A törlés gombra kattintva a termék azonnal lekerül a webshopból.</p>
+          <p class="dash-card-desc">Kattintson a ceruzára a szerkesztéshez, vagy a piros gombra a törléshez.</p>
 
           <div class="catalog-items-flow" id="adminCatalogList">
             <div class="admin-state-note">Kínálat betöltése...</div>

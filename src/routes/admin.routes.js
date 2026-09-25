@@ -164,7 +164,56 @@ router.post('/products', async (req, res) => {
     }
 });
 
-// 6. Méz törlése a kínálatból
+// 6. Meglévő méz adatainak módosítása (Szerkesztés)
+router.put('/products/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { cim, leiras, kep, price250, price500, price900, isSale, discountPercentage, bulkPrice } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ success: false, message: "Hiányzó termékazonosító!" });
+        }
+
+        if (!cim || !price250 || !price500 || !price900) {
+            return res.status(400).json({ success: false, message: "A név és az árak megadása kötelező!" });
+        }
+
+        const docRef = db.collection('products').doc(productId);
+        const doc = await docRef.get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ success: false, message: "A szerkeszteni kívánt termék nem található!" });
+        }
+
+        const updatedData = {
+            cim: cim.trim(),
+            leiras: leiras ? leiras.trim() : "",
+            kep: kep ? kep.trim() : (doc.data().kep || "kepek/mez.jpg"),
+            arak: {
+                "250g": Number(price250),
+                "500g": Number(price500),
+                "900g": Number(price900)
+            },
+            isSale: Boolean(isSale),
+            discountPercentage: Number(discountPercentage) || 0,
+            nagy_tetel_ar: bulkPrice ? bulkPrice.trim() : (doc.data().nagy_tetel_ar || "Egyedi árajánlat alapján"),
+            updatedAt: new Date().toISOString()
+        };
+
+        await docRef.update(updatedData);
+
+        return res.json({
+            success: true,
+            product: { id: productId, ...updatedData },
+            message: `"${updatedData.cim}" adatai sikeresen frissítve!`
+        });
+    } catch (err) {
+        console.error("Hiba a termék módosításakor:", err);
+        return res.status(500).json({ success: false, message: "Nem sikerült frissíteni a terméket." });
+    }
+});
+
+// 7. Méz törlése a kínálatból
 router.delete('/products/:id', async (req, res) => {
     try {
         const productId = req.params.id;
